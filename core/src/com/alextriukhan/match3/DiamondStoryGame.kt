@@ -15,6 +15,7 @@ class DiamondStoryGame : ApplicationAdapter() {
 	private val screenStack = MyStack<Screen>()
 	
 	override fun create () {
+		setResourcesToBeLoaded()
 		screenStack.push(GameScreen())
 	}
 
@@ -35,9 +36,9 @@ class DiamondStoryGame : ApplicationAdapter() {
 		screenStack.push(screen)
 	}
 
-//	private fun setResourcesToBeLoaded() {
-//		assetManager.apply {
-//			load("graphics/atlas.atlas", TextureAtlas::class.java)
-//		}
-//	}
+	private fun setResourcesToBeLoaded() {
+		assetManager.apply {
+			load("graphics/atlas.atlas", TextureAtlas::class.java)
+		}
+	}
 }
