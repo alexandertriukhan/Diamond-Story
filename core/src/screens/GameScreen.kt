@@ -5,15 +5,15 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import enums.GridType
-import gameobjects.JewelGrid
+import gameobjects.GameGrid
 
 class GameScreen : Screen {
 
     private val COLS = 10
-    private val gameGrid = JewelGrid(COLS, GridType.SQUARE)
+    private val gameGrid = GameGrid((gridTypes.circle()))
     private val batcher = SpriteBatch()
     private val gemSize = Gdx.graphics.width.toFloat()/COLS
+    private val gridOffset = (Gdx.graphics.height.toFloat() - (gemSize * COLS)) / 2
 
     private val cam = OrthographicCamera()
 
@@ -43,8 +43,10 @@ class GameScreen : Screen {
         batcher.begin()
         for (i in gameGrid.cells.indices) {
             for (j in gameGrid.cells[i].indices) {
-                batcher.draw(gameGrid.cells[i][j].texture, i.toFloat() * gemSize, j.toFloat() * gemSize,
-                        gemSize, gemSize)
+                if (gameGrid.cells[i][j].isPlaying) {
+                    batcher.draw(gameGrid.cells[i][j].jewel.texture, i.toFloat() * gemSize,
+                            (j.toFloat() * gemSize) + gridOffset, gemSize, gemSize)
+                }
             }
         }
         batcher.end()
