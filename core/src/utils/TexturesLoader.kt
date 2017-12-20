@@ -10,8 +10,8 @@ class TexturesLoader {
     val red_gem : TextureRegion = textureAtlas.findRegion("red_gem")
     val green_gem : TextureRegion = textureAtlas.findRegion("green_gem")
     val blue_gem : TextureRegion = textureAtlas.findRegion("blue_gem")
-    val purple_gem : TextureRegion = textureAtlas.findRegion("blue_gem")
-    val yellow_gem : TextureRegion = textureAtlas.findRegion("blue_gem")
+    val purple_gem : TextureRegion = textureAtlas.findRegion("purple_gem")
+    val yellow_gem : TextureRegion = textureAtlas.findRegion("yellow_gem")
 
     private object Holder { val INSTANCE = TexturesLoader() }
 
