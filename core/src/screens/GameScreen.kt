@@ -9,10 +9,10 @@ import gameobjects.GameGrid
 
 class GameScreen : Screen {
 
-    private val COLS = 10
     private val gameGrid = GameGrid((gridTypes.circle()))
+    private val COLS = 10
     private val batcher = SpriteBatch()
-    private val gemSize = Gdx.graphics.width.toFloat()/COLS
+    private val gemSize = Gdx.graphics.width.toFloat() / COLS
     private val gridOffset = (Gdx.graphics.height.toFloat() - (gemSize * COLS)) / 2
 
     private val cam = OrthographicCamera()
@@ -44,6 +44,8 @@ class GameScreen : Screen {
         for (i in gameGrid.cells.indices) {
             for (j in gameGrid.cells[i].indices) {
                 if (gameGrid.cells[i][j].isPlaying) {
+                    batcher.draw(gameGrid.cells[i][j].tileTexture, i.toFloat() * gemSize,
+                            (j.toFloat() * gemSize) + gridOffset, gemSize, gemSize)
                     batcher.draw(gameGrid.cells[i][j].jewel.texture, i.toFloat() * gemSize,
                             (j.toFloat() * gemSize) + gridOffset, gemSize, gemSize)
                 }

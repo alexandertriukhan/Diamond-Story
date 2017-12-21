@@ -8,11 +8,11 @@ import utils.TexturesLoader
 class Jewel(val jewelType : JewelType, val effect : EffectType) {
 
     val texture : TextureRegion = when (jewelType) {
-        JewelType.RED -> TexturesLoader.instance.red_gem
-        JewelType.GREEN -> TexturesLoader.instance.green_gem
-        JewelType.BLUE -> TexturesLoader.instance.blue_gem
-        JewelType.PURPLE -> TexturesLoader.instance.purple_gem
-        JewelType.YELLOW -> TexturesLoader.instance.yellow_gem
+        JewelType.RED -> TexturesLoader.instance.redGem
+        JewelType.GREEN -> TexturesLoader.instance.greenGem
+        JewelType.BLUE -> TexturesLoader.instance.blueGem
+        JewelType.PURPLE -> TexturesLoader.instance.purpleGem
+        JewelType.YELLOW -> TexturesLoader.instance.yellowGem
     }
 
 }
