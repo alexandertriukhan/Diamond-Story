@@ -9,22 +9,21 @@ import gameobjects.GameGrid
 
 class GameScreen : Screen {
 
-    private val gameGrid = GameGrid((gridTypes.circle()))
-    private val COLS = 10
+    private val gameGrid = GameGrid(gridTypes.square())
+    private val MAX_COLS = 9
+    private val MAX_ROWS = 8
     private val batcher = SpriteBatch()
-    private val gemSize = Gdx.graphics.width.toFloat() / COLS
-    private val gridOffset = (Gdx.graphics.height.toFloat() - (gemSize * COLS)) / 2
+    private val gemSize = Gdx.graphics.width.toFloat() / MAX_ROWS
+    private val gridOffset = (Gdx.graphics.height.toFloat() - (gemSize * MAX_COLS)) / 2
 
     private val cam = OrthographicCamera()
 
     init {
-        val width = Gdx.graphics.width
-        val height = Gdx.graphics.height
-        val w = COLS
-        val h = w * (height / width)
+        val w = MAX_ROWS
+        val h = MAX_COLS
 
         cam.setToOrtho(false, w.toFloat(), h.toFloat())
-        cam.position.set(COLS * 0.5f, COLS * 0.5f, 0f)
+        cam.position.set(MAX_COLS * 0.5f, MAX_ROWS * 0.5f, 0f)
         cam.update()
     }
 
