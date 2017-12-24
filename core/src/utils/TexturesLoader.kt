@@ -23,6 +23,8 @@ class TexturesLoader {
     val tileCornerLeftDown : TextureRegion = textureAtlas.findRegion("tile_corner_left_down")
     val tileCornerRightDown : TextureRegion = textureAtlas.findRegion("tile_corner_right_down")
 
+    val selectedGem : TextureRegion = textureAtlas.findRegion("selected")
+
     private object Holder { val INSTANCE = TexturesLoader() }
 
     companion object {
