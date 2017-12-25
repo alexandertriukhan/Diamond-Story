@@ -22,6 +22,7 @@ class GameScreen : Screen {
 
     private val cam = OrthographicCamera()
     private var selectedXY = Vector3()
+    private var isSelected = false
 
     init {
         cam.setToOrtho(false, MAX_ROWS.toFloat(), MAX_COLS)
@@ -54,15 +55,29 @@ class GameScreen : Screen {
                 }
             }
         }
-        batcher.draw(TexturesLoader.instance.selectedGem,selectedXY.x * gemSize,
-                (selectedXY.y * gemSize) + gridOffset, gemSize, gemSize)
+        if (isSelected) {
+            batcher.draw(TexturesLoader.instance.selectedGem, selectedXY.x * gemSize,
+                    (selectedXY.y * gemSize) + gridOffset, gemSize, gemSize)
+        }
         batcher.end()
     }
 
-    fun getSelected() {
-        selectedXY = Vector3(Gdx.input.x.toFloat(), Gdx.input.y.toFloat() + gridOffset, 0f)
-        cam.unproject(selectedXY)
-        selectedXY = Vector3(selectedXY.x.toInt().toFloat(), selectedXY.y.toInt().toFloat(),0f)
+    private fun getSelected() : Vector3 {
+        val touch = Vector3(Gdx.input.x.toFloat(), Gdx.input.y.toFloat() + gridOffset, 0f)
+        cam.unproject(touch)
+        if (touch.x < 0)
+            touch.x = -1f
+        if (touch.y < 0)
+            touch.y = -1f
+        return Vector3(touch.x.toInt().toFloat(), touch.y.toInt().toFloat(),0f)
+    }
+
+    fun onClick() {
+        val testTouch = getSelected()
+        if (gameGrid.inRange(testTouch.x.toInt(),testTouch.y.toInt())) {
+            selectedXY = testTouch
+            isSelected = true
+        }
     }
 
     override fun pause() {

@@ -34,7 +34,7 @@ class InputHandler(private val gs : GameScreen) : InputProcessor {
     }
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        gs.getSelected()
+        gs.onClick()
         return true
     }
 }

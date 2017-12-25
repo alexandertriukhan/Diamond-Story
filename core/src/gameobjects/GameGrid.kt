@@ -79,4 +79,8 @@ class GameGrid(private val gridType : Array<IntArray>) {
         return borders
     }
 
+    fun inRange(x : Int, y : Int) : Boolean {
+        return x >= 0 && y >= 0 && x < gridType.count() && y < gridType[0].count()
+    }
+
 }
