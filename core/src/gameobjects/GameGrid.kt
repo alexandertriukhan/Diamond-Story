@@ -16,6 +16,21 @@ class GameGrid(private val gridType : Array<IntArray>) {
         for (i in gridType.indices) {
             for (j in gridType[i].indices) {
                 cells[i][j].isPlaying = (gridType[i][j] == 1)
+
+                // Making check no occurrences of 3 gems are presented
+                if (i > 1) {
+                    if (cells[i - 1][j].isPlaying)
+                        if (cells[i - 2][j].isPlaying)
+                            while (cells[i - 2][j].jewel.jewelType == cells[i][j].jewel.jewelType)
+                                cells[i][j].jewel = Jewel(JewelType.from(Random().nextInt(5)), EffectType.valueOf("NONE"))
+                }
+                if (j > 1) {
+                    if (cells[i][j - 1].isPlaying)
+                        if (cells[i][j - 2].isPlaying)
+                            while (cells[i][j - 2].jewel.jewelType == cells[i][j].jewel.jewelType)
+                                cells[i][j].jewel = Jewel(JewelType.from(Random().nextInt(5)), EffectType.valueOf("NONE"))
+                }
+
                 val borders = getBorders(i, j, gridType)
                 if (borders.contentEquals(intArrayOf(0, 0, 0, 1))) {
                     cells[i][j].tileTexture = TexturesLoader.instance.tileTop
@@ -46,7 +61,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
     }
 
     // 1 if tile needs border, DOWN, RIGHT, LEFT, TOP
-    fun getBorders(i : Int, j : Int, cells : Array<IntArray>) : IntArray {
+    private fun getBorders(i : Int, j : Int, cells : Array<IntArray>) : IntArray {
         val borders = intArrayOf(0, 0, 0, 0)
         if (i != 0) {
             if (cells[i - 1][j] == 0) {
@@ -93,10 +108,6 @@ class GameGrid(private val gridType : Array<IntArray>) {
         if (((x1 - x2) <= 1 && (x1 - x2) >= -1)  &&
                 ((y1 - y2) <= 1 && (y1 - y2) >= -1)) {
             if (!isDiagonalAdjacent(x1,y1,x2,y2)) {
-                print(x1)
-                println(y1)
-                print(x2)
-                println(y2)
                 return true
             }
         }
