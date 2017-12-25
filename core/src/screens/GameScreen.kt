@@ -14,21 +14,18 @@ import utils.TexturesLoader
 class GameScreen : Screen {
 
     private val gameGrid = GameGrid(gridTypes.square())
-    private val MAX_COLS = gameGrid.cells[0].count()
     private val MAX_ROWS = gameGrid.cells.count()
-    private val batcher = SpriteBatch()
     private val gemSize = Gdx.graphics.width.toFloat() / MAX_ROWS
-    private val gridOffset = (Gdx.graphics.height.toFloat() - (gemSize * MAX_COLS)) / 2
+    private val MAX_COLS = (Gdx.graphics.height.toFloat() / gemSize)
+    private val batcher = SpriteBatch()
+    private val gridOffset = (Gdx.graphics.height.toFloat() - (gemSize * gameGrid.cells[0].count())) / 2
 
     private val cam = OrthographicCamera()
     private var selectedXY = Vector3()
 
     init {
-        val w = MAX_ROWS
-        val h = MAX_COLS
-
-        cam.setToOrtho(false, w.toFloat(), h.toFloat())
-        cam.position.set(MAX_COLS * 0.5f, MAX_ROWS * 0.5f, 0f)
+        cam.setToOrtho(false, MAX_ROWS.toFloat(), MAX_COLS)
+        cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0f)
         cam.update()
 
         Gdx.input.inputProcessor = InputHandler(this)
@@ -57,16 +54,15 @@ class GameScreen : Screen {
                 }
             }
         }
-        // TODO: find a way to get proper coordinates
         batcher.draw(TexturesLoader.instance.selectedGem,selectedXY.x * gemSize,
                 (selectedXY.y * gemSize) + gridOffset, gemSize, gemSize)
         batcher.end()
     }
 
     fun getSelected() {
-        selectedXY = Vector3(Gdx.input.x.toFloat(), Gdx.input.y.toFloat(), 0f)
+        selectedXY = Vector3(Gdx.input.x.toFloat(), Gdx.input.y.toFloat() + gridOffset, 0f)
         cam.unproject(selectedXY)
-        selectedXY = Vector3(selectedXY.x.toInt().toFloat(),selectedXY.y.toInt().toFloat(),0f)
+        selectedXY = Vector3(selectedXY.x.toInt().toFloat(), selectedXY.y.toInt().toFloat(),0f)
     }
 
     override fun pause() {
