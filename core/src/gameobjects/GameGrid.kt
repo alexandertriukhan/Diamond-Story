@@ -83,4 +83,32 @@ class GameGrid(private val gridType : Array<IntArray>) {
         return x >= 0 && y >= 0 && x < gridType.count() && y < gridType[0].count()
     }
 
+    fun swapCells(x1 : Int, y1 : Int, x2 : Int, y2 : Int) {
+        val tmpCell = cells[x1][y1].jewel
+        cells[x1][y1].jewel = cells[x2][y2].jewel
+        cells[x2][y2].jewel = tmpCell
+    }
+
+    fun isAdjacent(x1 : Int, y1 : Int, x2 : Int, y2 : Int) : Boolean {
+        if (((x1 - x2) <= 1 && (x1 - x2) >= -1)  &&
+                ((y1 - y2) <= 1 && (y1 - y2) >= -1)) {
+            if (!isDiagonalAdjacent(x1,y1,x2,y2)) {
+                print(x1)
+                println(y1)
+                print(x2)
+                println(y2)
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun isDiagonalAdjacent(x1 : Int, y1 : Int, x2 : Int, y2 : Int) : Boolean {
+        if ((x1 - x2) == (y1 - y2))
+            return true
+        if ((x1 + y1) == (x2 + y2))
+            return true
+        return false
+    }
+
 }

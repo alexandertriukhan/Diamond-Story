@@ -75,8 +75,18 @@ class GameScreen : Screen {
     fun onClick() {
         val testTouch = getSelected()
         if (gameGrid.inRange(testTouch.x.toInt(),testTouch.y.toInt())) {
-            selectedXY = testTouch
-            isSelected = true
+            if (!isSelected) {
+                selectedXY = testTouch
+                isSelected = true
+            } else {
+                if (gameGrid.isAdjacent(testTouch.x.toInt(), testTouch.y.toInt(), selectedXY.x.toInt(), selectedXY.y.toInt())) {
+                    gameGrid.swapCells(testTouch.x.toInt(), testTouch.y.toInt(), selectedXY.x.toInt(), selectedXY.y.toInt())
+                    isSelected = false
+                } else {
+                    selectedXY = testTouch
+                    isSelected = true
+                }
+            }
         }
     }
 
