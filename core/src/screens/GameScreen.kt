@@ -88,6 +88,9 @@ class GameScreen : Screen {
                 }
             }
         }
+        gameGrid.hasMatches().run {
+            gameGrid.removeMatches(this)
+        }
     }
 
     override fun pause() {

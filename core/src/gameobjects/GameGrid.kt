@@ -1,5 +1,6 @@
 package gameobjects
 
+import com.badlogic.gdx.math.Vector2
 import enums.EffectType
 import enums.JewelType
 import utils.TexturesLoader
@@ -120,6 +121,44 @@ class GameGrid(private val gridType : Array<IntArray>) {
         if ((x1 + y1) == (x2 + y2))
             return true
         return false
+    }
+
+    fun hasMatches() : MutableList<Match> {
+        // TODO: change fun to find 4 in a row and 5 in a row
+        val matches = mutableListOf<Match>()
+        for (i in cells.indices) {
+            for (j in cells[i].indices) {
+                if (cells[i][j].isPlaying) {
+                    if (i > 1) {
+                        val gem1 = cells[i][j]
+                        val gem2 = cells[i - 1][j]
+                        val gem3 = cells[i - 2][j]
+                        if (gem1.jewel.jewelType == gem2.jewel.jewelType && gem1.jewel.jewelType == gem3.jewel.jewelType)
+                            matches.add(Match(Vector2(i.toFloat(), j.toFloat()),
+                                    Vector2((i - 1).toFloat(), j.toFloat()), Vector2((i - 2).toFloat(), j.toFloat())))
+                    }
+                    if (j > 1) {
+                        val gem1 = cells[i][j]
+                        val gem2 = cells[i][j - 1]
+                        val gem3 = cells[i][j - 2]
+                        if (gem1.jewel.jewelType == gem2.jewel.jewelType && gem1.jewel.jewelType == gem3.jewel.jewelType)
+                            matches.add(Match(Vector2(i.toFloat(), j.toFloat()),
+                                    Vector2(i.toFloat(), (j - 1).toFloat()), Vector2(i.toFloat(), (j - 2).toFloat())))
+                    }
+                }
+            }
+        }
+        return matches
+    }
+
+    fun removeMatches(matches : MutableList<Match>) {
+        for (match in matches) {
+            // TODO: change to a falling down gems algorythm
+            cells[match.gem1.x.toInt()][match.gem1.y.toInt()].jewel = Jewel(JewelType.from(Random().nextInt(5)),EffectType.NONE)
+            cells[match.gem2.x.toInt()][match.gem2.y.toInt()].jewel = Jewel(JewelType.from(Random().nextInt(5)),EffectType.NONE)
+            cells[match.gem3.x.toInt()][match.gem3.y.toInt()].jewel = Jewel(JewelType.from(Random().nextInt(5)),EffectType.NONE)
+            matches.remove(match)
+        }
     }
 
 }
