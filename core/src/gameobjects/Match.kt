@@ -1,5 +1,6 @@
 package gameobjects
 
 import com.badlogic.gdx.math.Vector2
+import enums.MatchType
 
-class Match(val gem1 : Vector2, val gem2 : Vector2, val gem3 : Vector2)
+class Match(val gemsInMatch : Array<Vector2>, val matchType : MatchType)

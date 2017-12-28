@@ -6,7 +6,10 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
+import enums.Axis
+import enums.EffectType
 import gameobjects.GameGrid
+import gameobjects.JewelMove
 import utils.InputHandler
 import utils.TexturesLoader
 
@@ -19,10 +22,13 @@ class GameScreen : Screen {
     private val MAX_COLS = (Gdx.graphics.height.toFloat() / gemSize)
     private val batcher = SpriteBatch()
     private val gridOffset = (Gdx.graphics.height.toFloat() - (gemSize * gameGrid.cells[0].count())) / 2
+    private val moves = mutableListOf<JewelMove>()
 
     private val cam = OrthographicCamera()
     private var selectedXY = Vector3()
     private var isSelected = false
+    private var performingMoves = false
+
 
     init {
         cam.setToOrtho(false, MAX_ROWS.toFloat(), MAX_COLS)
@@ -50,11 +56,15 @@ class GameScreen : Screen {
                 if (gameGrid.cells[i][j].isPlaying) {
                     batcher.draw(gameGrid.cells[i][j].tileTexture, i.toFloat() * gemSize,
                             (j.toFloat() * gemSize) + gridOffset, gemSize, gemSize)
-                    batcher.draw(gameGrid.cells[i][j].jewel.texture, i.toFloat() * gemSize,
-                            (j.toFloat() * gemSize) + gridOffset, gemSize, gemSize)
+                    if (gameGrid.cells[i][j].jewel.effect != EffectType.NOT_DRAW) {
+                        batcher.draw(gameGrid.cells[i][j].jewel.texture, i.toFloat() * gemSize,
+                                (j.toFloat() * gemSize) + gridOffset, gemSize, gemSize)
+                    }
                 }
             }
         }
+        performingMoves = moves.isNotEmpty()
+        drawMoves(delta * 3)
         if (isSelected) {
             batcher.draw(TexturesLoader.instance.selectedGem, selectedXY.x * gemSize,
                     (selectedXY.y * gemSize) + gridOffset, gemSize, gemSize)
@@ -73,23 +83,70 @@ class GameScreen : Screen {
     }
 
     fun onClick() {
-        val testTouch = getSelected()
-        if (gameGrid.inRange(testTouch.x.toInt(),testTouch.y.toInt())) {
-            if (!isSelected) {
-                selectedXY = testTouch
-                isSelected = true
-            } else {
-                if (gameGrid.isAdjacent(testTouch.x.toInt(), testTouch.y.toInt(), selectedXY.x.toInt(), selectedXY.y.toInt())) {
-                    gameGrid.swapCells(testTouch.x.toInt(), testTouch.y.toInt(), selectedXY.x.toInt(), selectedXY.y.toInt())
-                    isSelected = false
-                } else {
+        if (!performingMoves) {
+            val testTouch = getSelected()
+            if (gameGrid.inRange(testTouch.x.toInt(), testTouch.y.toInt())) {
+                if (!isSelected) {
                     selectedXY = testTouch
                     isSelected = true
+                } else {
+                    if (gameGrid.isAdjacent(testTouch.x.toInt(), testTouch.y.toInt(), selectedXY.x.toInt(), selectedXY.y.toInt())) {
+                        moves.add(JewelMove(testTouch.x, testTouch.y, selectedXY.x, selectedXY.y,
+                                gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel))
+                        moves.add(JewelMove(selectedXY.x, selectedXY.y, testTouch.x, testTouch.y,
+                                gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel))
+                        gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.effect = EffectType.NOT_DRAW
+                        gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.effect = EffectType.NOT_DRAW
+                        gameGrid.swapCells(testTouch.x.toInt(),testTouch.y.toInt(),selectedXY.x.toInt(),selectedXY.y.toInt())
+                        isSelected = false
+                    } else {
+                        selectedXY = testTouch
+                        isSelected = true
+                    }
                 }
             }
         }
-        gameGrid.hasMatches().run {
-            gameGrid.removeMatches(this)
+    }
+
+    private fun drawMoves(delta : Float) {
+        var endMove = false
+        for (move in moves) {
+            if (move.movingAxis == Axis.X) {
+                if (!move.startBigger) {
+                    move.xStart = move.xStart + delta
+                    if (move.xStart > move.xEnd) {
+                        endMove = true
+                        move.xStart = move.xEnd
+                    }
+                } else {
+                    move.xStart = move.xStart - delta
+                    if (move.xStart < move.xEnd) {
+                        endMove = true
+                        move.xStart = move.xEnd
+                    }
+                }
+            } else {
+                if (!move.startBigger) {
+                    move.yStart = move.yStart + delta
+                    if (move.yStart > move.yEnd) {
+                        endMove = true
+                        move.yStart = move.yEnd
+                    }
+                } else {
+                    move.yStart = move.yStart - delta
+                    if (move.yStart < move.yEnd) {
+                        endMove = true
+                        move.yStart = move.yEnd
+                    }
+                }
+            }
+            batcher.draw(move.jewel.texture, move.xStart * gemSize, (move.yStart * gemSize) + gridOffset,
+                    gemSize, gemSize)
+            if (endMove) {
+                gameGrid.cells[move.xEnd.toInt()][move.yEnd.toInt()].jewel.effect = EffectType.NONE
+                moves.remove(move)
+                break
+            }
         }
     }
 

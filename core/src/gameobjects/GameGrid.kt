@@ -99,12 +99,6 @@ class GameGrid(private val gridType : Array<IntArray>) {
         return x >= 0 && y >= 0 && x < gridType.count() && y < gridType[0].count()
     }
 
-    fun swapCells(x1 : Int, y1 : Int, x2 : Int, y2 : Int) {
-        val tmpCell = cells[x1][y1].jewel
-        cells[x1][y1].jewel = cells[x2][y2].jewel
-        cells[x2][y2].jewel = tmpCell
-    }
-
     fun isAdjacent(x1 : Int, y1 : Int, x2 : Int, y2 : Int) : Boolean {
         if (((x1 - x2) <= 1 && (x1 - x2) >= -1)  &&
                 ((y1 - y2) <= 1 && (y1 - y2) >= -1)) {
@@ -123,42 +117,15 @@ class GameGrid(private val gridType : Array<IntArray>) {
         return false
     }
 
-    fun hasMatches() : MutableList<Match> {
-        // TODO: change fun to find 4 in a row and 5 in a row
-        val matches = mutableListOf<Match>()
-        for (i in cells.indices) {
-            for (j in cells[i].indices) {
-                if (cells[i][j].isPlaying) {
-                    if (i > 1) {
-                        val gem1 = cells[i][j]
-                        val gem2 = cells[i - 1][j]
-                        val gem3 = cells[i - 2][j]
-                        if (gem1.jewel.jewelType == gem2.jewel.jewelType && gem1.jewel.jewelType == gem3.jewel.jewelType)
-                            matches.add(Match(Vector2(i.toFloat(), j.toFloat()),
-                                    Vector2((i - 1).toFloat(), j.toFloat()), Vector2((i - 2).toFloat(), j.toFloat())))
-                    }
-                    if (j > 1) {
-                        val gem1 = cells[i][j]
-                        val gem2 = cells[i][j - 1]
-                        val gem3 = cells[i][j - 2]
-                        if (gem1.jewel.jewelType == gem2.jewel.jewelType && gem1.jewel.jewelType == gem3.jewel.jewelType)
-                            matches.add(Match(Vector2(i.toFloat(), j.toFloat()),
-                                    Vector2(i.toFloat(), (j - 1).toFloat()), Vector2(i.toFloat(), (j - 2).toFloat())))
-                    }
-                }
-            }
-        }
-        return matches
+    fun swapCells(x1 : Int, y1 : Int, x2 : Int, y2 : Int) {
+        val tmpCell = cells[x1][y1].jewel
+        cells[x1][y1].jewel = cells[x2][y2].jewel
+        cells[x2][y2].jewel = tmpCell
     }
 
-    fun removeMatches(matches : MutableList<Match>) {
-        for (match in matches) {
-            // TODO: change to a falling down gems algorythm
-            cells[match.gem1.x.toInt()][match.gem1.y.toInt()].jewel = Jewel(JewelType.from(Random().nextInt(5)),EffectType.NONE)
-            cells[match.gem2.x.toInt()][match.gem2.y.toInt()].jewel = Jewel(JewelType.from(Random().nextInt(5)),EffectType.NONE)
-            cells[match.gem3.x.toInt()][match.gem3.y.toInt()].jewel = Jewel(JewelType.from(Random().nextInt(5)),EffectType.NONE)
-            matches.remove(match)
-        }
+    // TODO: implement check whether this position creates any match
+    fun createsMatch(x1 : Int, y1 : Int, x2 : Int, y2 : Int) : Boolean {
+        return false
     }
 
 }

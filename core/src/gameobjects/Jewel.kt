@@ -5,7 +5,7 @@ import enums.EffectType
 import enums.JewelType
 import utils.TexturesLoader
 
-class Jewel(val jewelType : JewelType, val effect : EffectType) {
+class Jewel(val jewelType : JewelType, var effect : EffectType) {
 
     val texture : TextureRegion = when (jewelType) {
         JewelType.RED -> TexturesLoader.instance.redGem

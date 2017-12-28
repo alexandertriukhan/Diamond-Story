@@ -1,3 +1,3 @@
 package enums
 
-enum class EffectType { NONE }
+enum class EffectType { NONE, NOT_DRAW }
