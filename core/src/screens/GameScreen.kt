@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 import enums.Axis
 import enums.EffectType
+import enums.MatchType
 import gameobjects.GameGrid
 import gameobjects.JewelMove
 import utils.InputHandler
@@ -64,7 +65,7 @@ class GameScreen : Screen {
             }
         }
         performingMoves = moves.isNotEmpty()
-        drawMoves(delta * 3)
+        drawMoves(delta * 4)
         if (isSelected) {
             batcher.draw(TexturesLoader.instance.selectedGem, selectedXY.x * gemSize,
                     (selectedXY.y * gemSize) + gridOffset, gemSize, gemSize)
@@ -98,6 +99,8 @@ class GameScreen : Screen {
                         gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.effect = EffectType.NOT_DRAW
                         gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.effect = EffectType.NOT_DRAW
                         gameGrid.swapCells(testTouch.x.toInt(),testTouch.y.toInt(),selectedXY.x.toInt(),selectedXY.y.toInt())
+                        println(gameGrid.createsMatch(testTouch.x.toInt(),testTouch.y.toInt(),
+                                gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.jewelType).matchType)
                         isSelected = false
                     } else {
                         selectedXY = testTouch
@@ -144,6 +147,10 @@ class GameScreen : Screen {
                     gemSize, gemSize)
             if (endMove) {
                 gameGrid.cells[move.xEnd.toInt()][move.yEnd.toInt()].jewel.effect = EffectType.NONE
+                val match = gameGrid.createsMatch(move.xEnd.toInt(),move.yEnd.toInt(),
+                        gameGrid.cells[move.xEnd.toInt()][move.yEnd.toInt()].jewel.jewelType)
+                if (match.matchType != MatchType.NO_MATCH)
+                    gameGrid.removeMatch(match)
                 moves.remove(move)
                 break
             }
