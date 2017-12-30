@@ -6,7 +6,6 @@ import enums.JewelType
 import enums.MatchType
 import utils.TexturesLoader
 import java.util.*
-import kotlin.system.measureTimeMillis
 
 // TODO: implement intArrayOf(0, 1, 1, 1) etc., also consider refactoring
 class GameGrid(private val gridType : Array<IntArray>) {
@@ -24,14 +23,18 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 if (i > 1) {
                     if (cells[i - 1][j].isPlaying)
                         if (cells[i - 2][j].isPlaying)
-                            while (cells[i - 2][j].jewel.jewelType == cells[i][j].jewel.jewelType)
-                                cells[i][j].jewel = Jewel(JewelType.from(Random().nextInt(5)), EffectType.valueOf("NONE"))
+                            if (cells[i - 1][j].jewel.jewelType == cells[i][j].jewel.jewelType) {
+                                while (cells[i - 2][j].jewel.jewelType == cells[i][j].jewel.jewelType)
+                                    cells[i][j].jewel = Jewel(JewelType.from(Random().nextInt(5)), EffectType.valueOf("NONE"))
+                            }
                 }
                 if (j > 1) {
                     if (cells[i][j - 1].isPlaying)
                         if (cells[i][j - 2].isPlaying)
-                            while (cells[i][j - 2].jewel.jewelType == cells[i][j].jewel.jewelType)
-                                cells[i][j].jewel = Jewel(JewelType.from(Random().nextInt(5)), EffectType.valueOf("NONE"))
+                            if (cells[i][j - 1].jewel.jewelType == cells[i][j].jewel.jewelType) {
+                                while (cells[i][j - 2].jewel.jewelType == cells[i][j].jewel.jewelType)
+                                    cells[i][j].jewel = Jewel(JewelType.from(Random().nextInt(5)), EffectType.valueOf("NONE"))
+                            }
                 }
 
                 val borders = getBorders(i, j, gridType)
@@ -129,76 +132,79 @@ class GameGrid(private val gridType : Array<IntArray>) {
     fun createsMatch(x : Int, y : Int, jewelType: JewelType) : Match {
         var up = 0
         var down = 0
-        val gems = mutableListOf(Vector2(x.toFloat(),y.toFloat()))
-        val match = Match(mutableListOf(),MatchType.NO_MATCH)
-        if (x > 0) {
-            if (cells[x - 1][y].jewel.jewelType == jewelType) {
-                gems.add(Vector2((x - 1).toFloat(),y.toFloat()))
-                if (x > 1)
-                    if (cells[x - 2][y].jewel.jewelType == jewelType)
-                        gems.add(Vector2((x - 2).toFloat(),y.toFloat()))
+        val gems = mutableListOf(Vector2(x.toFloat(), y.toFloat()))
+        val match = Match(mutableListOf(), MatchType.NO_MATCH)
+        if (jewelType != JewelType.NO_JEWEL) {
+            if (x > 0) {
+                if (cells[x - 1][y].jewel.jewelType == jewelType) {
+                    gems.add(Vector2((x - 1).toFloat(), y.toFloat()))
+                    if (x > 1)
+                        if (cells[x - 2][y].jewel.jewelType == jewelType)
+                            gems.add(Vector2((x - 2).toFloat(), y.toFloat()))
+                }
             }
-        }
-        if ((x + 1) < cells.count()) {
-            if (cells[x + 1][y].jewel.jewelType == jewelType) {
-                gems.add(Vector2((x + 1).toFloat(),y.toFloat()))
-                if ((x + 2) < cells.count())
-                    if (cells[x + 2][y].jewel.jewelType == jewelType)
-                        gems.add(Vector2((x + 2).toFloat(),y.toFloat()))
+            if ((x + 1) < cells.count()) {
+                if (cells[x + 1][y].jewel.jewelType == jewelType) {
+                    gems.add(Vector2((x + 1).toFloat(), y.toFloat()))
+                    if ((x + 2) < cells.count())
+                        if (cells[x + 2][y].jewel.jewelType == jewelType)
+                            gems.add(Vector2((x + 2).toFloat(), y.toFloat()))
+                }
             }
-        }
-        if (gems.count() < 3) {
-            gems.clear()
-            gems.add(Vector2(x.toFloat(),y.toFloat()))
-        }
-        if (y > 0) {
-            if (cells[x][y - 1].jewel.jewelType == jewelType) {
-                gems.add(Vector2(x.toFloat(),(y - 1).toFloat()))
-                down++
-                if (y > 1)
-                    if (cells[x][y - 1].jewel.jewelType == jewelType) {
-                        gems.add(Vector2(x.toFloat(), (y - 2).toFloat()))
-                        down++
-                    }
+            if (gems.count() < 3) {
+                gems.clear()
+                gems.add(Vector2(x.toFloat(), y.toFloat()))
             }
-        }
-        if ((y + 1) < cells[0].count()) {
-            if (cells[x][y + 1].jewel.jewelType == jewelType) {
-                gems.add(Vector2(x.toFloat(),(y + 1).toFloat()))
-                up++
-                if ((y + 2) < cells[0].count())
-                    if (cells[x][y + 2].jewel.jewelType == jewelType) {
-                        gems.add(Vector2(x.toFloat(), (y + 2).toFloat()))
-                        up++
-                    }
+//            if (y > 0) {
+//                if (cells[x][y - 1].jewel.jewelType == jewelType) {
+//                    gems.add(Vector2(x.toFloat(), (y - 1).toFloat()))
+//                    down++
+//                    if (y > 1)
+//                        if (cells[x][y - 2].jewel.jewelType == jewelType) {
+//                            gems.add(Vector2(x.toFloat(), (y - 2).toFloat()))
+//                            down++
+//                        }
+//                }
+//            }
+//            if ((y + 1) < cells[0].count()) {
+//                if (cells[x][y + 1].jewel.jewelType == jewelType) {
+//                    gems.add(Vector2(x.toFloat(), (y + 1).toFloat()))
+//                    up++
+//                    if ((y + 2) < cells[0].count())
+//                        if (cells[x][y + 2].jewel.jewelType == jewelType) {
+//                            gems.add(Vector2(x.toFloat(), (y + 2).toFloat()))
+//                            up++
+//                        }
+//                }
+//            }
+            if ((down == 1 && up == 0) || (up == 1 && down == 0))
+                gems.removeAt(gems.count() - 1)
+            if (down == 1 && up == 1) {
+                gems.removeAt(gems.count() - 1)
+                gems.removeAt(gems.count() - 1)
             }
-        }
-        if ((down == 1 && up == 0) || (up == 1 && down == 0))
-            gems.removeAt(gems.count() - 1)
-        if (down == 1 && up == 1) {
-            gems.removeAt(gems.count() - 1)
-            gems.removeAt(gems.count() - 1)
-        }
-        if (gems.count() == 3)
-            match.matchType = MatchType.MATCH3
-        if (gems.count() == 4)
-            match.matchType = MatchType.MATCH4
-        if (gems.count() >= 5) {
-            if (down + up < 2)
-                match.matchType = MatchType.MATCH5
-            else
-                match.matchType = MatchType.MATCH_CROSS
-        }
-        if (match.matchType != MatchType.NO_MATCH) {
-            for (gem in gems)
-                match.gemsInMatch.add(Vector2(gem.x, gem.y))
+            if (gems.count() == 3)
+                match.matchType = MatchType.MATCH3
+            if (gems.count() == 4)
+                match.matchType = MatchType.MATCH4
+            if (gems.count() >= 5) {
+                if (down + up < 2)
+                    match.matchType = MatchType.MATCH5
+                else
+                    match.matchType = MatchType.MATCH_CROSS
+            }
+            if (match.matchType != MatchType.NO_MATCH) {
+                for (gem in gems)
+                    match.gemsInMatch.add(Vector2(gem.x, gem.y))
+            }
         }
         return match
     }
 
     fun removeMatch(match : Match) {
-        for (gem in match.gemsInMatch)
-            cells[gem.x.toInt()][gem.y.toInt()].jewel.effect = EffectType.NOT_DRAW
+        for (gem in match.gemsInMatch) {
+            cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
+        }
     }
 
 }

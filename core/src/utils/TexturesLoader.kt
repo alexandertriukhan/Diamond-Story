@@ -12,6 +12,7 @@ class TexturesLoader {
     val blueGem : TextureRegion = textureAtlas.findRegion("blue_gem")
     val purpleGem : TextureRegion = textureAtlas.findRegion("purple_gem")
     val yellowGem : TextureRegion = textureAtlas.findRegion("yellow_gem")
+    val noGem : TextureRegion = textureAtlas.findRegion("no_gem")
 
     val tileBlank : TextureRegion = textureAtlas.findRegion("tile_blank")
     val tileTop : TextureRegion = textureAtlas.findRegion("tile_top")
