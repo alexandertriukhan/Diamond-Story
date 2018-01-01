@@ -13,4 +13,10 @@ class Match(val gemsInMatch : MutableList<Vector2>, var matchType : MatchType) {
         return maxY
     }
 
+    fun mergeIn(match : Match) {
+        for (gem in match.gemsInMatch)
+            gemsInMatch.add(gem)
+    }
+
+
 }

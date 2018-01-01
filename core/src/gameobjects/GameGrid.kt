@@ -128,74 +128,69 @@ class GameGrid(private val gridType : Array<IntArray>) {
         cells[x2][y2].jewel = tmpCell
     }
 
-    // TODO: implement check whether this position creates any match
+    // TODO: CHECK DEBUG etc
+    // REFACTOR PREPARE MOVES (SEE GAMESCREEN)
     fun createsMatch(x : Int, y : Int, jewelType: JewelType) : Match {
-        var up = 0
-        var down = 0
-        val gems = mutableListOf(Vector2(x.toFloat(), y.toFloat()))
+        val matchHorizontal = getHorizontalMatch(x,y,jewelType)
+        val matchVertical = getVerticalMatch(x,y,jewelType)
+        val resultingMatch = Match(MutableList(1,{ _ -> Vector2(x.toFloat(),y.toFloat()) }),MatchType.NO_MATCH)
+        if (matchHorizontal.gemsInMatch.count() > 1) {
+            if (matchVertical.gemsInMatch.count() > 1) {
+                matchHorizontal.mergeIn(matchVertical)
+                resultingMatch.mergeIn(matchHorizontal)
+                resultingMatch.matchType = MatchType.MATCH_CROSS
+                return resultingMatch
+            } else {
+                resultingMatch.mergeIn(matchHorizontal)
+            }
+        } else {
+            if (matchVertical.gemsInMatch.count() > 1)
+                resultingMatch.mergeIn(matchVertical)
+        }
+        var size = resultingMatch.gemsInMatch.count()
+        if (size > 5) size = 5
+        if (size < 3) size = 0
+        resultingMatch.matchType = MatchType.from(size)
+        return resultingMatch
+    }
+
+    private fun getHorizontalMatch(x : Int, y : Int, jewelType: JewelType) : Match {
+        var counter = 1
         val match = Match(mutableListOf(), MatchType.NO_MATCH)
         if (jewelType != JewelType.NO_JEWEL) {
-            if (x > 0) {
-                if (cells[x - 1][y].jewel.jewelType == jewelType) {
-                    gems.add(Vector2((x - 1).toFloat(), y.toFloat()))
-                    if (x > 1)
-                        if (cells[x - 2][y].jewel.jewelType == jewelType)
-                            gems.add(Vector2((x - 2).toFloat(), y.toFloat()))
-                }
+            while ((x - counter) >= 0) {
+                if (cells[x - counter][y].jewel.jewelType == jewelType) {
+                    match.gemsInMatch.add(Vector2((x - counter).toFloat(), y.toFloat()))
+                } else break
+                counter++
             }
-            if ((x + 1) < cells.count()) {
-                if (cells[x + 1][y].jewel.jewelType == jewelType) {
-                    gems.add(Vector2((x + 1).toFloat(), y.toFloat()))
-                    if ((x + 2) < cells.count())
-                        if (cells[x + 2][y].jewel.jewelType == jewelType)
-                            gems.add(Vector2((x + 2).toFloat(), y.toFloat()))
-                }
+            counter = 1
+            while ((x + counter) < cells.count()) {
+                if (cells[x + counter][y].jewel.jewelType == jewelType) {
+                    match.gemsInMatch.add(Vector2((x + counter).toFloat(), y.toFloat()))
+                } else break
+                counter++
             }
-            if (gems.count() < 3) {
-                gems.clear()
-                gems.add(Vector2(x.toFloat(), y.toFloat()))
+        }
+        return match
+    }
+
+    private fun getVerticalMatch(x : Int, y : Int, jewelType: JewelType) : Match {
+        var counter = 1
+        val match = Match(mutableListOf(), MatchType.NO_MATCH)
+        if (jewelType != JewelType.NO_JEWEL) {
+            while ((y - counter) >= 0) {
+                if (cells[x][y - counter].jewel.jewelType == jewelType) {
+                    match.gemsInMatch.add(Vector2(x.toFloat(), (y - counter).toFloat()))
+                } else break
+                counter++
             }
-//            if (y > 0) {
-//                if (cells[x][y - 1].jewel.jewelType == jewelType) {
-//                    gems.add(Vector2(x.toFloat(), (y - 1).toFloat()))
-//                    down++
-//                    if (y > 1)
-//                        if (cells[x][y - 2].jewel.jewelType == jewelType) {
-//                            gems.add(Vector2(x.toFloat(), (y - 2).toFloat()))
-//                            down++
-//                        }
-//                }
-//            }
-//            if ((y + 1) < cells[0].count()) {
-//                if (cells[x][y + 1].jewel.jewelType == jewelType) {
-//                    gems.add(Vector2(x.toFloat(), (y + 1).toFloat()))
-//                    up++
-//                    if ((y + 2) < cells[0].count())
-//                        if (cells[x][y + 2].jewel.jewelType == jewelType) {
-//                            gems.add(Vector2(x.toFloat(), (y + 2).toFloat()))
-//                            up++
-//                        }
-//                }
-//            }
-            if ((down == 1 && up == 0) || (up == 1 && down == 0))
-                gems.removeAt(gems.count() - 1)
-            if (down == 1 && up == 1) {
-                gems.removeAt(gems.count() - 1)
-                gems.removeAt(gems.count() - 1)
-            }
-            if (gems.count() == 3)
-                match.matchType = MatchType.MATCH3
-            if (gems.count() == 4)
-                match.matchType = MatchType.MATCH4
-            if (gems.count() >= 5) {
-                if (down + up < 2)
-                    match.matchType = MatchType.MATCH5
-                else
-                    match.matchType = MatchType.MATCH_CROSS
-            }
-            if (match.matchType != MatchType.NO_MATCH) {
-                for (gem in gems)
-                    match.gemsInMatch.add(Vector2(gem.x, gem.y))
+            counter = 1
+            while ((y + counter) < cells.count()) {
+                if (cells[x][y + counter].jewel.jewelType == jewelType) {
+                    match.gemsInMatch.add(Vector2(x.toFloat(), (y + counter).toFloat()))
+                } else break
+                counter++
             }
         }
         return match

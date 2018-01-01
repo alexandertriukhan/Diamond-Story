@@ -7,6 +7,8 @@ import utils.TexturesLoader
 
 class Jewel(var jewelType : JewelType, var effect : EffectType) {
 
+    //val animationTextures = List<TextureRegion>(1, {_ -> TexturesLoader.instance.})
+
     fun texture() : TextureRegion {
         return when (jewelType) {
             JewelType.RED -> TexturesLoader.instance.redGem
@@ -18,4 +20,9 @@ class Jewel(var jewelType : JewelType, var effect : EffectType) {
         }
     }
 
+    //fun animation() : TextureRegion { }
+
+    fun update(delta : Float) {
+
+    }
 }
