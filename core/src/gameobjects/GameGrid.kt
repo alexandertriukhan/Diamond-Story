@@ -128,21 +128,20 @@ class GameGrid(private val gridType : Array<IntArray>) {
         cells[x2][y2].jewel = tmpCell
     }
 
-    // TODO: CHECK DEBUG etc
-    // REFACTOR PREPARE MOVES (SEE GAMESCREEN)
+    // TODO: uncomment lines after implementing creating moves in GameScreen for cross matches
     fun createsMatch(x : Int, y : Int, jewelType: JewelType) : Match {
         val matchHorizontal = getHorizontalMatch(x,y,jewelType)
         val matchVertical = getVerticalMatch(x,y,jewelType)
         val resultingMatch = Match(MutableList(1,{ _ -> Vector2(x.toFloat(),y.toFloat()) }),MatchType.NO_MATCH)
         if (matchHorizontal.gemsInMatch.count() > 1) {
-            if (matchVertical.gemsInMatch.count() > 1) {
-                matchHorizontal.mergeIn(matchVertical)
+//            if (matchVertical.gemsInMatch.count() > 1) {
+//                matchHorizontal.mergeIn(matchVertical)
+//                resultingMatch.mergeIn(matchHorizontal)
+//                resultingMatch.matchType = MatchType.MATCH_CROSS
+//                return resultingMatch
+//            } else {
                 resultingMatch.mergeIn(matchHorizontal)
-                resultingMatch.matchType = MatchType.MATCH_CROSS
-                return resultingMatch
-            } else {
-                resultingMatch.mergeIn(matchHorizontal)
-            }
+//            }
         } else {
             if (matchVertical.gemsInMatch.count() > 1)
                 resultingMatch.mergeIn(matchVertical)
@@ -186,7 +185,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 counter++
             }
             counter = 1
-            while ((y + counter) < cells.count()) {
+            while ((y + counter) < cells[0].count()) {
                 if (cells[x][y + counter].jewel.jewelType == jewelType) {
                     match.gemsInMatch.add(Vector2(x.toFloat(), (y + counter).toFloat()))
                 } else break

@@ -2,15 +2,24 @@ package gameobjects
 
 import com.badlogic.gdx.math.Vector2
 import enums.MatchType
+import kotlin.math.min
 
 class Match(val gemsInMatch : MutableList<Vector2>, var matchType : MatchType) {
 
     fun maxY() : Int {
-        var maxY = 0
+        var maxY = Int.MIN_VALUE
         for (gem in gemsInMatch)
             if (gem.y > maxY)
                 maxY = gem.y.toInt()
         return maxY
+    }
+
+    fun minY() : Int {
+        var minY = Int.MAX_VALUE
+        for (gem in gemsInMatch)
+            if (gem.y < minY)
+                minY = gem.y.toInt()
+        return minY
     }
 
     fun mergeIn(match : Match) {

@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
-import debug.ScreenshotFactory
 import enums.Axis
 import enums.EffectType
 import enums.JewelType
@@ -30,11 +29,12 @@ class GameScreen : Screen {
     private val gridOffset = (Gdx.graphics.height.toFloat() - (gemSize * gameGrid.cells[0].count())) / 2
     private val moves = mutableListOf<JewelMove>()
     private val itemsToCheck = mutableListOf<JewelMove>()
-
     private val cam = OrthographicCamera()
+
     private var selectedXY = Vector3()
     private var isSelected = false
     private var performingMoves = false
+    private var makeCheck = false
 
 
     init {
@@ -69,8 +69,8 @@ class GameScreen : Screen {
             }
         }
         performingMoves = moves.isNotEmpty()
-        drawMoves(delta * 4)
-        if (!performingMoves && itemsToCheck.isNotEmpty())
+        drawMoves(delta * 2)
+        if (makeCheck)
             checkMatches()
         if (isSelected) {
             batcher.draw(TexturesLoader.instance.selectedGem, selectedXY.x * gemSize,
@@ -98,10 +98,11 @@ class GameScreen : Screen {
                     isSelected = true
                 } else {
                     if (gameGrid.isAdjacent(testTouch.x.toInt(), testTouch.y.toInt(), selectedXY.x.toInt(), selectedXY.y.toInt())) {
-                        moves.add(JewelMove(testTouch.x, testTouch.y, selectedXY.x, selectedXY.y,
-                                Jewel(gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.jewelType,gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.effect)))
+
                         moves.add(JewelMove(selectedXY.x, selectedXY.y, testTouch.x, testTouch.y,
                                 Jewel(gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.jewelType,gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.effect)))
+                        moves.add(JewelMove(testTouch.x, testTouch.y, selectedXY.x, selectedXY.y,
+                                Jewel(gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.jewelType,gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.effect)))
                         gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
                         gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
                         isSelected = false
@@ -154,23 +155,31 @@ class GameScreen : Screen {
                 gameGrid.cells[move.xEnd.toInt()][move.yEnd.toInt()].jewel.jewelType = move.jewel.jewelType
                 itemsToCheck.add(move)
                 iterator.remove()
+                if (!iterator.hasNext())
+                    makeCheck = true
             }
         }
     }
 
-    // TODO: work with vertical rows
     private fun prepareMoves(match : Match) {
         gameGrid.removeMatch(match)
         for (m in match.gemsInMatch) {
-            var y = m.y
-            while (y < gameGrid.cells[0].count() - 1) {
-                moves.add(JewelMove(m.x, (y + 1), m.x, y, Jewel(gameGrid.cells[m.x.toInt()][(y.toInt() + 1)].jewel.jewelType,
-                            gameGrid.cells[m.x.toInt()][(y.toInt() + 1)].jewel.effect)))
-                gameGrid.cells[m.x.toInt()][(y + 1).toInt()].jewel.jewelType = JewelType.NO_JEWEL
+            var maxY = match.maxY()
+            var y = match.minY()
+            while (maxY < gameGrid.cells[0].count() - 1) {
+                moves.add(JewelMove(m.x, (maxY.toFloat() + 1), m.x, y.toFloat(), Jewel(gameGrid.cells[m.x.toInt()][(maxY + 1)].jewel.jewelType,
+                            gameGrid.cells[m.x.toInt()][(maxY + 1)].jewel.effect)))
+                gameGrid.cells[m.x.toInt()][(maxY + 1)].jewel.jewelType = JewelType.NO_JEWEL
+                maxY++
                 y++
             }
-            moves.add(JewelMove(m.x, gameGrid.cells[0].count().toFloat(), m.x, y, Jewel(JewelType.from(Random().nextInt(5)),
+            while (y < maxY + 1) {
+                moves.add(JewelMove(m.x, gameGrid.cells[0].count().toFloat(), m.x, y.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
                         EffectType.NONE)))
+                y++
+            } // TODO: this section makes impossible cross matches:
+            if (match.maxY() != match.minY())
+                break
         }
     }
 
@@ -182,11 +191,13 @@ class GameScreen : Screen {
                     gameGrid.cells[move.xEnd.toInt()][move.yEnd.toInt()].jewel.jewelType)
             if (match.matchType != MatchType.NO_MATCH) {
                 prepareMoves(match)
+                makeCheck = false
                 break
             } else {
                 iterator.remove()
             }
         }
+        makeCheck = false
     }
 
     override fun pause() {
