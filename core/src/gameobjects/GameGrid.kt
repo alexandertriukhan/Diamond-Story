@@ -20,21 +20,25 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 cells[i][j].isPlaying = (gridType[i][j] == 1)
 
                 // Making check no occurrences of 3 gems are presented
-                if (i > 1) {
-                    if (cells[i - 1][j].isPlaying)
-                        if (cells[i - 2][j].isPlaying)
-                            if (cells[i - 1][j].jewel.jewelType == cells[i][j].jewel.jewelType) {
-                                while (cells[i - 2][j].jewel.jewelType == cells[i][j].jewel.jewelType)
-                                    cells[i][j].jewel = Jewel(JewelType.from(Random().nextInt(5)), EffectType.valueOf("NONE"))
-                            }
-                }
-                if (j > 1) {
-                    if (cells[i][j - 1].isPlaying)
-                        if (cells[i][j - 2].isPlaying)
-                            if (cells[i][j - 1].jewel.jewelType == cells[i][j].jewel.jewelType) {
-                                while (cells[i][j - 2].jewel.jewelType == cells[i][j].jewel.jewelType)
-                                    cells[i][j].jewel = Jewel(JewelType.from(Random().nextInt(5)), EffectType.valueOf("NONE"))
-                            }
+                if (cells[i][j].isPlaying) {
+                    if (i > 1) {
+                        if (cells[i - 1][j].isPlaying)
+                            if (cells[i - 2][j].isPlaying)
+                                if (cells[i - 1][j].jewel.jewelType == cells[i][j].jewel.jewelType) {
+                                    while (cells[i - 2][j].jewel.jewelType == cells[i][j].jewel.jewelType)
+                                        cells[i][j].jewel = Jewel(JewelType.from(Random().nextInt(5)), EffectType.valueOf("NONE"))
+                                }
+                    }
+                    if (j > 1) {
+                        if (cells[i][j - 1].isPlaying)
+                            if (cells[i][j - 2].isPlaying)
+                                if (cells[i][j - 1].jewel.jewelType == cells[i][j].jewel.jewelType) {
+                                    while (cells[i][j - 2].jewel.jewelType == cells[i][j].jewel.jewelType)
+                                        cells[i][j].jewel = Jewel(JewelType.from(Random().nextInt(5)), EffectType.valueOf("NONE"))
+                                }
+                    }
+                } else {
+                    cells[i][j].jewel.jewelType = JewelType.NO_JEWEL
                 }
 
                 val borders = getBorders(i, j, gridType)
@@ -198,6 +202,20 @@ class GameGrid(private val gridType : Array<IntArray>) {
         for (gem in match.gemsInMatch) {
             cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
         }
+    }
+
+    fun getHighestIsNotPlaying(i: Int, j: Int) : Int {
+        for (row in (j + 1)..(cells[i].count() - 1))
+            if (!cells[i][row].isPlaying)
+                return row
+        return cells[i].count()
+    }
+
+    fun getHighestJewel(i : Int, j : Int) : Int {
+        for (row in (j + 1)..(cells[i].count() - 1))
+            if (cells[i][row].jewel.jewelType != JewelType.NO_JEWEL)
+                return row
+        return cells[i].count()
     }
 
 }

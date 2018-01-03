@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
-import debug.ScreenshotFactory
 import enums.Axis
 import enums.EffectType
 import enums.JewelType
@@ -22,7 +21,7 @@ import java.util.*
 
 class GameScreen : Screen {
 
-    private val gameGrid = GameGrid(gridTypes.square())
+    private val gameGrid = GameGrid(gridTypes.circle())
     private val MAX_ROWS = gameGrid.cells.count()
     private val gemSize = Gdx.graphics.width.toFloat() / MAX_ROWS
     private val MAX_COLS = (Gdx.graphics.height.toFloat() / gemSize)
@@ -68,7 +67,7 @@ class GameScreen : Screen {
                 }
             }
         }
-        drawMoves(delta / 2)
+        drawMoves(delta * 2)
         if (makeCheck)
             checkMatches()
         performingMoves = moves.isNotEmpty()
@@ -169,12 +168,18 @@ class GameScreen : Screen {
             for (i in gameGrid.cells.indices) {
                  for (j in gameGrid.cells[i].indices) {
                     if (gameGrid.cells[i][j].isPlaying) {
-                        if (gameGrid.cells[i][j].jewel.jewelType == JewelType.NO_JEWEL) {
+                        if (gameGrid.cells[i][j].jewel.jewelType == JewelType.NO_JEWEL && gameGrid.cells[i][j].isPlaying) {
                             if (j < gameGrid.cells[0].count() - 1) {
-                                val highestJewel = getHighestJewel(i, j)
+                                val highestJewel = gameGrid.getHighestJewel(i, j)
                                 if (highestJewel == gameGrid.cells[0].count()) {
-                                    moves.add(JewelMove(i.toFloat(), gameGrid.cells[0].count().toFloat(), i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
-                                            EffectType.NONE)))
+                                    val highestNotPlaying = gameGrid.getHighestIsNotPlaying(i, j)
+                                    if (highestNotPlaying == gameGrid.cells[0].count()) {
+                                        moves.add(JewelMove(i.toFloat(), gameGrid.cells[0].count().toFloat(), i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
+                                                EffectType.NONE)))
+                                    } else {
+                                        moves.add(JewelMove(i.toFloat(), highestNotPlaying.toFloat(), i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
+                                                EffectType.NONE)))
+                                    }
                                 } else {
                                     moves.add(JewelMove(i.toFloat(), highestJewel.toFloat(), i.toFloat(), j.toFloat(),
                                             Jewel(gameGrid.cells[i][highestJewel].jewel.jewelType, gameGrid.cells[i][highestJewel].jewel.effect)))
@@ -189,13 +194,6 @@ class GameScreen : Screen {
                 }
             }
         }
-    }
-
-    private fun getHighestJewel(i : Int, j : Int) : Int {
-        for (row in (j + 1)..(gameGrid.cells[i].count() - 1))
-            if (gameGrid.cells[i][row].jewel.jewelType != JewelType.NO_JEWEL)
-                return row
-        return gameGrid.cells[i].count()
     }
 
     private fun checkMatches() {
