@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
+import debug.ScreenshotFactory
 import enums.Axis
 import enums.EffectType
 import enums.JewelType
@@ -56,7 +57,6 @@ class GameScreen : Screen {
     override fun render(delta: Float) {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-
         batcher.begin()
         for (i in gameGrid.cells.indices) {
             for (j in gameGrid.cells[i].indices) {
@@ -68,10 +68,10 @@ class GameScreen : Screen {
                 }
             }
         }
-        performingMoves = moves.isNotEmpty()
-        drawMoves(delta * 2)
+        drawMoves(delta / 2)
         if (makeCheck)
             checkMatches()
+        performingMoves = moves.isNotEmpty()
         if (isSelected) {
             batcher.draw(TexturesLoader.instance.selectedGem, selectedXY.x * gemSize,
                     (selectedXY.y * gemSize) + gridOffset, gemSize, gemSize)
@@ -155,49 +155,64 @@ class GameScreen : Screen {
                 gameGrid.cells[move.xEnd.toInt()][move.yEnd.toInt()].jewel.jewelType = move.jewel.jewelType
                 itemsToCheck.add(move)
                 iterator.remove()
-                if (!iterator.hasNext())
+                if (moves.isEmpty()) {
                     makeCheck = true
+                }
             }
         }
     }
 
-    private fun prepareMoves(match : Match) {
-        gameGrid.removeMatch(match)
-        for (m in match.gemsInMatch) {
-            var maxY = match.maxY()
-            var y = match.minY()
-            while (maxY < gameGrid.cells[0].count() - 1) {
-                moves.add(JewelMove(m.x, (maxY.toFloat() + 1), m.x, y.toFloat(), Jewel(gameGrid.cells[m.x.toInt()][(maxY + 1)].jewel.jewelType,
-                            gameGrid.cells[m.x.toInt()][(maxY + 1)].jewel.effect)))
-                gameGrid.cells[m.x.toInt()][(maxY + 1)].jewel.jewelType = JewelType.NO_JEWEL
-                maxY++
-                y++
+    private fun prepareMoves(match : List<Match>) {
+        if (match.isNotEmpty()) {
+            for (m in match)
+                gameGrid.removeMatch(m)
+            for (i in gameGrid.cells.indices) {
+                 for (j in gameGrid.cells[i].indices) {
+                    if (gameGrid.cells[i][j].isPlaying) {
+                        if (gameGrid.cells[i][j].jewel.jewelType == JewelType.NO_JEWEL) {
+                            if (j < gameGrid.cells[0].count() - 1) {
+                                val highestJewel = getHighestJewel(i, j)
+                                if (highestJewel == gameGrid.cells[0].count()) {
+                                    moves.add(JewelMove(i.toFloat(), gameGrid.cells[0].count().toFloat(), i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
+                                            EffectType.NONE)))
+                                } else {
+                                    moves.add(JewelMove(i.toFloat(), highestJewel.toFloat(), i.toFloat(), j.toFloat(),
+                                            Jewel(gameGrid.cells[i][highestJewel].jewel.jewelType, gameGrid.cells[i][highestJewel].jewel.effect)))
+                                    gameGrid.cells[i][highestJewel].jewel.jewelType = JewelType.NO_JEWEL
+                                }
+                            } else {
+                                moves.add(JewelMove(i.toFloat(), gameGrid.cells[0].count().toFloat(), i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
+                                        EffectType.NONE)))
+                            }
+                        }
+                    }
+                }
             }
-            while (y < maxY + 1) {
-                moves.add(JewelMove(m.x, gameGrid.cells[0].count().toFloat(), m.x, y.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
-                        EffectType.NONE)))
-                y++
-            } // TODO: this section makes impossible cross matches:
-            if (match.maxY() != match.minY())
-                break
         }
+    }
+
+    private fun getHighestJewel(i : Int, j : Int) : Int {
+        for (row in (j + 1)..(gameGrid.cells[i].count() - 1))
+            if (gameGrid.cells[i][row].jewel.jewelType != JewelType.NO_JEWEL)
+                return row
+        return gameGrid.cells[i].count()
     }
 
     private fun checkMatches() {
+        val listOfMatches = mutableListOf<Match>()
         val iterator = itemsToCheck.iterator()
         while (iterator.hasNext()) {
             val move = iterator.next()
             val match = gameGrid.createsMatch(move.xEnd.toInt(), move.yEnd.toInt(),
                     gameGrid.cells[move.xEnd.toInt()][move.yEnd.toInt()].jewel.jewelType)
             if (match.matchType != MatchType.NO_MATCH) {
-                prepareMoves(match)
-                makeCheck = false
-                break
+                listOfMatches.add(match)
             } else {
                 iterator.remove()
             }
         }
         makeCheck = false
+        prepareMoves(listOfMatches)
     }
 
     override fun pause() {
