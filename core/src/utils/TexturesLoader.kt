@@ -1,6 +1,7 @@
 package utils
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 
@@ -25,6 +26,8 @@ class TexturesLoader {
     val tileCornerRightDown : TextureRegion = textureAtlas.findRegion("tile_corner_right_down")
 
     val selectedGem : TextureRegion = textureAtlas.findRegion("selected")
+
+    //val fireAnim = Animation<TextureRegion>(0.033f, textureAtlas.findRegions("fire"), Animation.PlayMode.LOOP)
 
     private object Holder { val INSTANCE = TexturesLoader() }
 

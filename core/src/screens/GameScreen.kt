@@ -33,7 +33,6 @@ class GameScreen : Screen {
 
     private var selectedXY = Vector3()
     private var isSelected = false
-    private var performingMoves = false
     private var makeCheck = false
 
 
@@ -57,6 +56,18 @@ class GameScreen : Screen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         batcher.begin()
+        drawGameGrid()
+        drawMoves(delta * 2)
+        if (makeCheck)
+            checkMatches()
+        if (isSelected) {
+            batcher.draw(TexturesLoader.instance.selectedGem, selectedXY.x * gemSize,
+                    (selectedXY.y * gemSize) + gridOffset, gemSize, gemSize)
+        }
+        batcher.end()
+    }
+
+    private fun drawGameGrid() {
         for (i in gameGrid.cells.indices) {
             for (j in gameGrid.cells[i].indices) {
                 if (gameGrid.cells[i][j].isPlaying) {
@@ -67,15 +78,6 @@ class GameScreen : Screen {
                 }
             }
         }
-        drawMoves(delta * 2)
-        if (makeCheck)
-            checkMatches()
-        performingMoves = moves.isNotEmpty()
-        if (isSelected) {
-            batcher.draw(TexturesLoader.instance.selectedGem, selectedXY.x * gemSize,
-                    (selectedXY.y * gemSize) + gridOffset, gemSize, gemSize)
-        }
-        batcher.end()
     }
 
     private fun getSelected() : Vector3 {
@@ -89,7 +91,7 @@ class GameScreen : Screen {
     }
 
     fun onClick() {
-        if (!performingMoves) {
+        if (moves.isEmpty()) {
             val testTouch = getSelected()
             if (gameGrid.inRange(testTouch.x.toInt(), testTouch.y.toInt())) {
                 if (!isSelected) {

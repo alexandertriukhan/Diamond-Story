@@ -5,9 +5,19 @@ import enums.EffectType
 import enums.JewelType
 import utils.TexturesLoader
 
-class Jewel(var jewelType : JewelType, var effect : EffectType) {
+class Jewel(var jewelType : JewelType) {
 
-    //val animationTextures = List<TextureRegion>(1, {_ -> TexturesLoader.instance.})
+    var animated = false
+    var effect = EffectType.NONE
+    set(value) {
+        field = value
+        animated = (field == EffectType.NONE)
+    }
+    //private val fireTextures = TexturesLoader.instance.fireAnim
+
+    constructor(jewelType: JewelType, effectType: EffectType) : this (jewelType) {
+        effect = effectType
+    }
 
     fun texture() : TextureRegion {
         return when (jewelType) {
@@ -20,9 +30,10 @@ class Jewel(var jewelType : JewelType, var effect : EffectType) {
         }
     }
 
-    //fun animation() : TextureRegion { }
+//    fun animation(delta : Float) : TextureRegion {
+//        if (effect == EffectType.FIRE)
+//            return fireTextures.getKeyFrame(delta)
+//        return TexturesLoader.instance.noGem
+//    }
 
-    fun update(delta : Float) {
-
-    }
 }

@@ -11,8 +11,8 @@ import java.util.*
 class GameGrid(private val gridType : Array<IntArray>) {
 
     var cells = Array(gridType.count(), {_ -> Array(gridType[0].count()
-            , {_ -> Cell(false, Jewel(JewelType.from(Random().nextInt(5)),
-            EffectType.NONE),TexturesLoader.instance.tileBlank)})})
+            , {_ -> Cell(false, Jewel(JewelType.from(Random().nextInt(5))),
+            TexturesLoader.instance.tileBlank)})})
 
     init {
         for (i in gridType.indices) {
@@ -26,7 +26,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                             if (cells[i - 2][j].isPlaying)
                                 if (cells[i - 1][j].jewel.jewelType == cells[i][j].jewel.jewelType) {
                                     while (cells[i - 2][j].jewel.jewelType == cells[i][j].jewel.jewelType)
-                                        cells[i][j].jewel = Jewel(JewelType.from(Random().nextInt(5)), EffectType.valueOf("NONE"))
+                                        cells[i][j].jewel = Jewel(JewelType.from(Random().nextInt(5)))
                                 }
                     }
                     if (j > 1) {
@@ -34,7 +34,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                             if (cells[i][j - 2].isPlaying)
                                 if (cells[i][j - 1].jewel.jewelType == cells[i][j].jewel.jewelType) {
                                     while (cells[i][j - 2].jewel.jewelType == cells[i][j].jewel.jewelType)
-                                        cells[i][j].jewel = Jewel(JewelType.from(Random().nextInt(5)), EffectType.valueOf("NONE"))
+                                        cells[i][j].jewel = Jewel(JewelType.from(Random().nextInt(5)))
                                 }
                     }
                 } else {
