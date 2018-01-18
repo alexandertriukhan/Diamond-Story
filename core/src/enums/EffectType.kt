@@ -2,5 +2,7 @@ package enums
 
 enum class EffectType {
     NONE,
-    FIRE
+    FIRE,
+    CAN_CREATE_MATCH,
+    DESTROYS_LINES
 }

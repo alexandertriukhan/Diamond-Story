@@ -9,17 +9,20 @@ class JewelMove(var xStart : Float,
                 val jewel : Jewel) {
 
     var startBigger = false
-    var movingAxis = Axis.X
+    var movingAxis = Axis.Y
 
     init {
-        if (xStart > xEnd) {
-            startBigger = true
+        if (xStart != xEnd) {
+            movingAxis = Axis.X
         }
-        if (yStart > yEnd) {
-            startBigger = true
-        }
-        if (xStart == xEnd) {
-            movingAxis = Axis.Y
+        if (movingAxis == Axis.X) {
+            if (xStart > xEnd) {
+                startBigger = true
+            }
+        } else {
+            if (yStart > yEnd) {
+                startBigger = true
+            }
         }
     }
 

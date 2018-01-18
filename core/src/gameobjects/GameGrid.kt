@@ -1,7 +1,7 @@
 package gameobjects
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
-import enums.EffectType
 import enums.JewelType
 import enums.MatchType
 import utils.TexturesLoader
@@ -68,6 +68,39 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 }
             }
         }
+    }
+
+    fun swapField() : List<JewelMove> {
+        val moves = mutableListOf<JewelMove>()
+        for (i in gridType.indices) {
+            for (j in gridType[i].indices) {
+                if (cells[i][j].isPlaying) {
+                    if (i > 1) {
+                        if (cells[i - 1][j].isPlaying)
+                            if (cells[i - 2][j].isPlaying)
+                                if (cells[i - 1][j].jewel.jewelType == cells[i][j].jewel.jewelType) {
+                                    while (cells[i - 2][j].jewel.jewelType == cells[i][j].jewel.jewelType) {
+                                        moves.add(JewelMove(Gdx.graphics.width.toFloat() / 2, Gdx.graphics.height.toFloat() / 2,
+                                                i.toFloat(), j.toFloat(),Jewel(JewelType.from(Random().nextInt(5)))))
+                                    }
+                                }
+                    }
+                    if (j > 1) {
+                        if (cells[i][j - 1].isPlaying)
+                            if (cells[i][j - 2].isPlaying)
+                                if (cells[i][j - 1].jewel.jewelType == cells[i][j].jewel.jewelType) {
+                                    while (cells[i][j - 2].jewel.jewelType == cells[i][j].jewel.jewelType) {
+                                        moves.add(JewelMove(Gdx.graphics.width.toFloat() / 2, Gdx.graphics.height.toFloat() / 2,
+                                                i.toFloat(), j.toFloat(),Jewel(JewelType.from(Random().nextInt(5)))))
+                                    }
+                                }
+                    }
+                } else {
+                    cells[i][j].jewel.jewelType = JewelType.NO_JEWEL
+                }
+            }
+        }
+        return moves
     }
 
     // 1 if tile needs border, DOWN, RIGHT, LEFT, TOP

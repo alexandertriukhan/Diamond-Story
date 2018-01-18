@@ -124,13 +124,13 @@ class GameScreen : Screen {
             if (move.movingAxis == Axis.X) {
                 if (!move.startBigger) {
                     move.xStart = move.xStart + delta
-                    if (move.xStart > move.xEnd) {
+                    if (move.xStart >= move.xEnd) {
                         endMove = true
                         move.xStart = move.xEnd
                     }
                 } else {
                     move.xStart = move.xStart - delta
-                    if (move.xStart < move.xEnd) {
+                    if (move.xStart <= move.xEnd) {
                         endMove = true
                         move.xStart = move.xEnd
                     }
@@ -138,13 +138,13 @@ class GameScreen : Screen {
             } else {
                 if (!move.startBigger) {
                     move.yStart = move.yStart + delta
-                    if (move.yStart > move.yEnd) {
+                    if (move.yStart >= move.yEnd) {
                         endMove = true
                         move.yStart = move.yEnd
                     }
                 } else {
                     move.yStart = move.yStart - delta
-                    if (move.yStart < move.yEnd) {
+                    if (move.yStart <= move.yEnd) {
                         endMove = true
                         move.yStart = move.yEnd
                     }
@@ -156,6 +156,7 @@ class GameScreen : Screen {
                 gameGrid.cells[move.xEnd.toInt()][move.yEnd.toInt()].jewel.jewelType = move.jewel.jewelType
                 itemsToCheck.add(move)
                 iterator.remove()
+                endMove = false
                 if (moves.isEmpty()) {
                     makeCheck = true
                 }
