@@ -27,7 +27,7 @@ class TexturesLoader {
 
     val selectedGem : TextureRegion = textureAtlas.findRegion("selected")
 
-    //val fireAnim = Animation<TextureRegion>(0.033f, textureAtlas.findRegions("fire"), Animation.PlayMode.LOOP)
+    val fireAnim : TextureRegion = textureAtlas.findRegion("fire_anim")
 
     private object Holder { val INSTANCE = TexturesLoader() }
 

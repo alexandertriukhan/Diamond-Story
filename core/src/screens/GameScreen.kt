@@ -56,8 +56,8 @@ class GameScreen : Screen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         batcher.begin()
-        drawGameGrid()
-        drawMoves(delta * 2)
+        drawGameGrid(delta)
+        drawMoves(delta * 4)
         if (makeCheck)
             checkMatches()
         if (isSelected) {
@@ -67,14 +67,12 @@ class GameScreen : Screen {
         batcher.end()
     }
 
-    private fun drawGameGrid() {
+    private fun drawGameGrid(delta: Float) {
         for (i in gameGrid.cells.indices) {
             for (j in gameGrid.cells[i].indices) {
                 if (gameGrid.cells[i][j].isPlaying) {
-                    batcher.draw(gameGrid.cells[i][j].tileTexture, i.toFloat() * gemSize,
-                            (j.toFloat() * gemSize) + gridOffset, gemSize, gemSize)
-                    batcher.draw(gameGrid.cells[i][j].jewel.texture(), i.toFloat() * gemSize,
-                            (j.toFloat() * gemSize) + gridOffset, gemSize, gemSize)
+                    gameGrid.cells[i][j].draw(batcher,i.toFloat() * gemSize,
+                            (j.toFloat() * gemSize) + gridOffset, gemSize, delta)
                 }
             }
         }
@@ -150,8 +148,8 @@ class GameScreen : Screen {
                     }
                 }
             }
-            batcher.draw(move.jewel.texture(), move.xStart * gemSize, (move.yStart * gemSize) + gridOffset,
-                    gemSize, gemSize)
+            move.jewel.draw(batcher, move.xStart * gemSize, (move.yStart * gemSize) + gridOffset,
+                    gemSize, delta)
             if (endMove) {
                 gameGrid.cells[move.xEnd.toInt()][move.yEnd.toInt()].jewel.jewelType = move.jewel.jewelType
                 itemsToCheck.add(move)

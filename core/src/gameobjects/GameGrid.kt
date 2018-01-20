@@ -2,6 +2,7 @@ package gameobjects
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
+import enums.EffectType
 import enums.JewelType
 import enums.MatchType
 import utils.TexturesLoader
@@ -40,7 +41,6 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 } else {
                     cells[i][j].jewel.jewelType = JewelType.NO_JEWEL
                 }
-
                 val borders = getBorders(i, j, gridType)
                 if (borders.contentEquals(intArrayOf(0, 0, 0, 1))) {
                     cells[i][j].tileTexture = TexturesLoader.instance.tileTop
