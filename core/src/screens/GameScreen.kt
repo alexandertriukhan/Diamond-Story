@@ -15,7 +15,6 @@ import gameobjects.Jewel
 import gameobjects.JewelMove
 import gameobjects.Match
 import utils.InputHandler
-import utils.TexturesLoader
 import java.util.*
 
 
@@ -57,7 +56,7 @@ class GameScreen : Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         batcher.begin()
         drawGameGrid(delta)
-        drawMoves(delta * 4)
+        drawMoves(delta)
         if (makeCheck)
             checkMatches()
         batcher.end()
@@ -115,46 +114,18 @@ class GameScreen : Screen {
     }
 
     private fun drawMoves(delta : Float) {
-        var endMove = false
         val iterator = moves.iterator()
         while (iterator.hasNext()) {
             val move = iterator.next()
-            if (move.movingAxis == Axis.X) {
-                if (!move.startBigger) {
-                    move.xStart = move.xStart + delta
-                    if (move.xStart >= move.xEnd) {
-                        endMove = true
-                        move.xStart = move.xEnd
-                    }
-                } else {
-                    move.xStart = move.xStart - delta
-                    if (move.xStart <= move.xEnd) {
-                        endMove = true
-                        move.xStart = move.xEnd
-                    }
-                }
-            } else {
-                if (!move.startBigger) {
-                    move.yStart = move.yStart + delta
-                    if (move.yStart >= move.yEnd) {
-                        endMove = true
-                        move.yStart = move.yEnd
-                    }
-                } else {
-                    move.yStart = move.yStart - delta
-                    if (move.yStart <= move.yEnd) {
-                        endMove = true
-                        move.yStart = move.yEnd
-                    }
-                }
-            }
+            move.perform(delta,4f)
             move.jewel.draw(batcher, move.xStart * gemSize, (move.yStart * gemSize) + gridOffset,
                     gemSize, delta)
-            if (endMove) {
-                gameGrid.cells[move.xEnd.toInt()][move.yEnd.toInt()].jewel.jewelType = move.jewel.jewelType
-                itemsToCheck.add(move)
+            if (move.endMove) {
+                if (!move.destroyOnEnd) {
+                    gameGrid.cells[move.xEnd.toInt()][move.yEnd.toInt()].jewel = move.jewel
+                    itemsToCheck.add(move)
+                }
                 iterator.remove()
-                endMove = false
                 if (moves.isEmpty()) {
                     makeCheck = true
                 }
@@ -165,7 +136,7 @@ class GameScreen : Screen {
     private fun prepareMoves(match : List<Match>) {
         if (match.isNotEmpty()) {
             for (m in match)
-                gameGrid.removeMatch(m)
+                gameGrid.removeMatch2(m)
             for (i in gameGrid.cells.indices) {
                  for (j in gameGrid.cells[i].indices) {
                     if (gameGrid.cells[i][j].isPlaying) {

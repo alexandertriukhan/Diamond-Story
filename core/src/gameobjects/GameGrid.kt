@@ -238,6 +238,24 @@ class GameGrid(private val gridType : Array<IntArray>) {
         }
     }
 
+    fun removeMatch2(match : Match) : List<JewelMove> {
+        val moves = mutableListOf<JewelMove>()
+        for (gem in match.gemsInMatch) {
+            if (match.matchType != MatchType.MATCH3) {
+                if (!(gem.x == match.firstGem().x && gem.y == match.firstGem().y)) {
+                    moves.add(JewelMove(gem.x, gem.y, match.firstGem().x, match.firstGem().y, cells[gem.x.toInt()][gem.y.toInt()].jewel))
+                    moves.last().destroyOnEnd = true
+                    cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
+                }
+            } else {
+                cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
+            }
+            if (match.matchType == MatchType.MATCH4)
+                cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.FIRE
+        }
+        return moves
+    }
+
     fun getHighestIsNotPlaying(i: Int, j: Int) : Int {
         for (row in (j + 1)..(cells[i].count() - 1))
             if (!cells[i][row].isPlaying)

@@ -5,6 +5,10 @@ import enums.MatchType
 
 class Match(val gemsInMatch : MutableList<Vector2>, var matchType : MatchType) {
 
+    fun firstGem() : Vector2 {
+        return gemsInMatch.first()
+    }
+
     fun maxY() : Int {
         var maxY = Int.MIN_VALUE
         for (gem in gemsInMatch)

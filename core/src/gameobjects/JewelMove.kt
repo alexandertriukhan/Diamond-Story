@@ -10,6 +10,8 @@ class JewelMove(var xStart : Float,
 
     var startBigger = false
     var movingAxis = Axis.Y
+    var destroyOnEnd = false
+    var endMove = false
 
     init {
         if (xStart != xEnd) {
@@ -22,6 +24,40 @@ class JewelMove(var xStart : Float,
         } else {
             if (yStart > yEnd) {
                 startBigger = true
+            }
+        }
+    }
+
+    fun perform(delta : Float, speed : Float) {
+        if (!endMove) {
+            if (movingAxis == Axis.X) {
+                if (!startBigger) {
+                    xStart += delta * speed
+                    if (xStart >= xEnd) {
+                        endMove = true
+                        xStart = xEnd
+                    }
+                } else {
+                    xStart -= delta * speed
+                    if (xStart <= xEnd) {
+                        endMove = true
+                        xStart = xEnd
+                    }
+                }
+            } else {
+                if (!startBigger) {
+                    yStart += delta * speed
+                    if (yStart >= yEnd) {
+                        endMove = true
+                        yStart = yEnd
+                    }
+                } else {
+                    yStart -= delta * speed
+                    if (yStart <= yEnd) {
+                        endMove = true
+                        yStart = yEnd
+                    }
+                }
             }
         }
     }
