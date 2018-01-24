@@ -25,7 +25,8 @@ class TexturesLoader {
     val tileCornerLeftDown : TextureRegion = textureAtlas.findRegion("tile_corner_left_down")
     val tileCornerRightDown : TextureRegion = textureAtlas.findRegion("tile_corner_right_down")
 
-    val selectedGem : TextureRegion = textureAtlas.findRegion("selected")
+    val selectedMoveSpell : TextureRegion = textureAtlas.findRegion("selected_move_spell")
+    val selectedFireSpell : TextureRegion = textureAtlas.findRegion("selected_fire_spell")
 
     val fireAnim : TextureRegion = textureAtlas.findRegion("fire_anim")
 

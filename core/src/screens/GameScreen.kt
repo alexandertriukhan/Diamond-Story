@@ -60,10 +60,6 @@ class GameScreen : Screen {
         drawMoves(delta * 4)
         if (makeCheck)
             checkMatches()
-        if (isSelected) {
-            batcher.draw(TexturesLoader.instance.selectedGem, selectedXY.x * gemSize,
-                    (selectedXY.y * gemSize) + gridOffset, gemSize, gemSize)
-        }
         batcher.end()
     }
 
@@ -95,6 +91,7 @@ class GameScreen : Screen {
                 if (!isSelected) {
                     selectedXY = testTouch
                     isSelected = true
+                    gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.isSelected = true
                 } else {
                     if (gameGrid.isAdjacent(testTouch.x.toInt(), testTouch.y.toInt(), selectedXY.x.toInt(), selectedXY.y.toInt())) {
 
@@ -104,9 +101,12 @@ class GameScreen : Screen {
                                 Jewel(gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.jewelType,gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.effect)))
                         gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
                         gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
+                        gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.isSelected = false
                         isSelected = false
                     } else {
+                        gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.isSelected = false
                         selectedXY = testTouch
+                        gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.isSelected = true
                         isSelected = true
                     }
                 }

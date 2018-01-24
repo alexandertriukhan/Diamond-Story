@@ -41,6 +41,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 } else {
                     cells[i][j].jewel.jewelType = JewelType.NO_JEWEL
                 }
+                //cells[i][j].jewel.effect = EffectType.FIRE //FOR TEST PURPOSE
                 val borders = getBorders(i, j, gridType)
                 if (borders.contentEquals(intArrayOf(0, 0, 0, 1))) {
                     cells[i][j].tileTexture = TexturesLoader.instance.tileTop

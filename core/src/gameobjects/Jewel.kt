@@ -10,21 +10,28 @@ class Jewel(var jewelType : JewelType) {
 
     private val animationSpeed = 80f
     private var animRotation = 0f
-    private val fireTexture = TexturesLoader.instance.fireAnim
-
+    private val selectionSpeed = 40f
+    private var selectionRotation = 0f
     private var isAnimated = false
+
     var effect = EffectType.NONE
     set(value) {
         field = value
         isAnimated = (field != EffectType.NONE)
         animRotation = 0f
     }
+    var isSelected = false
 
     constructor(jewelType: JewelType, effectType: EffectType) : this (jewelType) {
         effect = effectType
     }
 
     fun draw(batch: Batch, x : Float, y : Float, size : Float, delta : Float) {
+        if (isSelected) {
+            selectionRotation += delta
+            batch.draw(selection(), x, y, size / 2f, size / 2f, size, size,
+                    1f, 1f, -selectionRotation * selectionSpeed)
+        }
         batch.draw(texture(), x, y, size, size)
         if (isAnimated) {
             animRotation += delta
@@ -45,9 +52,16 @@ class Jewel(var jewelType : JewelType) {
     }
 
     private fun animation() : TextureRegion {
-        if (effect == EffectType.FIRE) {
-            return fireTexture
-        }
+        if (effect == EffectType.FIRE)
+            return TexturesLoader.instance.fireAnim
+        return TexturesLoader.instance.noGem
+    }
+
+    private fun selection() : TextureRegion {
+        if (effect == EffectType.NONE)
+            return TexturesLoader.instance.selectedMoveSpell
+        if (effect == EffectType.FIRE)
+            return TexturesLoader.instance.selectedFireSpell
         return TexturesLoader.instance.noGem
     }
 
