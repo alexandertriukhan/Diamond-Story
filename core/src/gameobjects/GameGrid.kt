@@ -1,6 +1,7 @@
 package gameobjects
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import enums.EffectType
 import enums.JewelType
@@ -41,7 +42,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 } else {
                     cells[i][j].jewel.jewelType = JewelType.NO_JEWEL
                 }
-                //cells[i][j].jewel.effect = EffectType.FIRE //FOR TEST PURPOSE
+                // cells[i][j].jewel.effect = EffectType.CROSS //FOR TEST PURPOSE
                 val borders = getBorders(i, j, gridType)
                 if (borders.contentEquals(intArrayOf(0, 0, 0, 1))) {
                     cells[i][j].tileTexture = TexturesLoader.instance.tileTop
@@ -70,6 +71,8 @@ class GameGrid(private val gridType : Array<IntArray>) {
             }
         }
     }
+
+
 
     fun swapField() : List<JewelMove> {
         val moves = mutableListOf<JewelMove>()
@@ -136,6 +139,17 @@ class GameGrid(private val gridType : Array<IntArray>) {
             borders[3] = 1
         }
         return borders
+    }
+
+    fun draw(batcher : SpriteBatch, delta: Float, gemSize : Float, gridOffset : Float) {
+        for (i in cells.indices) {
+            for (j in cells[i].indices) {
+                if (cells[i][j].isPlaying) {
+                    cells[i][j].draw(batcher,i.toFloat() * gemSize,
+                            (j.toFloat() * gemSize) + gridOffset, gemSize, delta)
+                }
+            }
+        }
     }
 
     fun inRange(x : Int, y : Int) : Boolean {
@@ -232,13 +246,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
         return match
     }
 
-    fun removeMatch(match : Match) {
-        for (gem in match.gemsInMatch) {
-            cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
-        }
-    }
-
-    fun removeMatch2(match : Match) : List<JewelMove> {
+    fun removeMatch(match : Match) : List<JewelMove> {
         val moves = mutableListOf<JewelMove>()
         for (gem in match.gemsInMatch) {
             if (match.matchType != MatchType.MATCH3) {
@@ -252,6 +260,10 @@ class GameGrid(private val gridType : Array<IntArray>) {
             }
             if (match.matchType == MatchType.MATCH4)
                 cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.FIRE
+            if (match.matchType == MatchType.MATCH_CROSS)
+                cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.CROSS
+            if (match.matchType == MatchType.MATCH5)
+                cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.SUPER_GEM
         }
         return moves
     }

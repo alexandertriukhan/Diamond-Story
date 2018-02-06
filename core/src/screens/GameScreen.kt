@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
-import enums.Axis
 import enums.EffectType
 import enums.JewelType
 import enums.MatchType
@@ -55,22 +54,11 @@ class GameScreen : Screen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         batcher.begin()
-        drawGameGrid(delta)
+        gameGrid.draw(batcher,delta,gemSize,gridOffset)
         drawMoves(delta)
         if (makeCheck)
             checkMatches()
         batcher.end()
-    }
-
-    private fun drawGameGrid(delta: Float) {
-        for (i in gameGrid.cells.indices) {
-            for (j in gameGrid.cells[i].indices) {
-                if (gameGrid.cells[i][j].isPlaying) {
-                    gameGrid.cells[i][j].draw(batcher,i.toFloat() * gemSize,
-                            (j.toFloat() * gemSize) + gridOffset, gemSize, delta)
-                }
-            }
-        }
     }
 
     private fun getSelected() : Vector3 {
@@ -136,7 +124,7 @@ class GameScreen : Screen {
     private fun prepareMoves(match : List<Match>) {
         if (match.isNotEmpty()) {
             for (m in match)
-                gameGrid.removeMatch2(m)
+                gameGrid.removeMatch(m)
             for (i in gameGrid.cells.indices) {
                  for (j in gameGrid.cells[i].indices) {
                     if (gameGrid.cells[i][j].isPlaying) {

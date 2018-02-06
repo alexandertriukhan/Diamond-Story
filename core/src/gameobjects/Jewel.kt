@@ -1,6 +1,9 @@
 package gameobjects
 
+import animations.Flash
+import animations.Rotation
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import enums.EffectType
 import enums.JewelType
@@ -8,17 +11,17 @@ import utils.TexturesLoader
 
 class Jewel(var jewelType : JewelType) {
 
-    private val animationSpeed = 80f
-    private var animRotation = 0f
-    private val selectionSpeed = 40f
-    private var selectionRotation = 0f
     private var isAnimated = false
+
+    private val fireGemAnim = Rotation(TexturesLoader.instance.fireAnim,80f,true)
+    private val fireSelectionAnim = Rotation(TexturesLoader.instance.selectedFireSpell,40f,true)
+    private val moveSelectionAnim = Rotation(TexturesLoader.instance.selectedMoveSpell,40f,true)
+    private val crossGemAnim = Flash(TexturesLoader.instance.crossAnim,0.9f, true)
 
     var effect = EffectType.NONE
     set(value) {
         field = value
         isAnimated = (field != EffectType.NONE)
-        animRotation = 0f
     }
     var isSelected = false
 
@@ -28,15 +31,11 @@ class Jewel(var jewelType : JewelType) {
 
     fun draw(batch: Batch, x : Float, y : Float, size : Float, delta : Float) {
         if (isSelected) {
-            selectionRotation += delta
-            batch.draw(selection(), x, y, size / 2f, size / 2f, size, size,
-                    1f, 1f, -selectionRotation * selectionSpeed)
+            selection(batch,x,y,size,delta)
         }
         batch.draw(texture(), x, y, size, size)
         if (isAnimated) {
-            animRotation += delta
-            batch.draw(animation(), x, y, size / 2f, size / 2f, size, size,
-                    1f, 1f, -animRotation * animationSpeed)
+            animation(batch,x,y,size,delta)
         }
     }
 
@@ -51,18 +50,19 @@ class Jewel(var jewelType : JewelType) {
         }
     }
 
-    private fun animation() : TextureRegion {
-        if (effect == EffectType.FIRE)
-            return TexturesLoader.instance.fireAnim
-        return TexturesLoader.instance.noGem
+    private fun animation(batch: Batch, x : Float, y : Float, size : Float, delta : Float) {
+        when (effect) {
+            EffectType.NONE -> return
+            EffectType.FIRE -> fireGemAnim.draw(batch,x,y,size,delta)
+            EffectType.CROSS -> crossGemAnim.draw(batch,x,y,size,delta)
+        }
     }
 
-    private fun selection() : TextureRegion {
-        if (effect == EffectType.NONE)
-            return TexturesLoader.instance.selectedMoveSpell
-        if (effect == EffectType.FIRE)
-            return TexturesLoader.instance.selectedFireSpell
-        return TexturesLoader.instance.noGem
+    private fun selection(batch: Batch, x : Float, y : Float, size : Float, delta : Float) {
+        when (effect) {
+            EffectType.NONE -> moveSelectionAnim.draw(batch,x,y,size,delta)
+            EffectType.FIRE -> fireSelectionAnim.draw(batch,x,y,size,delta)
+        }
     }
 
 }

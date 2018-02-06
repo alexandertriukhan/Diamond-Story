@@ -29,6 +29,7 @@ class TexturesLoader {
     val selectedFireSpell : TextureRegion = textureAtlas.findRegion("selected_fire_spell")
 
     val fireAnim : TextureRegion = textureAtlas.findRegion("fire_anim")
+    val crossAnim : TextureRegion = textureAtlas.findRegion("cross_anim")
 
     private object Holder { val INSTANCE = TexturesLoader() }
 
