@@ -16,6 +16,7 @@ class Flash(override val texture: TextureRegion, override val speed: Float, over
     override fun draw(batch: Batch, x: Float, y: Float, size: Float, delta: Float) {
         if (!isStopped) {
             if (alpha > 1f) alpha = 1f
+            if (alpha < 0f) alpha = 0f
             batch.setColor(1.0f, 1.0f, 1.0f, alpha)
             batch.draw(texture, x, y, size, size)
             batch.setColor(1.0f, 1.0f, 1.0f, 1.0f)

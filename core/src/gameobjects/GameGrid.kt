@@ -257,14 +257,15 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 }
             } else {
                 cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
+                cells[gem.x.toInt()][gem.y.toInt()].jewel.effect = EffectType.BEING_DESTROYED
             }
-            if (match.matchType == MatchType.MATCH4)
-                cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.FIRE
-            if (match.matchType == MatchType.MATCH_CROSS)
-                cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.CROSS
-            if (match.matchType == MatchType.MATCH5)
-                cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.SUPER_GEM
         }
+        if (match.matchType == MatchType.MATCH4)
+            cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.FIRE
+        if (match.matchType == MatchType.MATCH_CROSS)
+            cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.CROSS
+        if (match.matchType == MatchType.MATCH5)
+            cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.SUPER_GEM
         return moves
     }
 

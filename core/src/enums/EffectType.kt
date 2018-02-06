@@ -6,5 +6,5 @@ enum class EffectType {
     CROSS,
     SUPER_GEM,
     CAN_CREATE_MATCH,
-    DESTROYS_LINES
+    BEING_DESTROYED
 }

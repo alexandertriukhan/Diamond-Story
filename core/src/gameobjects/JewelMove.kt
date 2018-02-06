@@ -10,7 +10,7 @@ class JewelMove(var xStart : Float,
 
     var startBigger = false
     var movingAxis = Axis.Y
-    var destroyOnEnd = false
+    var destroyOnEnd = false // TODO : implement logic
     var endMove = false
 
     init {
