@@ -1,7 +1,6 @@
 package utils
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 
@@ -30,6 +29,8 @@ class TexturesLoader {
 
     val fireAnim : TextureRegion = textureAtlas.findRegion("fire_anim")
     val crossAnim : TextureRegion = textureAtlas.findRegion("cross_anim")
+    val superGem : TextureRegion = textureAtlas.findRegion("super_gem")
+    val superGemGlow : TextureRegion = textureAtlas.findRegion("super_gem_glow")
 
     private object Holder { val INSTANCE = TexturesLoader() }
 

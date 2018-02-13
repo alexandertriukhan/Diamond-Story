@@ -9,10 +9,7 @@ import com.badlogic.gdx.math.Vector3
 import enums.EffectType
 import enums.JewelType
 import enums.MatchType
-import gameobjects.GameGrid
-import gameobjects.Jewel
-import gameobjects.JewelMove
-import gameobjects.Match
+import gameobjects.*
 import utils.InputHandler
 import java.util.*
 
@@ -25,14 +22,14 @@ class GameScreen : Screen {
     private val MAX_COLS = (Gdx.graphics.height.toFloat() / gemSize)
     private val batcher = SpriteBatch()
     private val gridOffset = (Gdx.graphics.height.toFloat() - (gemSize * gameGrid.cells[0].count())) / 2
-    private val moves = mutableListOf<JewelMove>()
-    private val itemsToCheck = mutableListOf<JewelMove>()
+    private val moves = mutableListOf<JewelAccMove>()
+    private val specialMoves = mutableListOf<JewelLinearMove>()
+    private val itemsToCheck = mutableListOf<JewelLinearMove>()
     private val cam = OrthographicCamera()
 
     private var selectedXY = Vector3()
     private var isSelected = false
     private var makeCheck = false
-
 
     init {
         cam.setToOrtho(false, MAX_ROWS.toFloat(), MAX_COLS)
@@ -56,6 +53,7 @@ class GameScreen : Screen {
         batcher.begin()
         gameGrid.draw(batcher,delta,gemSize,gridOffset)
         drawMoves(delta)
+        drawSpecialMoves(delta)
         if (makeCheck)
             checkMatches()
         batcher.end()
@@ -82,9 +80,9 @@ class GameScreen : Screen {
                 } else {
                     if (gameGrid.isAdjacent(testTouch.x.toInt(), testTouch.y.toInt(), selectedXY.x.toInt(), selectedXY.y.toInt())) {
 
-                        moves.add(JewelMove(selectedXY.x, selectedXY.y, testTouch.x, testTouch.y,
+                        moves.add(JewelAccMove(selectedXY.x, selectedXY.y, testTouch.x, testTouch.y,
                                 Jewel(gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.jewelType,gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.effect)))
-                        moves.add(JewelMove(testTouch.x, testTouch.y, selectedXY.x, selectedXY.y,
+                        moves.add(JewelAccMove(testTouch.x, testTouch.y, selectedXY.x, selectedXY.y,
                                 Jewel(gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.jewelType,gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.effect)))
                         gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
                         gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
@@ -101,17 +99,17 @@ class GameScreen : Screen {
         }
     }
 
+
     private fun drawMoves(delta : Float) {
         val iterator = moves.iterator()
         while (iterator.hasNext()) {
             val move = iterator.next()
-            move.perform(delta,4f)
-            move.jewel.draw(batcher, move.xStart * gemSize, (move.yStart * gemSize) + gridOffset,
-                    gemSize, delta)
+            move.nextPosition(delta,0.5f,20f)
+            move.draw(batcher, gemSize, delta, gridOffset)
             if (move.endMove) {
                 if (!move.destroyOnEnd) {
-                    gameGrid.cells[move.xEnd.toInt()][move.yEnd.toInt()].jewel = move.jewel
-                    itemsToCheck.add(move)
+                    gameGrid.cells[move.xTo.toInt()][move.yTo.toInt()].jewel = move.jewel
+                    itemsToCheck.add(JewelLinearMove(move.xFrom,move.yFrom,move.xTo,move.yTo,move.jewel))
                 }
                 iterator.remove()
                 if (moves.isEmpty()) {
@@ -121,10 +119,36 @@ class GameScreen : Screen {
         }
     }
 
-    private fun prepareMoves(match : List<Match>) {
+    private fun drawSpecialMoves(delta : Float) {
+        val iterator = specialMoves.iterator()
+        while (iterator.hasNext()) {
+            val move = iterator.next()
+            move.nextPosition(delta,8f)
+            move.draw(batcher, gemSize, delta, gridOffset)
+            if (move.endMove) {
+                if (!move.destroyOnEnd) {
+                    gameGrid.cells[move.xTo.toInt()][move.yTo.toInt()].jewel = move.jewel
+                    itemsToCheck.add(move)
+                }
+                iterator.remove()
+                if (specialMoves.isEmpty()) {
+                    prepareFalldownMoves()
+                }
+            }
+        }
+    }
+
+    private fun removeMatches(match : List<Match>) {
         if (match.isNotEmpty()) {
-            for (m in match)
-                gameGrid.removeMatch(m)
+            for (m in match) {
+                val tmp = gameGrid.removeMatch(m)
+                for (move in tmp)
+                    specialMoves.add(move)
+            }
+        }
+    }
+
+    private fun prepareFalldownMoves() {
             for (i in gameGrid.cells.indices) {
                  for (j in gameGrid.cells[i].indices) {
                     if (gameGrid.cells[i][j].isPlaying) {
@@ -134,19 +158,19 @@ class GameScreen : Screen {
                                 if (highestJewel == gameGrid.cells[0].count()) {
                                     val highestNotPlaying = gameGrid.getHighestIsNotPlaying(i, j)
                                     if (highestNotPlaying == gameGrid.cells[0].count()) {
-                                        moves.add(JewelMove(i.toFloat(), gameGrid.cells[0].count().toFloat(), i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
+                                        moves.add(JewelAccMove(i.toFloat(), gameGrid.cells[0].count().toFloat(), i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
                                                 EffectType.NONE)))
                                     } else {
-                                        moves.add(JewelMove(i.toFloat(), highestNotPlaying.toFloat(), i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
+                                        moves.add(JewelAccMove(i.toFloat(), highestNotPlaying.toFloat(), i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
                                                 EffectType.NONE)))
                                     }
                                 } else {
-                                    moves.add(JewelMove(i.toFloat(), highestJewel.toFloat(), i.toFloat(), j.toFloat(),
+                                    moves.add(JewelAccMove(i.toFloat(), highestJewel.toFloat(), i.toFloat(), j.toFloat(),
                                             Jewel(gameGrid.cells[i][highestJewel].jewel.jewelType, gameGrid.cells[i][highestJewel].jewel.effect)))
                                     gameGrid.cells[i][highestJewel].jewel.jewelType = JewelType.NO_JEWEL
                                 }
                             } else {
-                                moves.add(JewelMove(i.toFloat(), gameGrid.cells[0].count().toFloat(), i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
+                                moves.add(JewelAccMove(i.toFloat(), gameGrid.cells[0].count().toFloat(), i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
                                         EffectType.NONE)))
                             }
                         }
@@ -154,15 +178,14 @@ class GameScreen : Screen {
                 }
             }
         }
-    }
 
     private fun checkMatches() {
         val listOfMatches = mutableListOf<Match>()
         val iterator = itemsToCheck.iterator()
         while (iterator.hasNext()) {
             val move = iterator.next()
-            val match = gameGrid.createsMatch(move.xEnd.toInt(), move.yEnd.toInt(),
-                    gameGrid.cells[move.xEnd.toInt()][move.yEnd.toInt()].jewel.jewelType)
+            val match = gameGrid.createsMatch(move.xTo.toInt(), move.yTo.toInt(),
+                    gameGrid.cells[move.xTo.toInt()][move.yTo.toInt()].jewel.jewelType)
             if (match.matchType != MatchType.NO_MATCH) {
                 listOfMatches.add(match)
             } else {
@@ -170,7 +193,9 @@ class GameScreen : Screen {
             }
         }
         makeCheck = false
-        prepareMoves(listOfMatches)
+        removeMatches(listOfMatches)
+        if (specialMoves.isEmpty())
+            prepareFalldownMoves()
     }
 
     override fun pause() {

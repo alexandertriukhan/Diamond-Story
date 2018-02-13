@@ -72,10 +72,8 @@ class GameGrid(private val gridType : Array<IntArray>) {
         }
     }
 
-
-
-    fun swapField() : List<JewelMove> {
-        val moves = mutableListOf<JewelMove>()
+    fun swapField() : List<JewelLinearMove> {
+        val moves = mutableListOf<JewelLinearMove>()
         for (i in gridType.indices) {
             for (j in gridType[i].indices) {
                 if (cells[i][j].isPlaying) {
@@ -84,7 +82,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                             if (cells[i - 2][j].isPlaying)
                                 if (cells[i - 1][j].jewel.jewelType == cells[i][j].jewel.jewelType) {
                                     while (cells[i - 2][j].jewel.jewelType == cells[i][j].jewel.jewelType) {
-                                        moves.add(JewelMove(Gdx.graphics.width.toFloat() / 2, Gdx.graphics.height.toFloat() / 2,
+                                        moves.add(JewelLinearMove(Gdx.graphics.width.toFloat() / 2, Gdx.graphics.height.toFloat() / 2,
                                                 i.toFloat(), j.toFloat(),Jewel(JewelType.from(Random().nextInt(5)))))
                                     }
                                 }
@@ -94,7 +92,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                             if (cells[i][j - 2].isPlaying)
                                 if (cells[i][j - 1].jewel.jewelType == cells[i][j].jewel.jewelType) {
                                     while (cells[i][j - 2].jewel.jewelType == cells[i][j].jewel.jewelType) {
-                                        moves.add(JewelMove(Gdx.graphics.width.toFloat() / 2, Gdx.graphics.height.toFloat() / 2,
+                                        moves.add(JewelLinearMove(Gdx.graphics.width.toFloat() / 2, Gdx.graphics.height.toFloat() / 2,
                                                 i.toFloat(), j.toFloat(),Jewel(JewelType.from(Random().nextInt(5)))))
                                     }
                                 }
@@ -246,12 +244,12 @@ class GameGrid(private val gridType : Array<IntArray>) {
         return match
     }
 
-    fun removeMatch(match : Match) : List<JewelMove> {
-        val moves = mutableListOf<JewelMove>()
+    fun removeMatch(match : Match) : List<JewelLinearMove> {
+        val moves = mutableListOf<JewelLinearMove>()
         for (gem in match.gemsInMatch) {
             if (match.matchType != MatchType.MATCH3) {
                 if (!(gem.x == match.firstGem().x && gem.y == match.firstGem().y)) {
-                    moves.add(JewelMove(gem.x, gem.y, match.firstGem().x, match.firstGem().y, cells[gem.x.toInt()][gem.y.toInt()].jewel))
+                    moves.add(JewelLinearMove(gem.x, gem.y, match.firstGem().x, match.firstGem().y, Jewel(cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType)))
                     moves.last().destroyOnEnd = true
                     cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
                 }
@@ -264,8 +262,10 @@ class GameGrid(private val gridType : Array<IntArray>) {
             cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.FIRE
         if (match.matchType == MatchType.MATCH_CROSS)
             cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.CROSS
-        if (match.matchType == MatchType.MATCH5)
+        if (match.matchType == MatchType.MATCH5) {
+            cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.jewelType = JewelType.SUPER_GEM
             cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.SUPER_GEM
+        }
         return moves
     }
 

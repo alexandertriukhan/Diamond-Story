@@ -6,7 +6,8 @@ enum class JewelType(val value: Int) {
     BLUE(2),
     PURPLE(3),
     YELLOW(4),
-    NO_JEWEL(5);
+    NO_JEWEL(5),
+    SUPER_GEM(6);
 
     companion object {
         fun from(findValue: Int): JewelType = JewelType.values().first { it.value == findValue }

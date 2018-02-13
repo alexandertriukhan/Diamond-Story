@@ -4,7 +4,7 @@ enum class EffectType {
     NONE,
     FIRE,
     CROSS,
-    SUPER_GEM,
     CAN_CREATE_MATCH,
+    SUPER_GEM,
     BEING_DESTROYED
 }

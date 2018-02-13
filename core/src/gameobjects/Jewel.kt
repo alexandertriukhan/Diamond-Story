@@ -17,6 +17,7 @@ class Jewel(var jewelType : JewelType) {
     private val fireSelectionAnim = Rotation(TexturesLoader.instance.selectedFireSpell,40f,true)
     private val moveSelectionAnim = Rotation(TexturesLoader.instance.selectedMoveSpell,40f,true)
     private val crossGemAnim = Flash(TexturesLoader.instance.crossAnim,0.9f, true)
+    private val superGemAnim = Flash(TexturesLoader.instance.superGemGlow,1.2f,true)
     private val shrinkAnim = Shrink(texture(),5f,false)
 
     var effect = EffectType.NONE
@@ -51,6 +52,7 @@ class Jewel(var jewelType : JewelType) {
             JewelType.PURPLE -> TexturesLoader.instance.purpleGem
             JewelType.YELLOW -> TexturesLoader.instance.yellowGem
             JewelType.NO_JEWEL -> TexturesLoader.instance.noGem
+            JewelType.SUPER_GEM -> TexturesLoader.instance.superGem
         }
     }
 
@@ -60,6 +62,7 @@ class Jewel(var jewelType : JewelType) {
             EffectType.FIRE -> fireGemAnim.draw(batch,x,y,size,delta)
             EffectType.CROSS -> crossGemAnim.draw(batch,x,y,size,delta)
             EffectType.BEING_DESTROYED -> shrinkAnim.draw(batch,x,y,size,delta)
+            EffectType.SUPER_GEM -> superGemAnim.draw(batch,x,y,size,delta)
         }
     }
 
