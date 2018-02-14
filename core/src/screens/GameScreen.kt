@@ -1,12 +1,12 @@
 package screens
 
+import collections.MatchList
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
-import debug.ScreenshotFactory
 import enums.EffectType
 import enums.JewelType
 import enums.MatchType
@@ -58,7 +58,6 @@ class GameScreen : Screen {
         if (makeCheck)
             checkMatches()
         batcher.end()
-        ScreenshotFactory.saveScreenshot()
     }
 
     private fun getSelected() : Vector3 {
@@ -189,7 +188,7 @@ class GameScreen : Screen {
         }
 
     private fun checkMatches() {
-        val listOfMatches = mutableListOf<Match>()
+        val listOfMatches = MatchList()
         val iterator = itemsToCheck.iterator()
         while (iterator.hasNext()) {
             val move = iterator.next()
@@ -197,12 +196,11 @@ class GameScreen : Screen {
                     gameGrid.cells[move.xTo.toInt()][move.yTo.toInt()].jewel.jewelType)
             if (match.matchType != MatchType.NO_MATCH) {
                 listOfMatches.add(match)
-            } else {
-                iterator.remove()
             }
+            iterator.remove()
         }
         makeCheck = false
-        removeMatches(listOfMatches)
+        removeMatches(listOfMatches.get())
         if (specialMoves.isEmpty())
             prepareFalldownMoves()
     }
