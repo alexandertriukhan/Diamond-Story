@@ -256,8 +256,13 @@ class GameGrid(private val gridType : Array<IntArray>) {
     fun removeMatch(match : Match) : List<JewelMove> {
         val moves = mutableListOf<JewelMove>()
         for (gem in match.gemsInMatch) {
+            // TODO: handle when destroying and both creation of special gem is triggered
             if (cells[gem.x.toInt()][gem.y.toInt()].jewel.effect != EffectType.NONE) {
                 // TODO: destroy gems according to effect
+                when (cells[gem.x.toInt()][gem.y.toInt()].jewel.effect) {
+                    EffectType.FIRE -> fireDestroy(gem.x,gem.y)
+                    EffectType.CROSS -> crossDestroy(gem.x,gem.y)
+                }
             }
             if (match.matchType != MatchType.MATCH3) {
                 if (!(gem.x == match.firstGem().x && gem.y == match.firstGem().y)) {
@@ -282,6 +287,40 @@ class GameGrid(private val gridType : Array<IntArray>) {
             cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.SUPER_GEM
         }
         return moves
+    }
+
+    private fun fireDestroy(x: Float, y: Float) {
+
+    }
+
+    // TODO: debug when has specials inline
+    private fun crossDestroy(x: Float, y: Float) {
+        for (col in (0..(cells[0].count() - 1))) {
+            if (cells[x.toInt()][col].jewel.effect != EffectType.NONE) {
+                if (cells[x.toInt()][col].jewel.effect == EffectType.CROSS) {
+                    if (col != y.toInt()) {
+                        crossDestroy(x, col.toFloat())
+                    }
+                }
+                if (cells[x.toInt()][col].jewel.effect == EffectType.FIRE) {
+                    fireDestroy(x, col.toFloat())
+                }
+            }
+            cells[x.toInt()][col].jewel.jewelType = JewelType.NO_JEWEL
+        }
+        for (row in (0..(cells.count() - 1))) {
+            if (cells[row][y.toInt()].jewel.effect != EffectType.NONE) {
+                if (cells[row][y.toInt()].jewel.effect == EffectType.CROSS) {
+                    if (row != x.toInt()) {
+                        crossDestroy(row.toFloat(), y)
+                    }
+                }
+                if (cells[x.toInt()][y.toInt()].jewel.effect == EffectType.FIRE) {
+                    fireDestroy(row.toFloat(), y)
+                }
+            }
+            cells[row][y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
+        }
     }
 
     private fun drawDestroyAnimations(batch: SpriteBatch, delta: Float, size: Float, gridOffset: Float) {
