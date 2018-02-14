@@ -32,6 +32,8 @@ class TexturesLoader {
     val superGem : TextureRegion = textureAtlas.findRegion("super_gem")
     val superGemGlow : TextureRegion = textureAtlas.findRegion("super_gem_glow")
 
+    val explosion : TextureRegion = textureAtlas.findRegion("explosion")
+
     private object Holder { val INSTANCE = TexturesLoader() }
 
     companion object {

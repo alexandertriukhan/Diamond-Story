@@ -107,7 +107,11 @@ class GameScreen : Screen {
         val iterator = moves.iterator()
         while (iterator.hasNext()) {
             val move = iterator.next()
-            move.draw(batcher, gemSize, delta, gridOffset)
+            if (gameGrid.isDrawing()) {
+                move.drawFromPosition(batcher, gemSize, delta, gridOffset)
+            } else {
+                move.draw(batcher, gemSize, delta, gridOffset)
+            }
             if (move.endMove) {
                 if (!move.destroyOnEnd) {
                     gameGrid.cells[move.xTo.toInt()][move.yTo.toInt()].jewel = move.jewel
@@ -161,22 +165,22 @@ class GameScreen : Screen {
                                     if (highestNotPlaying == gameGrid.cells[0].count()) {
                                         moves.add(JewelMove(i.toFloat(), gameGrid.cells[0].count().toFloat(),
                                                 i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
-                                                EffectType.NONE),0f,20f,0.5f))
+                                                EffectType.NONE),0f,18f,0.45f))
                                     } else {
                                         moves.add(JewelMove(i.toFloat(), highestNotPlaying.toFloat(),
                                                 i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
-                                                EffectType.NONE),0f,20f,0.5f))
+                                                EffectType.NONE),0f,18f,0.45f))
                                     }
                                 } else {
                                     moves.add(JewelMove(i.toFloat(), highestJewel.toFloat(), i.toFloat(), j.toFloat(),
                                             Jewel(gameGrid.cells[i][highestJewel].jewel.jewelType,
-                                                    gameGrid.cells[i][highestJewel].jewel.effect),0f,20f,0.5f))
+                                                    gameGrid.cells[i][highestJewel].jewel.effect),0f,18f,0.45f))
                                     gameGrid.cells[i][highestJewel].jewel.jewelType = JewelType.NO_JEWEL
                                 }
                             } else {
                                 moves.add(JewelMove(i.toFloat(), gameGrid.cells[0].count().toFloat(),
                                         i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
-                                        EffectType.NONE),0f,20f,0.5f))
+                                        EffectType.NONE),0f,18f,0.45f))
                             }
                         }
                     }

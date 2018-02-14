@@ -12,8 +12,6 @@ class Cell(var isPlaying : Boolean, var jewel : Jewel, var tileTexture : Texture
             batch.draw(tileTexture, x, y, size, size)
             if (jewel.jewelType != JewelType.NO_JEWEL) {
                 jewel.draw(batch, x, y, size, delta)
-            } else if (jewel.effect == EffectType.BEING_DESTROYED) {
-                jewel.draw(batch, x, y, size, delta)
             }
         }
     }

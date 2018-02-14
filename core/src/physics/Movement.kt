@@ -2,13 +2,16 @@ package physics
 
 import enums.Axis
 
-open class Movement(var xFrom: Float,
-                    var yFrom: Float,
+open class Movement(val xFrom: Float,
+                    val yFrom: Float,
                     val xTo: Float,
                     val yTo: Float,
                     private val startSpeed: Float = 0f,
                     private val topSpeed: Float = startSpeed,
                     private val acceleration: Float = 0f) {
+
+    var xCurrent = xFrom
+    var yCurrent = yFrom
 
     var startBigger = false
     var endMove = false
@@ -40,30 +43,30 @@ open class Movement(var xFrom: Float,
             }
             if (movingAxis == Axis.X) {
                 if (!startBigger) {
-                    xFrom += delta * currentSpeed
-                    if (xFrom >= xTo) {
+                    xCurrent += delta * currentSpeed
+                    if (xCurrent >= xTo) {
                         endMove = true
-                        xFrom = xTo
+                        xCurrent = xTo
                     }
                 } else {
-                    xFrom -= delta * currentSpeed
-                    if (xFrom <= xTo) {
+                    xCurrent -= delta * currentSpeed
+                    if (xCurrent <= xTo) {
                         endMove = true
-                        xFrom = xTo
+                        xCurrent = xTo
                     }
                 }
             } else {
                 if (!startBigger) {
-                    yFrom += delta * currentSpeed
-                    if (yFrom >= yTo) {
+                    yCurrent += delta * currentSpeed
+                    if (yCurrent >= yTo) {
                         endMove = true
-                        yFrom = yTo
+                        yCurrent = yTo
                     }
                 } else {
-                    yFrom -= delta * currentSpeed
-                    if (yFrom <= yTo) {
+                    yCurrent -= delta * currentSpeed
+                    if (yCurrent <= yTo) {
                         endMove = true
-                        yFrom = yTo
+                        yCurrent = yTo
                     }
                 }
             }

@@ -1,4 +1,4 @@
-package com.alextriukhan.match3;
+package com.alextriukhan.match3
 
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx

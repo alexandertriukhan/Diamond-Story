@@ -12,6 +12,8 @@ import java.util.*
 // TODO: implement intArrayOf(0, 1, 1, 1) etc., also consider refactoring
 class GameGrid(private val gridType : Array<IntArray>) {
 
+    private val destroyAnimations = mutableListOf<DestroyAnimation>()
+
     var cells = Array(gridType.count(), {_ -> Array(gridType[0].count()
             , {_ -> Cell(false, Jewel(JewelType.from(Random().nextInt(5))),
             TexturesLoader.instance.tileBlank)})})
@@ -150,6 +152,11 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 }
             }
         }
+        drawDestroyAnimations(batcher,delta,gemSize,gridOffset)
+    }
+
+    fun isDrawing() : Boolean {
+        return destroyAnimations.isNotEmpty()
     }
 
     fun inRange(x : Int, y : Int) : Boolean {
@@ -249,16 +256,21 @@ class GameGrid(private val gridType : Array<IntArray>) {
     fun removeMatch(match : Match) : List<JewelMove> {
         val moves = mutableListOf<JewelMove>()
         for (gem in match.gemsInMatch) {
+            if (cells[gem.x.toInt()][gem.y.toInt()].jewel.effect != EffectType.NONE) {
+                // TODO: destroy gems according to effect
+            }
             if (match.matchType != MatchType.MATCH3) {
                 if (!(gem.x == match.firstGem().x && gem.y == match.firstGem().y)) {
                     moves.add(JewelMove(gem.x, gem.y, match.firstGem().x, match.firstGem().y,
                             Jewel(cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType),8f))
                     moves.last().destroyOnEnd = true
                     cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
+                    cells[gem.x.toInt()][gem.y.toInt()].jewel.effect = EffectType.NONE
                 }
             } else {
+                destroyAnimations.add(DestroyAnimation(gem.x,gem.y,Jewel(cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType)))
                 cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
-                cells[gem.x.toInt()][gem.y.toInt()].jewel.effect = EffectType.BEING_DESTROYED
+                cells[gem.x.toInt()][gem.y.toInt()].jewel.effect = EffectType.NONE
             }
         }
         if (match.matchType == MatchType.MATCH4)
@@ -270,6 +282,20 @@ class GameGrid(private val gridType : Array<IntArray>) {
             cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.SUPER_GEM
         }
         return moves
+    }
+
+    private fun drawDestroyAnimations(batch: SpriteBatch, delta: Float, size: Float, gridOffset: Float) {
+        if (destroyAnimations.isNotEmpty()) {
+            val iterator = destroyAnimations.iterator()
+            while (iterator.hasNext()) {
+                val anim = iterator.next()
+                if (anim.isStopped()) {
+                    iterator.remove()
+                } else {
+                    anim.draw(batch, delta, size, gridOffset)
+                }
+            }
+        }
     }
 
     fun getHighestIsNotPlaying(i: Int, j: Int) : Int {
