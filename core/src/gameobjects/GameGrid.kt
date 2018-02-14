@@ -256,6 +256,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
     fun removeMatch(match : Match) : List<JewelMove> {
         val moves = mutableListOf<JewelMove>()
         for (gem in match.gemsInMatch) {
+            // consider using if (cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType != JewelType.NONE) {}
             // TODO: handle when destroying and both creation of special gem is triggered
             if (cells[gem.x.toInt()][gem.y.toInt()].jewel.effect != EffectType.NONE) {
                 // TODO: destroy gems according to effect
@@ -264,6 +265,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                     EffectType.CROSS -> crossDestroy(gem.x,gem.y)
                 }
             }
+
             if (match.matchType != MatchType.MATCH3) {
                 if (!(gem.x == match.firstGem().x && gem.y == match.firstGem().y)) {
                     moves.add(JewelMove(gem.x, gem.y, match.firstGem().x, match.firstGem().y,
@@ -273,9 +275,9 @@ class GameGrid(private val gridType : Array<IntArray>) {
                     cells[gem.x.toInt()][gem.y.toInt()].jewel.effect = EffectType.NONE
                 }
             } else {
-                destroyAnimations.add(DestroyAnimation(gem.x,gem.y,Jewel(cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType)))
+                destroyAnimations.add(DestroyAnimation(gem.x,gem.y,
+                        Jewel(cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType),EffectType.NONE))
                 cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
-                cells[gem.x.toInt()][gem.y.toInt()].jewel.effect = EffectType.NONE
             }
         }
         if (match.matchType == MatchType.MATCH4)
@@ -290,24 +292,23 @@ class GameGrid(private val gridType : Array<IntArray>) {
     }
 
     private fun fireDestroy(x: Float, y: Float) {
-
+        cells[x.toInt()][y.toInt()].jewel.effect = EffectType.NONE
+        val toDestroy = getAdjacents(x.toInt(),y.toInt())
+        for (xy in toDestroy) {
+            if (cells[xy.x.toInt()][xy.y.toInt()].jewel.effect == EffectType.FIRE) {
+                fireDestroy(xy.x,xy.y)
+            }
+            if (cells[xy.x.toInt()][xy.y.toInt()].jewel.effect == EffectType.CROSS) {
+                crossDestroy(xy.x,xy.y)
+            }
+            destroyAnimations.add(DestroyAnimation(xy.x,xy.y,
+                    Jewel(cells[xy.x.toInt()][xy.y.toInt()].jewel.jewelType),EffectType.FIRE))
+            cells[xy.x.toInt()][xy.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
+        }
     }
 
-    // TODO: debug when has specials inline
     private fun crossDestroy(x: Float, y: Float) {
-        for (col in (0..(cells[0].count() - 1))) {
-            if (cells[x.toInt()][col].jewel.effect != EffectType.NONE) {
-                if (cells[x.toInt()][col].jewel.effect == EffectType.CROSS) {
-                    if (col != y.toInt()) {
-                        crossDestroy(x, col.toFloat())
-                    }
-                }
-                if (cells[x.toInt()][col].jewel.effect == EffectType.FIRE) {
-                    fireDestroy(x, col.toFloat())
-                }
-            }
-            cells[x.toInt()][col].jewel.jewelType = JewelType.NO_JEWEL
-        }
+        cells[x.toInt()][y.toInt()].jewel.effect = EffectType.NONE
         for (row in (0..(cells.count() - 1))) {
             if (cells[row][y.toInt()].jewel.effect != EffectType.NONE) {
                 if (cells[row][y.toInt()].jewel.effect == EffectType.CROSS) {
@@ -319,8 +320,70 @@ class GameGrid(private val gridType : Array<IntArray>) {
                     fireDestroy(row.toFloat(), y)
                 }
             }
+            destroyAnimations.add(DestroyAnimation(row.toFloat(),y,
+                    Jewel(cells[row][y.toInt()].jewel.jewelType),EffectType.CROSS))
             cells[row][y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
         }
+        for (col in (0..(cells[0].count() - 1))) {
+            if (cells[x.toInt()][col].jewel.effect != EffectType.NONE) {
+                if (cells[x.toInt()][col].jewel.effect == EffectType.CROSS) {
+                    if (col != y.toInt()) {
+                        crossDestroy(x, col.toFloat())
+                    }
+                }
+                if (cells[x.toInt()][col].jewel.effect == EffectType.FIRE) {
+                    fireDestroy(x, col.toFloat())
+                }
+            }
+            destroyAnimations.add(DestroyAnimation(x,col.toFloat(),
+                    Jewel(cells[x.toInt()][col].jewel.jewelType),EffectType.CROSS))
+            cells[x.toInt()][col].jewel.jewelType = JewelType.NO_JEWEL
+        }
+    }
+
+    private fun getAdjacents(x : Int, y : Int) : List<Vector2> {
+        val result = mutableListOf<Vector2>()
+        if (x > 0 && y > 0) {
+            if (cells[x-1][y-1].isPlaying) {
+                result.add(Vector2(x-1f,y-1f))
+            }
+        }
+        if (x > 0) {
+            if (cells[x-1][y].isPlaying) {
+                result.add(Vector2(x-1f,y.toFloat()))
+            }
+        }
+        if (y > 0) {
+            if (cells[x][y-1].isPlaying) {
+                result.add(Vector2(x.toFloat(),y-1f))
+            }
+        }
+        if ((x < (cells.count() - 1)) && (y < (cells[0].count() - 1))) {
+            if (cells[x+1][y+1].isPlaying) {
+                result.add(Vector2(x+1f,y+1f))
+            }
+        }
+        if (x < (cells.count() - 1)) {
+            if (cells[x+1][y].isPlaying) {
+                result.add(Vector2(x+1f,y.toFloat()))
+            }
+        }
+        if (y < (cells[0].count() - 1)) {
+            if (cells[x][y+1].isPlaying) {
+                result.add(Vector2(x.toFloat(),y+1f))
+            }
+        }
+        if (((x - 1) >= 0) && ((y + 1) < cells[0].count())) {
+            if (cells[x-1][y+1].isPlaying) {
+                result.add(Vector2(x-1f,y+1f))
+            }
+        }
+        if (((x + 1) < cells.count()) && ((y - 1) >= 0)) {
+            if (cells[x+1][y-1].isPlaying) {
+                result.add(Vector2(x+1f,y-1f))
+            }
+        }
+        return result
     }
 
     private fun drawDestroyAnimations(batch: SpriteBatch, delta: Float, size: Float, gridOffset: Float) {

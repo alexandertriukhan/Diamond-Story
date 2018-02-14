@@ -11,24 +11,28 @@ class Match(val gemsInMatch : MutableList<Vector2>, var matchType : MatchType) {
 
     fun maxY() : Int {
         var maxY = Int.MIN_VALUE
-        for (gem in gemsInMatch)
-            if (gem.y > maxY)
+        for (gem in gemsInMatch) {
+            if (gem.y > maxY) {
                 maxY = gem.y.toInt()
+            }
+        }
         return maxY
     }
 
     fun minY() : Int {
         var minY = Int.MAX_VALUE
-        for (gem in gemsInMatch)
-            if (gem.y < minY)
+        for (gem in gemsInMatch) {
+            if (gem.y < minY) {
                 minY = gem.y.toInt()
+            }
+        }
         return minY
     }
 
     fun mergeIn(match : Match) {
-        for (gem in match.gemsInMatch)
+        for (gem in match.gemsInMatch) {
             gemsInMatch.add(gem)
+        }
     }
-
 
 }
