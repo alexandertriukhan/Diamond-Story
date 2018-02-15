@@ -1,5 +1,6 @@
 package gameobjects
 
+import collections.DestroyAnimsList
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
@@ -12,7 +13,7 @@ import java.util.*
 // TODO: implement intArrayOf(0, 1, 1, 1) etc., also consider refactoring
 class GameGrid(private val gridType : Array<IntArray>) {
 
-    private val destroyAnimations = mutableListOf<DestroyAnimation>()
+    private val destroyAnimations = DestroyAnimsList()
 
     var cells = Array(gridType.count(), {_ -> Array(gridType[0].count()
             , {_ -> Cell(false, Jewel(JewelType.from(Random().nextInt(5))),
@@ -156,7 +157,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
     }
 
     fun isDrawing() : Boolean {
-        return destroyAnimations.isNotEmpty()
+        return destroyAnimations.list.isNotEmpty()
     }
 
     fun inRange(x : Int, y : Int) : Boolean {
@@ -190,7 +191,8 @@ class GameGrid(private val gridType : Array<IntArray>) {
     fun createsMatch(x : Int, y : Int, jewelType: JewelType) : Match {
         val matchHorizontal = getHorizontalMatch(x,y,jewelType)
         val matchVertical = getVerticalMatch(x,y,jewelType)
-        val resultingMatch = Match(MutableList(1,{ _ -> Vector2(x.toFloat(),y.toFloat()) }),MatchType.NO_MATCH)
+        val resultingMatch = Match(MutableList(1,{ _ -> Vector2(x.toFloat(),y.toFloat()) }),MatchType.NO_MATCH,
+                cells[x][y].jewel.jewelType)
         if (matchHorizontal.gemsInMatch.count() > 1) {
             if (matchVertical.gemsInMatch.count() > 1) {
                 matchHorizontal.mergeIn(matchVertical)
@@ -213,7 +215,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
 
     private fun getHorizontalMatch(x : Int, y : Int, jewelType: JewelType) : Match {
         var counter = 1
-        val match = Match(mutableListOf(), MatchType.NO_MATCH)
+        val match = Match(mutableListOf(), MatchType.NO_MATCH, JewelType.NO_JEWEL)
         if (jewelType != JewelType.NO_JEWEL) {
             while ((x - counter) >= 0) {
                 if (cells[x - counter][y].jewel.jewelType == jewelType) {
@@ -234,7 +236,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
 
     private fun getVerticalMatch(x : Int, y : Int, jewelType: JewelType) : Match {
         var counter = 1
-        val match = Match(mutableListOf(), MatchType.NO_MATCH)
+        val match = Match(mutableListOf(), MatchType.NO_MATCH, JewelType.NO_JEWEL)
         if (jewelType != JewelType.NO_JEWEL) {
             while ((y - counter) >= 0) {
                 if (cells[x][y - counter].jewel.jewelType == jewelType) {
@@ -255,22 +257,33 @@ class GameGrid(private val gridType : Array<IntArray>) {
 
     fun removeMatch(match : Match) : List<JewelMove> {
         val moves = mutableListOf<JewelMove>()
+        var hasSpecials = false
+        for (gem in match.gemsInMatch) {
+            if (cells[gem.x.toInt()][gem.y.toInt()].jewel.effect != EffectType.NONE) {
+                hasSpecials = true
+            }
+        }
+        //val specialsList = mutableListOf<>()
         for (gem in match.gemsInMatch) {
             // consider using if (cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType != JewelType.NONE) {}
             // TODO: handle when destroying and both creation of special gem is triggered
             if (cells[gem.x.toInt()][gem.y.toInt()].jewel.effect != EffectType.NONE) {
                 // TODO: destroy gems according to effect
+                //specialsList.add(SpecialJewel(Vector2(gem.x,gem.y),))
                 when (cells[gem.x.toInt()][gem.y.toInt()].jewel.effect) {
                     EffectType.FIRE -> fireDestroy(gem.x,gem.y)
                     EffectType.CROSS -> crossDestroy(gem.x,gem.y)
                 }
             }
-
+            // TODO: ensure all the moves are added before the special destroying is started
+            // this involves saving the specials to the list
             if (match.matchType != MatchType.MATCH3) {
                 if (!(gem.x == match.firstGem().x && gem.y == match.firstGem().y)) {
-                    moves.add(JewelMove(gem.x, gem.y, match.firstGem().x, match.firstGem().y,
-                            Jewel(cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType),8f))
-                    moves.last().destroyOnEnd = true
+                    if (!hasSpecials) {
+                        moves.add(JewelMove(gem.x, gem.y, match.firstGem().x, match.firstGem().y,
+                                Jewel(cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType), 1f))  // ORIGINAL : 8f
+                        moves.last().destroyOnEnd = true
+                    }
                     cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
                     cells[gem.x.toInt()][gem.y.toInt()].jewel.effect = EffectType.NONE
                 }
@@ -280,13 +293,16 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
             }
         }
-        if (match.matchType == MatchType.MATCH4)
-            cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.FIRE
-        if (match.matchType == MatchType.MATCH_CROSS)
-            cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.CROSS
-        if (match.matchType == MatchType.MATCH5) {
-            cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.jewelType = JewelType.SUPER_GEM
-            cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.SUPER_GEM
+        if (match.matchType != MatchType.MATCH3) {
+            cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.jewelType = match.matchColor
+            if (match.matchType == MatchType.MATCH4)
+                cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.FIRE
+            if (match.matchType == MatchType.MATCH_CROSS)
+                cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.CROSS
+            if (match.matchType == MatchType.MATCH5) {
+                cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.jewelType = JewelType.SUPER_GEM
+                cells[match.firstGem().x.toInt()][match.firstGem().y.toInt()].jewel.effect = EffectType.SUPER_GEM
+            }
         }
         return moves
     }
@@ -387,8 +403,8 @@ class GameGrid(private val gridType : Array<IntArray>) {
     }
 
     private fun drawDestroyAnimations(batch: SpriteBatch, delta: Float, size: Float, gridOffset: Float) {
-        if (destroyAnimations.isNotEmpty()) {
-            val iterator = destroyAnimations.iterator()
+        if (destroyAnimations.list.isNotEmpty()) {
+            val iterator = destroyAnimations.list.iterator()
             while (iterator.hasNext()) {
                 val anim = iterator.next()
                 if (anim.isStopped()) {

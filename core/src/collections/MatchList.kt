@@ -27,9 +27,16 @@ class MatchList {
     }
 
     private fun equalMatches(match1: Match, match2: Match) : Boolean {
-        if (match1.gemsInMatch.count() == match2.gemsInMatch.count()) {
+        if (match1.gemsInMatch.count() >= match2.gemsInMatch.count()) {
+            for (xy in match2.gemsInMatch) {
+                if (!containsVect(match1.gemsInMatch, xy)) {
+                    return false
+                }
+            }
+            return true
+        } else if (match1.gemsInMatch.count() < match2.gemsInMatch.count()) {
             for (xy in match1.gemsInMatch) {
-                if (!containsVect(match2.gemsInMatch,xy)) {
+                if (!containsVect(match2.gemsInMatch, xy)) {
                     return false
                 }
             }

@@ -1,9 +1,10 @@
 package gameobjects
 
 import com.badlogic.gdx.math.Vector2
+import enums.JewelType
 import enums.MatchType
 
-class Match(val gemsInMatch : MutableList<Vector2>, var matchType : MatchType) {
+class Match(val gemsInMatch : MutableList<Vector2>, var matchType : MatchType, val matchColor: JewelType) {
 
     fun firstGem() : Vector2 {
         return gemsInMatch.first()
