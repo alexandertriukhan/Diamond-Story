@@ -75,7 +75,7 @@ class GameScreen : Screen {
     }
 
     fun onClick() {
-        if (moves.isEmpty()) {
+        if (moves.isEmpty() && specialMoves.isEmpty()) {
             val testTouch = getSelected()
             if (gameGrid.inRange(testTouch.x.toInt(), testTouch.y.toInt())) {
                 if (!isSelected) {

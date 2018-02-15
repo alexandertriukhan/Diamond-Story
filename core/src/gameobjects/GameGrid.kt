@@ -263,20 +263,13 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 hasSpecials = true
             }
         }
-        //val specialsList = mutableListOf<>()
         for (gem in match.gemsInMatch) {
-            // consider using if (cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType != JewelType.NONE) {}
-            // TODO: handle when destroying and both creation of special gem is triggered
             if (cells[gem.x.toInt()][gem.y.toInt()].jewel.effect != EffectType.NONE) {
-                // TODO: destroy gems according to effect
-                //specialsList.add(SpecialJewel(Vector2(gem.x,gem.y),))
                 when (cells[gem.x.toInt()][gem.y.toInt()].jewel.effect) {
                     EffectType.FIRE -> fireDestroy(gem.x,gem.y)
                     EffectType.CROSS -> crossDestroy(gem.x,gem.y)
                 }
             }
-            // TODO: ensure all the moves are added before the special destroying is started
-            // this involves saving the specials to the list
             if (match.matchType != MatchType.MATCH3) {
                 if (!(gem.x == match.firstGem().x && gem.y == match.firstGem().y)) {
                     if (!hasSpecials) {
