@@ -7,18 +7,18 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
-import debug.ScreenshotFactory
 import enums.EffectType
 import enums.JewelType
 import enums.MatchType
 import gameobjects.*
 import utils.InputHandler
+import utils.TexturesLoader
 import java.util.*
 
 
 class GameScreen : Screen {
 
-    private val gameGrid = GameGrid(gridTypes.square())
+    private val gameGrid = GameGrid(gridTypes.puzzle())
     private val MAX_ROWS = gameGrid.cells.count()
     private val gemSize = Gdx.graphics.width.toFloat() / MAX_ROWS
     private val MAX_COLS = (Gdx.graphics.height.toFloat() / gemSize)
@@ -33,7 +33,7 @@ class GameScreen : Screen {
     private var isSelected = false
     private var makeCheck = false
 
-    private val fallDownAcceleration = 0.145f  // ORIGINAL: 0.45f
+    private val fallDownAcceleration = 0.45f  // ORIGINAL: 0.45f
     private val moveSpeed = 8f  // ORIGINAL: 8f
 
     init {
@@ -53,7 +53,7 @@ class GameScreen : Screen {
     }
 
     override fun render(delta: Float) {
-        Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
+        Gdx.gl.glClearColor(135/255f, 206/255f, 235/255f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         batcher.begin()
         gameGrid.draw(batcher,delta,gemSize,gridOffset)
@@ -78,28 +78,30 @@ class GameScreen : Screen {
         if (moves.isEmpty() && specialMoves.isEmpty()) {
             val testTouch = getSelected()
             if (gameGrid.inRange(testTouch.x.toInt(), testTouch.y.toInt())) {
-                if (!isSelected) {
-                    selectedXY = testTouch
-                    isSelected = true
-                    gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.isSelected = true
-                } else {
-                    if (gameGrid.isAdjacent(testTouch.x.toInt(), testTouch.y.toInt(), selectedXY.x.toInt(), selectedXY.y.toInt())) {
-
-                        moves.add(JewelMove(selectedXY.x, selectedXY.y, testTouch.x, testTouch.y,
-                                Jewel(gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.jewelType,
-                                        gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.effect),moveSpeed))
-                        moves.add(JewelMove(testTouch.x, testTouch.y, selectedXY.x, selectedXY.y,
-                                Jewel(gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.jewelType,
-                                        gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.effect),moveSpeed))
-                        gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
-                        gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
-                        gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.isSelected = false
-                        isSelected = false
-                    } else {
-                        gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.isSelected = false
+                if (gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].isPlaying) {
+                    if (!isSelected) {
                         selectedXY = testTouch
-                        gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.isSelected = true
                         isSelected = true
+                        gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.isSelected = true
+                    } else {
+                        if (gameGrid.isAdjacent(testTouch.x.toInt(), testTouch.y.toInt(), selectedXY.x.toInt(), selectedXY.y.toInt())) {
+
+                            moves.add(JewelMove(selectedXY.x, selectedXY.y, testTouch.x, testTouch.y,
+                                    Jewel(gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.jewelType,
+                                            gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.effect), moveSpeed))
+                            moves.add(JewelMove(testTouch.x, testTouch.y, selectedXY.x, selectedXY.y,
+                                    Jewel(gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.jewelType,
+                                            gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.effect), moveSpeed))
+                            gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
+                            gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
+                            gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.isSelected = false
+                            isSelected = false
+                        } else {
+                            gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.isSelected = false
+                            selectedXY = testTouch
+                            gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.isSelected = true
+                            isSelected = true
+                        }
                     }
                 }
             }

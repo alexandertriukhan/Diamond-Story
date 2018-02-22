@@ -5,10 +5,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import enums.EffectType
 import utils.TexturesLoader
 
-class DestroyAnimation(val x : Float, val y : Float, val jewel: Jewel, val effect: EffectType) {
+class DestroyAnimation(val x : Float, val y : Float, jewel: Jewel, val effect: EffectType) {
 
-    private val shrinkAnim = Shrink(jewel.texture(),2f,false)  // ORIGINAL : 5f
-    private val explodeAnim = Shrink(TexturesLoader.instance.explosion,1f,false)  // ORIGINAL : 4f
+    private val shrinkAnim = Shrink(jewel.texture(),5f,false)  // ORIGINAL : 5f
+    private val explodeAnim = Shrink(TexturesLoader.instance.explosion,4f,false)  // ORIGINAL : 4f
 
     fun draw(batch : SpriteBatch, delta : Float, size : Float, gridOffset : Float) {
         when (effect) {

@@ -3,7 +3,9 @@ package gameobjects
 import animations.Flash
 import animations.Rotation
 import animations.Shrink
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import enums.EffectType
 import enums.JewelType
@@ -13,11 +15,16 @@ class Jewel(var jewelType : JewelType) {
 
     private var isAnimated = false
 
-    private val fireGemAnim = Rotation(TexturesLoader.instance.fireAnim,80f,true)
+    private val fireGemAnim = ParticleEffect()
+
     private val fireSelectionAnim = Rotation(TexturesLoader.instance.selectedFireSpell,40f,true)
     private val moveSelectionAnim = Rotation(TexturesLoader.instance.selectedMoveSpell,40f,true)
     private val crossGemAnim = Flash(TexturesLoader.instance.crossAnim,0.9f, true)
     private val superGemAnim = Flash(TexturesLoader.instance.superGemGlow,1.2f,true)
+
+    init {
+        fireGemAnim.load(Gdx.files.internal("graphics/effects/fire.p"),TexturesLoader.instance.textureAtlas)
+    }
 
     var effect = EffectType.NONE
     set(value) {
@@ -58,7 +65,10 @@ class Jewel(var jewelType : JewelType) {
     private fun animation(batch: Batch, x : Float, y : Float, size : Float, delta : Float) {
         when (effect) {
             EffectType.NONE -> return
-            EffectType.FIRE -> fireGemAnim.draw(batch,x,y,size,delta)
+            EffectType.FIRE -> {
+                fireGemAnim.setPosition(x + size / 2,y + size / 4)
+                fireGemAnim.draw(batch, delta)
+            }
             EffectType.CROSS -> crossGemAnim.draw(batch,x,y,size,delta)
             EffectType.SUPER_GEM -> superGemAnim.draw(batch,x,y,size,delta)
         }

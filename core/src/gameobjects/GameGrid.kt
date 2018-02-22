@@ -45,31 +45,114 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 } else {
                     cells[i][j].jewel.jewelType = JewelType.NO_JEWEL
                 }
-                // cells[i][j].jewel.effect = EffectType.CROSS //FOR TEST PURPOSE
+
                 val borders = getBorders(i, j, gridType)
                 if (borders.contentEquals(intArrayOf(0, 0, 0, 1))) {
                     cells[i][j].tileTexture = TexturesLoader.instance.tileTop
+                    if (j % 2 == 0) {
+                        if (i % 2 != 0) {
+                            cells[i][j].tileTexture = TexturesLoader.instance.tileTopLite
+                        }
+                    } else if (i % 2 == 0) {
+                        cells[i][j].tileTexture = TexturesLoader.instance.tileTopLite
+                    }
                 }
-                if (borders.contentEquals(intArrayOf(0, 1, 0, 0))) {
+                else if (borders.contentEquals(intArrayOf(0, 1, 0, 0))) {
                     cells[i][j].tileTexture = TexturesLoader.instance.tileRight
+                    if (j % 2 == 0) {
+                        if (i % 2 != 0) {
+                            cells[i][j].tileTexture = TexturesLoader.instance.tileRightLite
+                        }
+                    } else if (i % 2 == 0) {
+                        cells[i][j].tileTexture = TexturesLoader.instance.tileRightLite
+                    }
                 }
-                if (borders.contentEquals(intArrayOf(1, 0, 0, 0))) {
+                else if (borders.contentEquals(intArrayOf(1, 0, 0, 0))) {
                     cells[i][j].tileTexture = TexturesLoader.instance.tileDown
+                    if (j % 2 == 0) {
+                        if (i % 2 != 0) {
+                            cells[i][j].tileTexture = TexturesLoader.instance.tileDownLite
+                        }
+                    } else if (i % 2 == 0) {
+                        cells[i][j].tileTexture = TexturesLoader.instance.tileDownLite
+                    }
                 }
-                if (borders.contentEquals(intArrayOf(0, 0, 1, 0))) {
+                else if (borders.contentEquals(intArrayOf(0, 0, 1, 0))) {
                     cells[i][j].tileTexture = TexturesLoader.instance.tileLeft
+                    if (j % 2 == 0) {
+                        if (i % 2 != 0) {
+                            cells[i][j].tileTexture = TexturesLoader.instance.tileLeftLite
+                        }
+                    } else if (i % 2 == 0) {
+                        cells[i][j].tileTexture = TexturesLoader.instance.tileLeftLite
+                    }
                 }
-                if (borders.contentEquals(intArrayOf(1, 1, 0, 0))) {
+                else if (borders.contentEquals(intArrayOf(1, 1, 0, 0))) {
                     cells[i][j].tileTexture = TexturesLoader.instance.tileCornerRightDown
+                    if (j % 2 == 0) {
+                        if (i % 2 != 0) {
+                            cells[i][j].tileTexture = TexturesLoader.instance.tileCornerRightDownLite
+                        }
+                    } else if (i % 2 == 0) {
+                        cells[i][j].tileTexture = TexturesLoader.instance.tileCornerRightDownLite
+                    }
                 }
-                if (borders.contentEquals(intArrayOf(1, 0, 1, 0))) {
+                else if (borders.contentEquals(intArrayOf(1, 0, 1, 0))) {
                     cells[i][j].tileTexture = TexturesLoader.instance.tileCornerLeftDown
+                    if (j % 2 == 0) {
+                        if (i % 2 != 0) {
+                            cells[i][j].tileTexture = TexturesLoader.instance.tileCornerLeftDownLite
+                        }
+                    } else if (i % 2 == 0) {
+                        cells[i][j].tileTexture = TexturesLoader.instance.tileCornerLeftDownLite
+                    }
                 }
-                if (borders.contentEquals(intArrayOf(0, 0, 1, 1))) {
+                else if (borders.contentEquals(intArrayOf(0, 0, 1, 1))) {
                     cells[i][j].tileTexture = TexturesLoader.instance.tileCornerLeftTop
+                    if (j % 2 == 0) {
+                        if (i % 2 != 0) {
+                            cells[i][j].tileTexture = TexturesLoader.instance.tileCornerLeftTopLite
+                        }
+                    } else if (i % 2 == 0) {
+                        cells[i][j].tileTexture = TexturesLoader.instance.tileCornerLeftTopLite
+                    }
                 }
-                if (borders.contentEquals(intArrayOf(0, 1, 0, 1))) {
+                else if (borders.contentEquals(intArrayOf(0, 1, 0, 1))) {
                     cells[i][j].tileTexture = TexturesLoader.instance.tileCornerRightTop
+                    if (j % 2 == 0) {
+                        if (i % 2 != 0) {
+                            cells[i][j].tileTexture = TexturesLoader.instance.tileCornerRightTopLite
+                        }
+                    } else if (i % 2 == 0) {
+                        cells[i][j].tileTexture = TexturesLoader.instance.tileCornerRightTopLite
+                    }
+                } else if (borders.contentEquals(intArrayOf(1, 1, 1, 0))) {
+                    cells[i][j].tileTexture = TexturesLoader.instance.tileCornerDownThree
+                    if (j % 2 == 0) {
+                        if (i % 2 != 0) {
+                            cells[i][j].tileTexture = TexturesLoader.instance.tileCornerDownThreeLite
+                        }
+                    } else if (i % 2 == 0) {
+                        cells[i][j].tileTexture = TexturesLoader.instance.tileCornerDownThreeLite
+                    }
+                }
+                else if (borders.contentEquals(intArrayOf(0, 1, 1, 1))) {
+                    cells[i][j].tileTexture = TexturesLoader.instance.tileCornerTopThree
+                    if (j % 2 == 0) {
+                        if (i % 2 != 0) {
+                            cells[i][j].tileTexture = TexturesLoader.instance.tileCornerTopThreeLite
+                        }
+                    } else if (i % 2 == 0) {
+                        cells[i][j].tileTexture = TexturesLoader.instance.tileCornerTopThreeLite
+                    }
+                }
+                else if (j % 2 == 0) {
+                    if (i % 2 != 0) {
+                        cells[i][j].tileTexture = TexturesLoader.instance.tileBlankLite
+                    }
+                }
+                else if (i % 2 == 0) {
+                    cells[i][j].tileTexture = TexturesLoader.instance.tileBlankLite
                 }
             }
         }
@@ -148,7 +231,15 @@ class GameGrid(private val gridType : Array<IntArray>) {
         for (i in cells.indices) {
             for (j in cells[i].indices) {
                 if (cells[i][j].isPlaying) {
-                    cells[i][j].draw(batcher,i.toFloat() * gemSize,
+                    cells[i][j].drawTile(batcher,i.toFloat() * gemSize,
+                            (j.toFloat() * gemSize) + gridOffset, gemSize)
+                }
+            }
+        }
+        for (i in cells.indices) {
+            for (j in cells[i].indices) {
+                if (cells[i][j].isPlaying) {
+                    cells[i][j].drawJewel(batcher,i.toFloat() * gemSize,
                             (j.toFloat() * gemSize) + gridOffset, gemSize, delta)
                 }
             }
@@ -274,7 +365,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 if (!(gem.x == match.firstGem().x && gem.y == match.firstGem().y)) {
                     if (!hasSpecials) {
                         moves.add(JewelMove(gem.x, gem.y, match.firstGem().x, match.firstGem().y,
-                                Jewel(cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType), 1f))  // ORIGINAL : 8f
+                                Jewel(cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType), 8f))  // ORIGINAL : 8f
                         moves.last().destroyOnEnd = true
                     }
                     cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
