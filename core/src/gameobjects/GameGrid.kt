@@ -47,106 +47,19 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 }
 
                 val borders = getBorders(i, j, gridType)
-                if (borders.contentEquals(intArrayOf(0, 0, 0, 1))) {
-                    cells[i][j].tileTexture = TexturesLoader.instance.tileTop
-                    if (j % 2 == 0) {
-                        if (i % 2 != 0) {
-                            cells[i][j].tileTexture = TexturesLoader.instance.tileTopLite
-                        }
-                    } else if (i % 2 == 0) {
-                        cells[i][j].tileTexture = TexturesLoader.instance.tileTopLite
-                    }
+                if (borders[3] == 1) {
+                    cells[i][j].isTop = true
                 }
-                else if (borders.contentEquals(intArrayOf(0, 1, 0, 0))) {
-                    cells[i][j].tileTexture = TexturesLoader.instance.tileRight
-                    if (j % 2 == 0) {
-                        if (i % 2 != 0) {
-                            cells[i][j].tileTexture = TexturesLoader.instance.tileRightLite
-                        }
-                    } else if (i % 2 == 0) {
-                        cells[i][j].tileTexture = TexturesLoader.instance.tileRightLite
-                    }
+                if (borders[0] == 1) {
+                    cells[i][j].isBottom = true
                 }
-                else if (borders.contentEquals(intArrayOf(1, 0, 0, 0))) {
-                    cells[i][j].tileTexture = TexturesLoader.instance.tileDown
-                    if (j % 2 == 0) {
-                        if (i % 2 != 0) {
-                            cells[i][j].tileTexture = TexturesLoader.instance.tileDownLite
-                        }
-                    } else if (i % 2 == 0) {
-                        cells[i][j].tileTexture = TexturesLoader.instance.tileDownLite
-                    }
+                if (borders[1] == 1) {
+                    cells[i][j].isRight = true
                 }
-                else if (borders.contentEquals(intArrayOf(0, 0, 1, 0))) {
-                    cells[i][j].tileTexture = TexturesLoader.instance.tileLeft
-                    if (j % 2 == 0) {
-                        if (i % 2 != 0) {
-                            cells[i][j].tileTexture = TexturesLoader.instance.tileLeftLite
-                        }
-                    } else if (i % 2 == 0) {
-                        cells[i][j].tileTexture = TexturesLoader.instance.tileLeftLite
-                    }
+                if (borders[2] == 1) {
+                    cells[i][j].isLeft = true
                 }
-                else if (borders.contentEquals(intArrayOf(1, 1, 0, 0))) {
-                    cells[i][j].tileTexture = TexturesLoader.instance.tileCornerRightDown
-                    if (j % 2 == 0) {
-                        if (i % 2 != 0) {
-                            cells[i][j].tileTexture = TexturesLoader.instance.tileCornerRightDownLite
-                        }
-                    } else if (i % 2 == 0) {
-                        cells[i][j].tileTexture = TexturesLoader.instance.tileCornerRightDownLite
-                    }
-                }
-                else if (borders.contentEquals(intArrayOf(1, 0, 1, 0))) {
-                    cells[i][j].tileTexture = TexturesLoader.instance.tileCornerLeftDown
-                    if (j % 2 == 0) {
-                        if (i % 2 != 0) {
-                            cells[i][j].tileTexture = TexturesLoader.instance.tileCornerLeftDownLite
-                        }
-                    } else if (i % 2 == 0) {
-                        cells[i][j].tileTexture = TexturesLoader.instance.tileCornerLeftDownLite
-                    }
-                }
-                else if (borders.contentEquals(intArrayOf(0, 0, 1, 1))) {
-                    cells[i][j].tileTexture = TexturesLoader.instance.tileCornerLeftTop
-                    if (j % 2 == 0) {
-                        if (i % 2 != 0) {
-                            cells[i][j].tileTexture = TexturesLoader.instance.tileCornerLeftTopLite
-                        }
-                    } else if (i % 2 == 0) {
-                        cells[i][j].tileTexture = TexturesLoader.instance.tileCornerLeftTopLite
-                    }
-                }
-                else if (borders.contentEquals(intArrayOf(0, 1, 0, 1))) {
-                    cells[i][j].tileTexture = TexturesLoader.instance.tileCornerRightTop
-                    if (j % 2 == 0) {
-                        if (i % 2 != 0) {
-                            cells[i][j].tileTexture = TexturesLoader.instance.tileCornerRightTopLite
-                        }
-                    } else if (i % 2 == 0) {
-                        cells[i][j].tileTexture = TexturesLoader.instance.tileCornerRightTopLite
-                    }
-                } else if (borders.contentEquals(intArrayOf(1, 1, 1, 0))) {
-                    cells[i][j].tileTexture = TexturesLoader.instance.tileCornerDownThree
-                    if (j % 2 == 0) {
-                        if (i % 2 != 0) {
-                            cells[i][j].tileTexture = TexturesLoader.instance.tileCornerDownThreeLite
-                        }
-                    } else if (i % 2 == 0) {
-                        cells[i][j].tileTexture = TexturesLoader.instance.tileCornerDownThreeLite
-                    }
-                }
-                else if (borders.contentEquals(intArrayOf(0, 1, 1, 1))) {
-                    cells[i][j].tileTexture = TexturesLoader.instance.tileCornerTopThree
-                    if (j % 2 == 0) {
-                        if (i % 2 != 0) {
-                            cells[i][j].tileTexture = TexturesLoader.instance.tileCornerTopThreeLite
-                        }
-                    } else if (i % 2 == 0) {
-                        cells[i][j].tileTexture = TexturesLoader.instance.tileCornerTopThreeLite
-                    }
-                }
-                else if (j % 2 == 0) {
+                if (j % 2 == 0) {
                     if (i % 2 != 0) {
                         cells[i][j].tileTexture = TexturesLoader.instance.tileBlankLite
                     }
