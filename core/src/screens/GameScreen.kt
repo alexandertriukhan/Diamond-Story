@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 import enums.EffectType
@@ -36,6 +37,7 @@ class GameScreen : Screen {
     private val fallDownAcceleration = 0.45f  // ORIGINAL: 0.45f
     private val moveSpeed = 8f  // ORIGINAL: 8f
 
+
     init {
         cam.setToOrtho(false, MAX_ROWS.toFloat(), MAX_COLS)
         cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0f)
@@ -53,7 +55,7 @@ class GameScreen : Screen {
     }
 
     override fun render(delta: Float) {
-        Gdx.gl.glClearColor(135/255f, 206/255f, 235/255f, 1f)
+        Gdx.gl.glClearColor(127/255f, 100/255f, 127/255f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         batcher.begin()
         gameGrid.draw(batcher,delta,gemSize,gridOffset)

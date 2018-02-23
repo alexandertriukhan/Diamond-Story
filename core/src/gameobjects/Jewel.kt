@@ -24,6 +24,7 @@ class Jewel(var jewelType : JewelType) {
 
     init {
         fireGemAnim.load(Gdx.files.internal("graphics/effects/fire.p"),TexturesLoader.instance.textureAtlas)
+        fireGemAnim.scaleEffect(TexturesLoader.instance.animScaleFactor)
     }
 
     var effect = EffectType.NONE

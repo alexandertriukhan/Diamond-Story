@@ -1,6 +1,7 @@
 package utils
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -31,8 +32,13 @@ class TexturesLoader {
     val superGemGlow : TextureRegion = textureAtlas.findRegion("super_gem_glow")
     val explosion : TextureRegion = textureAtlas.findRegion("explosion")
 
+    // ANIMATIONS SCALE:
+    var animScaleFactor = 1f
+
     init {
         fireAnimation.load(Gdx.files.internal("graphics/effects/fire.p"),textureAtlas)
+        animScaleFactor = Gdx.graphics.width.toFloat() / 640f // 640f is a reference width
+        border.color = Color.PURPLE
     }
 
     private object Holder { val INSTANCE = TexturesLoader() }

@@ -24,7 +24,6 @@ class Cell(var isPlaying : Boolean, var jewel : Jewel, var tileTexture : Texture
         if (isPlaying) {
             batch.draw(tileTexture,x,y,size,size)
         }
-        TexturesLoader.instance.border.color = Color.BLUE
         batch.end()
         TexturesLoader.instance.border.begin(ShapeRenderer.ShapeType.Filled)
         if (isTop) {
