@@ -1,28 +1,54 @@
 package gameobjects
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import enums.JewelType
 import utils.TexturesLoader
 
 class Cell(var isPlaying : Boolean, var jewel : Jewel, var tileTexture : TextureRegion) {
 
+    private val borderSizeDel = 14
+
     var isTop = false
     var isBottom = false
     var isRight = false
     var isLeft = false
+    var isTopEdge = false
+    var isBottomEdge = false
 
     fun drawTile(batch: Batch, x : Float, y : Float, size : Float) {
+        val borderSize = size / borderSizeDel
         if (isPlaying) {
-            batch.draw(tileTexture, x, y, size, size)
+            batch.draw(tileTexture,x,y,size,size)
         }
+        TexturesLoader.instance.border.color = Color.BLUE
+        batch.end()
+        TexturesLoader.instance.border.begin(ShapeRenderer.ShapeType.Filled)
         if (isTop) {
-            batch.draw(TexturesLoader.instance.oneBorder, x, y + size, size, size )
+            if (!isTopEdge) {
+                TexturesLoader.instance.border.rect(x, y + size, size, borderSize)
+            } else {
+                TexturesLoader.instance.border.rect(x - borderSize, y + size, size + borderSize * 2, borderSize)
+            }
         }
         if (isBottom) {
-            batch.draw(TexturesLoader.instance.oneBorder, x, y - size, size / 2f, size / 2f, size, size,
-                    1f, 1f, 180f)
+            if (!isBottomEdge) {
+                TexturesLoader.instance.border.rect(x, y - borderSize, size, borderSize)
+            } else {
+                TexturesLoader.instance.border.rect(x - borderSize, y - borderSize, size + borderSize * 2, borderSize)
+            }
         }
+        if (isRight) {
+            TexturesLoader.instance.border.rect(x + size,y,borderSize,size)
+        }
+        if (isLeft) {
+            TexturesLoader.instance.border.rect(x - borderSize,y,borderSize,size)
+        }
+        TexturesLoader.instance.border.end()
+        batch.begin()
     }
 
     fun drawJewel(batch: Batch, x : Float, y : Float, size : Float, delta : Float) {

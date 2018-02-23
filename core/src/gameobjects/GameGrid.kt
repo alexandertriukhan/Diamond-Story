@@ -59,6 +59,12 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 if (borders[2] == 1) {
                     cells[i][j].isLeft = true
                 }
+                if (j == 0) {
+                    cells[i][j].isBottomEdge = true
+                }
+                if (j == cells[0].count() - 1) {
+                    cells[i][j].isTopEdge = true
+                }
                 if (j % 2 == 0) {
                     if (i % 2 != 0) {
                         cells[i][j].tileTexture = TexturesLoader.instance.tileBlankLite

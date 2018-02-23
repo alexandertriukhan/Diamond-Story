@@ -40,7 +40,7 @@ class GameScreen : Screen {
         cam.setToOrtho(false, MAX_ROWS.toFloat(), MAX_COLS)
         cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0f)
         cam.update()
-
+        TexturesLoader.instance.border.projectionMatrix = batcher.projectionMatrix
         Gdx.input.inputProcessor = InputHandler(this)
     }
 

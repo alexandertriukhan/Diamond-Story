@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 
 class TexturesLoader {
     val textureAtlas = TextureAtlas(Gdx.files.internal("graphics/atlas.atlas"))
@@ -20,7 +21,7 @@ class TexturesLoader {
     // CELLS:
     val tileBlank : TextureRegion = textureAtlas.findRegion("cells/tile_blank")
     val tileBlankLite : TextureRegion = textureAtlas.findRegion("cells/tile_blank_lite")
-    val oneBorder : TextureRegion = textureAtlas.findRegion("cells/one_border")
+    val border = ShapeRenderer()
 
     // ANIMATIONS:
     val fireAnimation = ParticleEffect()
