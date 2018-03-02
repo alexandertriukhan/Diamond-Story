@@ -7,9 +7,9 @@ import interfaces.Anim
 class Expand(override val texture: TextureRegion, override val speed: Float, override val isLoop: Boolean) : Anim {
 
     private var sizeModifier = 0f
-    private var waitFor1 = true
+    var waitFor1 = true
     private var increment = true
-    private var maxSize = 1f
+    var maxSize = 1f
 
     var isStopped = false
 

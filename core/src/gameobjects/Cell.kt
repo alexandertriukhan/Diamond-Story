@@ -58,4 +58,11 @@ class Cell(var isPlaying : Boolean, var jewel : Jewel, var tileTexture : Texture
         }
     }
 
+    fun isBlocked() : Boolean {  // TODO: returns true for cells that arent allowed to be moved, ex: chained jewels
+        if (!isPlaying) {
+            return true
+        }
+        return false
+    }
+
 }

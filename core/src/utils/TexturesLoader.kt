@@ -30,7 +30,6 @@ class TexturesLoader {
     val selectedFireSpell : TextureRegion = textureAtlas.findRegion("selected_fire_spell")
     val crossAnim : TextureRegion = textureAtlas.findRegion("cross_anim")
     val superGemGlow : TextureRegion = textureAtlas.findRegion("super_gem_glow")
-    val explosion : TextureRegion = textureAtlas.findRegion("explosion")
 
     // ANIMATIONS SCALE:
     var animScaleFactor = 1f

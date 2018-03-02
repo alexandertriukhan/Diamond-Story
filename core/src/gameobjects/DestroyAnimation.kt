@@ -1,38 +1,56 @@
 package gameobjects
 
-import animations.Shrink
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import enums.EffectType
+import enums.JewelType
 import utils.TexturesLoader
 
 class DestroyAnimation(val x : Float, val y : Float, jewel: Jewel, val effect: EffectType) {
 
-    private val shrinkAnim = Shrink(jewel.texture(),5f,false)  // ORIGINAL : 5f
     private val explodeAnim = ParticleEffect()
+    private val crossAnim = ParticleEffect()
 
     init {
-        explodeAnim.load(Gdx.files.internal("graphics/effects/explosion.p"),TexturesLoader.instance.textureAtlas)
+        when (jewel.jewelType) {
+            JewelType.RED -> explodeAnim.load(Gdx.files.internal("graphics/effects/explosion_red.p"),TexturesLoader.instance.textureAtlas)
+            JewelType.BLUE -> explodeAnim.load(Gdx.files.internal("graphics/effects/explosion_blue.p"),TexturesLoader.instance.textureAtlas)
+            JewelType.GREEN -> explodeAnim.load(Gdx.files.internal("graphics/effects/explosion_green.p"),TexturesLoader.instance.textureAtlas)
+            JewelType.YELLOW -> explodeAnim.load(Gdx.files.internal("graphics/effects/explosion_yellow.p"),TexturesLoader.instance.textureAtlas)
+            JewelType.PURPLE -> explodeAnim.load(Gdx.files.internal("graphics/effects/explosion_purple.p"),TexturesLoader.instance.textureAtlas)
+        }
+        if (effect == EffectType.CROSS) {
+            crossAnim.load(Gdx.files.internal("graphics/effects/cross.p"),TexturesLoader.instance.textureAtlas)
+            crossAnim.scaleEffect(TexturesLoader.instance.animScaleFactor)
+            crossAnim.start()
+        }
+        explodeAnim.scaleEffect(TexturesLoader.instance.animScaleFactor * 0.8f)
         explodeAnim.start()
     }
 
     fun draw(batch : SpriteBatch, delta : Float, size : Float, gridOffset : Float) {
         when (effect) {
-            EffectType.NONE -> shrinkAnim.draw(batch,x * size,(y * size) + gridOffset,size,delta)
-            EffectType.FIRE -> {
-                explodeAnim.setPosition((x * size) + size / 2,((y * size) + gridOffset) + size / 2)
+            EffectType.NONE -> {
+                explodeAnim.setPosition((x * size) + size / 2,(((y * size) + gridOffset) + size / 2) - delta * 4)
                 explodeAnim.draw(batch, delta * 2)
             }
-            EffectType.CROSS -> shrinkAnim.draw(batch,x * size,(y * size) + gridOffset,size,delta)  // TODO: change
+            EffectType.FIRE -> {
+                explodeAnim.setPosition((x * size) + size / 2,(((y * size) + gridOffset) + size / 2) - delta * 4)
+                explodeAnim.draw(batch, delta * 2)
+            }
+            EffectType.CROSS -> {
+                crossAnim.setPosition((x * size) + size / 2,(((y * size) + gridOffset) + size / 2) - delta * 4)
+                crossAnim.draw(batch, delta * 2)
+            }
         }
     }
 
     fun isStopped() : Boolean {
         when (effect) {
-            EffectType.NONE -> return shrinkAnim.isStopped
+            EffectType.NONE -> return explodeAnim.isComplete
             EffectType.FIRE -> return explodeAnim.isComplete
-            EffectType.CROSS -> return shrinkAnim.isStopped  // TODO: change
+            EffectType.CROSS -> return crossAnim.isComplete
         }
         return false
     }

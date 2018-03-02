@@ -144,7 +144,8 @@ class GameScreen : Screen {
                 }
                 iterator.remove()
                 if (specialMoves.isEmpty()) {
-                    prepareFalldownMoves()
+                    //prepareFalldownMoves()
+                    fallDownRow(gameGrid.cols - 1)
                 }
             }
         }
@@ -160,36 +161,59 @@ class GameScreen : Screen {
         }
     }
 
-    private fun prepareFalldownMoves() {
+//    private fun prepareFalldownMoves() {
+//        for (i in gameGrid.cells.indices) {
+//            for (j in gameGrid.cells[i].indices) {
+//                if (gameGrid.cells[i][j].isPlaying) {
+//                    if (gameGrid.cells[i][j].jewel.jewelType == JewelType.NO_JEWEL && gameGrid.cells[i][j].isPlaying) {
+//                        if (j < gameGrid.cells[0].count() - 1) {
+//                            val highestJewel = gameGrid.getHighestJewel(i, j)
+//                            if (highestJewel == gameGrid.cells[0].count()) {
+//                                val highestNotPlaying = gameGrid.getHighestIsNotPlaying(i, j)
+//                                if (highestNotPlaying == gameGrid.cells[0].count()) {
+//                                    moves.add(JewelMove(i.toFloat(), gameGrid.cells[0].count().toFloat(),
+//                                            i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
+//                                            EffectType.NONE),0f,18f,fallDownAcceleration))
+//                                } else {
+//                                    moves.add(JewelMove(i.toFloat(), highestNotPlaying.toFloat(),
+//                                            i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
+//                                            EffectType.NONE),0f,18f,fallDownAcceleration))
+//                                }
+//                            } else {
+//                                moves.add(JewelMove(i.toFloat(), highestJewel.toFloat(), i.toFloat(), j.toFloat(),
+//                                        Jewel(gameGrid.cells[i][highestJewel].jewel.jewelType,
+//                                                gameGrid.cells[i][highestJewel].jewel.effect),0f,18f,fallDownAcceleration))
+//                                gameGrid.cells[i][highestJewel].jewel.jewelType = JewelType.NO_JEWEL
+//                            }
+//                        } else {
+//                            moves.add(JewelMove(i.toFloat(), gameGrid.cells[0].count().toFloat(),
+//                                        i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
+//                                        EffectType.NONE),0f,18f,fallDownAcceleration))
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+    private fun fallDownMoves() {
+        for (j in gameGrid.cells[0].indices) {
+            fallDownRow(j)
+        }
+    }
+
+    private fun fallDownRow(row : Int) {
         for (i in gameGrid.cells.indices) {
-            for (j in gameGrid.cells[i].indices) {
-                if (gameGrid.cells[i][j].isPlaying) {
-                    if (gameGrid.cells[i][j].jewel.jewelType == JewelType.NO_JEWEL && gameGrid.cells[i][j].isPlaying) {
-                        if (j < gameGrid.cells[0].count() - 1) {
-                            val highestJewel = gameGrid.getHighestJewel(i, j)
-                            if (highestJewel == gameGrid.cells[0].count()) {
-                                val highestNotPlaying = gameGrid.getHighestIsNotPlaying(i, j)
-                                if (highestNotPlaying == gameGrid.cells[0].count()) {
-                                    moves.add(JewelMove(i.toFloat(), gameGrid.cells[0].count().toFloat(),
-                                            i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
-                                            EffectType.NONE),0f,18f,fallDownAcceleration))
-                                } else {
-                                    moves.add(JewelMove(i.toFloat(), highestNotPlaying.toFloat(),
-                                            i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
-                                            EffectType.NONE),0f,18f,fallDownAcceleration))
-                                }
-                            } else {
-                                moves.add(JewelMove(i.toFloat(), highestJewel.toFloat(), i.toFloat(), j.toFloat(),
-                                        Jewel(gameGrid.cells[i][highestJewel].jewel.jewelType,
-                                                gameGrid.cells[i][highestJewel].jewel.effect),0f,18f,fallDownAcceleration))
-                                gameGrid.cells[i][highestJewel].jewel.jewelType = JewelType.NO_JEWEL
-                            }
-                        } else {
-                            moves.add(JewelMove(i.toFloat(), gameGrid.cells[0].count().toFloat(),
-                                        i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
-                                        EffectType.NONE),0f,18f,fallDownAcceleration))
-                        }
-                    }
+            if (!gameGrid.cells[i][row].isBlocked() && gameGrid.cells[i][row].jewel.jewelType == JewelType.NO_JEWEL) {
+                if (row < gameGrid.cells[0].count() - 1) {
+                    moves.add(JewelMove(i.toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
+                            Jewel(gameGrid.cells[i][row + 1].jewel.jewelType,
+                                    gameGrid.cells[i][row + 1].jewel.effect),0f,18f,fallDownAcceleration))
+                    gameGrid.cells[i][row + 1].jewel.jewelType = JewelType.NO_JEWEL
+                } else {
+                    moves.add(JewelMove(i.toFloat(), gameGrid.cells[0].count().toFloat(),
+                            i.toFloat(), row.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
+                            EffectType.NONE),0f,18f,fallDownAcceleration))
                 }
             }
         }
@@ -210,7 +234,8 @@ class GameScreen : Screen {
         makeCheck = false
         removeMatches(listOfMatches.get())
         if (specialMoves.isEmpty())
-            prepareFalldownMoves()
+            //prepareFalldownMoves()
+            fallDownRow(gameGrid.cols - 1)
     }
 
     override fun pause() {

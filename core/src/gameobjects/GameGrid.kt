@@ -18,6 +18,9 @@ class GameGrid(private val gridType : Array<IntArray>) {
     var cells = Array(gridType.count(), {_ -> Array(gridType[0].count()
             , {_ -> Cell(false, Jewel(JewelType.from(Random().nextInt(5))),
             TexturesLoader.instance.tileBlank)})})
+    val rows = cells.count()
+    val cols = cells[0].count()
+    var isFilled = false
 
     init {
         for (i in gridType.indices) {
@@ -75,6 +78,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 }
             }
         }
+        isFilled = true
     }
 
     fun swapField() : List<JewelMove> {
@@ -328,6 +332,8 @@ class GameGrid(private val gridType : Array<IntArray>) {
 
     private fun crossDestroy(x: Float, y: Float) {
         cells[x.toInt()][y.toInt()].jewel.effect = EffectType.NONE
+        destroyAnimations.add(DestroyAnimation(x,y,
+                Jewel(cells[x.toInt()][y.toInt()].jewel.jewelType),EffectType.CROSS))  // TODO: dont add for x y
         for (row in (0..(cells.count() - 1))) {
             if (cells[row][y.toInt()].jewel.effect != EffectType.NONE) {
                 if (cells[row][y.toInt()].jewel.effect == EffectType.CROSS) {
@@ -340,7 +346,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 }
             }
             destroyAnimations.add(DestroyAnimation(row.toFloat(),y,
-                    Jewel(cells[row][y.toInt()].jewel.jewelType),EffectType.CROSS))
+                    Jewel(cells[row][y.toInt()].jewel.jewelType),EffectType.FIRE))
             cells[row][y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
         }
         for (col in (0..(cells[0].count() - 1))) {
@@ -355,7 +361,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 }
             }
             destroyAnimations.add(DestroyAnimation(x,col.toFloat(),
-                    Jewel(cells[x.toInt()][col].jewel.jewelType),EffectType.CROSS))
+                    Jewel(cells[x.toInt()][col].jewel.jewelType),EffectType.FIRE))
             cells[x.toInt()][col].jewel.jewelType = JewelType.NO_JEWEL
         }
     }
@@ -419,18 +425,18 @@ class GameGrid(private val gridType : Array<IntArray>) {
         }
     }
 
-    fun getHighestIsNotPlaying(i: Int, j: Int) : Int {
-        for (row in (j + 1)..(cells[i].count() - 1))
-            if (!cells[i][row].isPlaying)
-                return row
-        return cells[i].count()
-    }
-
-    fun getHighestJewel(i : Int, j : Int) : Int {
-        for (row in (j + 1)..(cells[i].count() - 1))
-            if (cells[i][row].jewel.jewelType != JewelType.NO_JEWEL)
-                return row
-        return cells[i].count()
-    }
+//    fun getHighestIsNotPlaying(i: Int, j: Int) : Int {
+//        for (row in (j + 1)..(cells[i].count() - 1))
+//            if (!cells[i][row].isPlaying)
+//                return row
+//        return cells[i].count()
+//    }
+//
+//    fun getHighestJewel(i : Int, j : Int) : Int {
+//        for (row in (j + 1)..(cells[i].count() - 1))
+//            if (cells[i][row].jewel.jewelType != JewelType.NO_JEWEL)
+//                return row
+//        return cells[i].count()
+//    }
 
 }
