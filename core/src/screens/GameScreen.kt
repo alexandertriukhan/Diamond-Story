@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 import enums.EffectType
@@ -33,6 +32,7 @@ class GameScreen : Screen {
     private var selectedXY = Vector3()
     private var isSelected = false
     private var makeCheck = false
+    private var needMoves = false
 
     private val fallDownAcceleration = 0.45f  // ORIGINAL: 0.45f
     private val moveSpeed = 8f  // ORIGINAL: 8f
@@ -58,6 +58,10 @@ class GameScreen : Screen {
         Gdx.gl.glClearColor(127/255f, 100/255f, 127/255f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         batcher.begin()
+        if (needMoves) {
+            fallDownMoves()
+            needMoves = false
+        }
         gameGrid.draw(batcher,delta,gemSize,gridOffset)
         drawMoves(delta)
         drawSpecialMoves(delta)
@@ -77,7 +81,7 @@ class GameScreen : Screen {
     }
 
     fun onClick() {
-        if (moves.isEmpty() && specialMoves.isEmpty()) {
+        if (moves.isEmpty() && specialMoves.isEmpty() && gameGrid.isFilled) {
             val testTouch = getSelected()
             if (gameGrid.inRange(testTouch.x.toInt(), testTouch.y.toInt())) {
                 if (gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].isPlaying) {
@@ -126,7 +130,10 @@ class GameScreen : Screen {
                 }
                 iterator.remove()
                 if (moves.isEmpty()) {
-                    makeCheck = true
+                    if (gameGrid.isFilled) {
+                        makeCheck = true
+                    }
+                    needMoves = !gameGrid.isFilled
                 }
             }
         }
@@ -145,13 +152,14 @@ class GameScreen : Screen {
                 iterator.remove()
                 if (specialMoves.isEmpty()) {
                     //prepareFalldownMoves()
-                    fallDownRow(gameGrid.cols - 1)
+                    fallDownMoves()
                 }
             }
         }
     }
 
     private fun removeMatches(match : List<Match>) {
+        needMoves = false
         if (match.isNotEmpty()) {
             for (m in match) {
                 val tmp = gameGrid.removeMatch(m)
@@ -171,6 +179,7 @@ class GameScreen : Screen {
 //                            if (highestJewel == gameGrid.cells[0].count()) {
 //                                val highestNotPlaying = gameGrid.getHighestIsNotPlaying(i, j)
 //                                if (highestNotPlaying == gameGrid.cells[0].count()) {
+//
 //                                    moves.add(JewelMove(i.toFloat(), gameGrid.cells[0].count().toFloat(),
 //                                            i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
 //                                            EffectType.NONE),0f,18f,fallDownAcceleration))
@@ -197,19 +206,63 @@ class GameScreen : Screen {
 //    }
 
     private fun fallDownMoves() {
-        for (j in gameGrid.cells[0].indices) {
+        gameGrid.isFilled = false
+        for (j in (gameGrid.cells[0].count() - 1) downTo 0) {
             fallDownRow(j)
+        }
+        if (moves.count() == 0) {
+            gameGrid.isFilled = true
+            makeCheck = true
         }
     }
 
     private fun fallDownRow(row : Int) {
         for (i in gameGrid.cells.indices) {
-            if (!gameGrid.cells[i][row].isBlocked() && gameGrid.cells[i][row].jewel.jewelType == JewelType.NO_JEWEL) {
+            var leftTurn = false
+            var rightTurn = false
+            if (gameGrid.cells[i][row].isPlaying && gameGrid.cells[i][row].jewel.jewelType == JewelType.NO_JEWEL) {
                 if (row < gameGrid.cells[0].count() - 1) {
-                    moves.add(JewelMove(i.toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
-                            Jewel(gameGrid.cells[i][row + 1].jewel.jewelType,
-                                    gameGrid.cells[i][row + 1].jewel.effect),0f,18f,fallDownAcceleration))
-                    gameGrid.cells[i][row + 1].jewel.jewelType = JewelType.NO_JEWEL
+                    if (!gameGrid.cells[i][row + 1].isBlocked()) {
+                        moves.add(JewelMove(i.toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
+                                Jewel(gameGrid.cells[i][row + 1].jewel.jewelType,
+                                        gameGrid.cells[i][row + 1].jewel.effect), 0f, 18f, fallDownAcceleration))
+                        gameGrid.cells[i][row + 1].jewel.jewelType = JewelType.NO_JEWEL
+                    } else if (!gameGrid.cells[i][row + 1].isPlaying) {
+                        if (i != 0) {
+                            if (!gameGrid.cells[i - 1][row + 1].isBlocked()) {
+                                leftTurn = true
+                            }
+                        }
+                        if (i < gameGrid.cells.count() - 1) {
+                            if (!gameGrid.cells[i + 1][row + 1].isBlocked()) {
+                                rightTurn = true
+                            }
+                        }
+                        if (leftTurn && rightTurn) {
+                            val randI = Random().nextInt(2)
+                            if (randI == 1) {
+                                moves.add(JewelMove((i - 1).toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
+                                        Jewel(gameGrid.cells[i - 1][row + 1].jewel.jewelType,
+                                                gameGrid.cells[i - 1][row + 1].jewel.effect), 0f, 18f, fallDownAcceleration))
+                                gameGrid.cells[i - 1][row + 1].jewel.jewelType = JewelType.NO_JEWEL
+                            } else {
+                                moves.add(JewelMove((i + 1).toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
+                                        Jewel(gameGrid.cells[i + 1][row + 1].jewel.jewelType,
+                                                gameGrid.cells[i + 1][row + 1].jewel.effect), 0f, 18f, fallDownAcceleration))
+                                gameGrid.cells[i + 1][row + 1].jewel.jewelType = JewelType.NO_JEWEL
+                            }
+                        } else if (leftTurn) {
+                            moves.add(JewelMove((i - 1).toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
+                                    Jewel(gameGrid.cells[i - 1][row + 1].jewel.jewelType,
+                                            gameGrid.cells[i - 1][row + 1].jewel.effect), 0f, 18f, fallDownAcceleration))
+                            gameGrid.cells[i - 1][row + 1].jewel.jewelType = JewelType.NO_JEWEL
+                        } else if (rightTurn) {
+                            moves.add(JewelMove((i + 1).toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
+                                    Jewel(gameGrid.cells[i + 1][row + 1].jewel.jewelType,
+                                            gameGrid.cells[i + 1][row + 1].jewel.effect), 0f, 18f, fallDownAcceleration))
+                            gameGrid.cells[i + 1][row + 1].jewel.jewelType = JewelType.NO_JEWEL
+                        }
+                    }
                 } else {
                     moves.add(JewelMove(i.toFloat(), gameGrid.cells[0].count().toFloat(),
                             i.toFloat(), row.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
@@ -222,20 +275,25 @@ class GameScreen : Screen {
     private fun checkMatches() {
         val listOfMatches = MatchList()
         val iterator = itemsToCheck.iterator()
+        var matchesFound = false
         while (iterator.hasNext()) {
             val move = iterator.next()
             val match = gameGrid.createsMatch(move.xTo.toInt(), move.yTo.toInt(),
                     gameGrid.cells[move.xTo.toInt()][move.yTo.toInt()].jewel.jewelType)
             if (match.matchType != MatchType.NO_MATCH) {
                 listOfMatches.add(match)
+                matchesFound = true
             }
             iterator.remove()
         }
         makeCheck = false
         removeMatches(listOfMatches.get())
-        if (specialMoves.isEmpty())
+        if (specialMoves.isEmpty()) {
             //prepareFalldownMoves()
-            fallDownRow(gameGrid.cols - 1)
+            if (matchesFound) {
+                fallDownMoves()
+            }
+        }
     }
 
     override fun pause() {

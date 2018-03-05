@@ -425,18 +425,18 @@ class GameGrid(private val gridType : Array<IntArray>) {
         }
     }
 
-//    fun getHighestIsNotPlaying(i: Int, j: Int) : Int {
-//        for (row in (j + 1)..(cells[i].count() - 1))
-//            if (!cells[i][row].isPlaying)
-//                return row
-//        return cells[i].count()
-//    }
-//
-//    fun getHighestJewel(i : Int, j : Int) : Int {
-//        for (row in (j + 1)..(cells[i].count() - 1))
-//            if (cells[i][row].jewel.jewelType != JewelType.NO_JEWEL)
-//                return row
-//        return cells[i].count()
-//    }
+    fun getHighestIsNotPlaying(i: Int, j: Int) : Int {
+        for (row in (j + 1)..(cells[i].count() - 1))
+            if (!cells[i][row].isPlaying)
+                return row
+        return cells[i].count()
+    }
+
+    fun getHighestJewel(i : Int, j : Int) : Int {
+        for (row in (j + 1)..(cells[i].count() - 1))
+            if (cells[i][row].jewel.jewelType != JewelType.NO_JEWEL)
+                return row
+        return cells[i].count()
+    }
 
 }

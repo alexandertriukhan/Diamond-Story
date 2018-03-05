@@ -62,6 +62,9 @@ class Cell(var isPlaying : Boolean, var jewel : Jewel, var tileTexture : Texture
         if (!isPlaying) {
             return true
         }
+        if (jewel.jewelType == JewelType.NO_JEWEL) {
+            return true
+        }
         return false
     }
 
