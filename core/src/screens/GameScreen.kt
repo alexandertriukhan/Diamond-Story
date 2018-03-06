@@ -7,13 +7,11 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
-import enums.EffectType
 import enums.JewelType
 import enums.MatchType
 import gameobjects.*
 import utils.InputHandler
 import utils.TexturesLoader
-import java.util.*
 
 
 class GameScreen : Screen {
@@ -34,7 +32,6 @@ class GameScreen : Screen {
     private var makeCheck = false
     private var needMoves = false
 
-    private val fallDownAcceleration = 0.45f  // ORIGINAL: 0.45f
     private val moveSpeed = 8f  // ORIGINAL: 8f
 
 
@@ -123,10 +120,12 @@ class GameScreen : Screen {
             } else {
                 move.draw(batcher, gemSize, delta, gridOffset)
             }
-            if (move.endMove) {
+            if (move.endMove()) {
                 if (!move.destroyOnEnd) {
                     gameGrid.cells[move.xTo.toInt()][move.yTo.toInt()].jewel = move.jewel
                     itemsToCheck.add(move)
+                    //gameGrid.lastMoves.add(JewelMove(move.xFrom,move.yFrom,move.xTo,move.yTo,move.jewel,
+                    //        move.currentSpeed,18f,0.45f))
                 }
                 iterator.remove()
                 if (moves.isEmpty()) {
@@ -144,14 +143,13 @@ class GameScreen : Screen {
         while (iterator.hasNext()) {
             val move = iterator.next()
             move.draw(batcher, gemSize, delta, gridOffset)
-            if (move.endMove) {
+            if (move.endMove()) {
                 if (!move.destroyOnEnd) {
                     gameGrid.cells[move.xTo.toInt()][move.yTo.toInt()].jewel = move.jewel
                     itemsToCheck.add(move)
                 }
                 iterator.remove()
                 if (specialMoves.isEmpty()) {
-                    //prepareFalldownMoves()
                     fallDownMoves()
                 }
             }
@@ -169,107 +167,19 @@ class GameScreen : Screen {
         }
     }
 
-//    private fun prepareFalldownMoves() {
-//        for (i in gameGrid.cells.indices) {
-//            for (j in gameGrid.cells[i].indices) {
-//                if (gameGrid.cells[i][j].isPlaying) {
-//                    if (gameGrid.cells[i][j].jewel.jewelType == JewelType.NO_JEWEL && gameGrid.cells[i][j].isPlaying) {
-//                        if (j < gameGrid.cells[0].count() - 1) {
-//                            val highestJewel = gameGrid.getHighestJewel(i, j)
-//                            if (highestJewel == gameGrid.cells[0].count()) {
-//                                val highestNotPlaying = gameGrid.getHighestIsNotPlaying(i, j)
-//                                if (highestNotPlaying == gameGrid.cells[0].count()) {
-//
-//                                    moves.add(JewelMove(i.toFloat(), gameGrid.cells[0].count().toFloat(),
-//                                            i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
-//                                            EffectType.NONE),0f,18f,fallDownAcceleration))
-//                                } else {
-//                                    moves.add(JewelMove(i.toFloat(), highestNotPlaying.toFloat(),
-//                                            i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
-//                                            EffectType.NONE),0f,18f,fallDownAcceleration))
-//                                }
-//                            } else {
-//                                moves.add(JewelMove(i.toFloat(), highestJewel.toFloat(), i.toFloat(), j.toFloat(),
-//                                        Jewel(gameGrid.cells[i][highestJewel].jewel.jewelType,
-//                                                gameGrid.cells[i][highestJewel].jewel.effect),0f,18f,fallDownAcceleration))
-//                                gameGrid.cells[i][highestJewel].jewel.jewelType = JewelType.NO_JEWEL
-//                            }
-//                        } else {
-//                            moves.add(JewelMove(i.toFloat(), gameGrid.cells[0].count().toFloat(),
-//                                        i.toFloat(), j.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
-//                                        EffectType.NONE),0f,18f,fallDownAcceleration))
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-
     private fun fallDownMoves() {
         gameGrid.isFilled = false
         for (j in (gameGrid.cells[0].count() - 1) downTo 0) {
-            fallDownRow(j)
+            val tmpMoves = gameGrid.fallDownRow(j)
+            for (move in tmpMoves) {
+                moves.add(move)
+            }
         }
         if (moves.count() == 0) {
             gameGrid.isFilled = true
             makeCheck = true
         }
-    }
-
-    private fun fallDownRow(row : Int) {
-        for (i in gameGrid.cells.indices) {
-            var leftTurn = false
-            var rightTurn = false
-            if (gameGrid.cells[i][row].isPlaying && gameGrid.cells[i][row].jewel.jewelType == JewelType.NO_JEWEL) {
-                if (row < gameGrid.cells[0].count() - 1) {
-                    if (!gameGrid.cells[i][row + 1].isBlocked()) {
-                        moves.add(JewelMove(i.toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
-                                Jewel(gameGrid.cells[i][row + 1].jewel.jewelType,
-                                        gameGrid.cells[i][row + 1].jewel.effect), 0f, 18f, fallDownAcceleration))
-                        gameGrid.cells[i][row + 1].jewel.jewelType = JewelType.NO_JEWEL
-                    } else if (!gameGrid.cells[i][row + 1].isPlaying) {
-                        if (i != 0) {
-                            if (!gameGrid.cells[i - 1][row + 1].isBlocked()) {
-                                leftTurn = true
-                            }
-                        }
-                        if (i < gameGrid.cells.count() - 1) {
-                            if (!gameGrid.cells[i + 1][row + 1].isBlocked()) {
-                                rightTurn = true
-                            }
-                        }
-                        if (leftTurn && rightTurn) {
-                            val randI = Random().nextInt(2)
-                            if (randI == 1) {
-                                moves.add(JewelMove((i - 1).toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
-                                        Jewel(gameGrid.cells[i - 1][row + 1].jewel.jewelType,
-                                                gameGrid.cells[i - 1][row + 1].jewel.effect), 0f, 18f, fallDownAcceleration))
-                                gameGrid.cells[i - 1][row + 1].jewel.jewelType = JewelType.NO_JEWEL
-                            } else {
-                                moves.add(JewelMove((i + 1).toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
-                                        Jewel(gameGrid.cells[i + 1][row + 1].jewel.jewelType,
-                                                gameGrid.cells[i + 1][row + 1].jewel.effect), 0f, 18f, fallDownAcceleration))
-                                gameGrid.cells[i + 1][row + 1].jewel.jewelType = JewelType.NO_JEWEL
-                            }
-                        } else if (leftTurn) {
-                            moves.add(JewelMove((i - 1).toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
-                                    Jewel(gameGrid.cells[i - 1][row + 1].jewel.jewelType,
-                                            gameGrid.cells[i - 1][row + 1].jewel.effect), 0f, 18f, fallDownAcceleration))
-                            gameGrid.cells[i - 1][row + 1].jewel.jewelType = JewelType.NO_JEWEL
-                        } else if (rightTurn) {
-                            moves.add(JewelMove((i + 1).toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
-                                    Jewel(gameGrid.cells[i + 1][row + 1].jewel.jewelType,
-                                            gameGrid.cells[i + 1][row + 1].jewel.effect), 0f, 18f, fallDownAcceleration))
-                            gameGrid.cells[i + 1][row + 1].jewel.jewelType = JewelType.NO_JEWEL
-                        }
-                    }
-                } else {
-                    moves.add(JewelMove(i.toFloat(), gameGrid.cells[0].count().toFloat(),
-                            i.toFloat(), row.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
-                            EffectType.NONE),0f,18f,fallDownAcceleration))
-                }
-            }
-        }
+        //gameGrid.lastMoves.clear()
     }
 
     private fun checkMatches() {
@@ -289,7 +199,6 @@ class GameScreen : Screen {
         makeCheck = false
         removeMatches(listOfMatches.get())
         if (specialMoves.isEmpty()) {
-            //prepareFalldownMoves()
             if (matchesFound) {
                 fallDownMoves()
             }

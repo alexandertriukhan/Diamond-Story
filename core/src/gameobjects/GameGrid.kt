@@ -14,6 +14,8 @@ import java.util.*
 class GameGrid(private val gridType : Array<IntArray>) {
 
     private val destroyAnimations = DestroyAnimsList()
+    private val fallDownAcceleration = 0.45f  // ORIGINAL: 0.45f
+    val lastMoves = mutableListOf<JewelMove>()
 
     var cells = Array(gridType.count(), {_ -> Array(gridType[0].count()
             , {_ -> Cell(false, Jewel(JewelType.from(Random().nextInt(5))),
@@ -425,18 +427,71 @@ class GameGrid(private val gridType : Array<IntArray>) {
         }
     }
 
-    fun getHighestIsNotPlaying(i: Int, j: Int) : Int {
-        for (row in (j + 1)..(cells[i].count() - 1))
-            if (!cells[i][row].isPlaying)
-                return row
-        return cells[i].count()
+    fun fallDownRow(row : Int) : List<JewelMove> {
+        val moves = mutableListOf<JewelMove>()
+        for (i in cells.indices) {
+            var leftTurn = false
+            var rightTurn = false
+            if (cells[i][row].isPlaying && cells[i][row].jewel.jewelType == JewelType.NO_JEWEL) {
+                if (row < cells[0].count() - 1) {
+                    if (!cells[i][row + 1].isBlocked()) {
+                        moves.add(JewelMove(i.toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
+                                Jewel(cells[i][row + 1].jewel.jewelType,
+                                        cells[i][row + 1].jewel.effect), 5f))
+                        cells[i][row + 1].jewel.jewelType = JewelType.NO_JEWEL
+                    } else if (!cells[i][row + 1].isPlaying) {
+                        if (i != 0) {
+                            if (!cells[i - 1][row + 1].isBlocked()) {
+                                leftTurn = true
+                            }
+                        }
+                        if (i < cells.count() - 1) {
+                            if (!cells[i + 1][row + 1].isBlocked()) {
+                                rightTurn = true
+                            }
+                        }
+                        if (leftTurn && rightTurn) {
+                            val randI = Random().nextInt(2)
+                            if (randI == 1) {
+                                moves.add(JewelMove((i - 1).toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
+                                        Jewel(cells[i - 1][row + 1].jewel.jewelType,
+                                                cells[i - 1][row + 1].jewel.effect), 5f))
+                                cells[i - 1][row + 1].jewel.jewelType = JewelType.NO_JEWEL
+                            } else {
+                                moves.add(JewelMove((i + 1).toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
+                                        Jewel(cells[i + 1][row + 1].jewel.jewelType,
+                                                cells[i + 1][row + 1].jewel.effect), 5f))
+                                cells[i + 1][row + 1].jewel.jewelType = JewelType.NO_JEWEL
+                            }
+                        } else if (leftTurn) {
+                            moves.add(JewelMove((i - 1).toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
+                                    Jewel(cells[i - 1][row + 1].jewel.jewelType,
+                                            cells[i - 1][row + 1].jewel.effect), 5f))
+                            cells[i - 1][row + 1].jewel.jewelType = JewelType.NO_JEWEL
+                        } else if (rightTurn) {
+                            moves.add(JewelMove((i + 1).toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
+                                    Jewel(cells[i + 1][row + 1].jewel.jewelType,
+                                            cells[i + 1][row + 1].jewel.effect), 5f))
+                            cells[i + 1][row + 1].jewel.jewelType = JewelType.NO_JEWEL
+                        }
+                    }
+                } else {
+                    moves.add(JewelMove(i.toFloat(), cells[0].count().toFloat(),
+                            i.toFloat(), row.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
+                            EffectType.NONE),5f))
+                }
+            }
+        }
+        return moves
     }
 
-    fun getHighestJewel(i : Int, j : Int) : Int {
-        for (row in (j + 1)..(cells[i].count() - 1))
-            if (cells[i][row].jewel.jewelType != JewelType.NO_JEWEL)
-                return row
-        return cells[i].count()
-    }
+//    private fun prevMoveStartSpeed(xFrom : Float, yFrom : Float) : Float {
+//        for (lastMove in lastMoves) {
+//            if (lastMove.xTo == xFrom && lastMove.yTo == yFrom) {
+//                return lastMove.currentSpeed
+//            }
+//        }
+//        return 0f
+//    }
 
 }
