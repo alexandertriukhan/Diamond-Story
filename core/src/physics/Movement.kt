@@ -1,7 +1,5 @@
 package physics
 
-import enums.Axis
-
 open class Movement(val xFrom: Float,
                     val yFrom: Float,
                     val xTo: Float,
@@ -10,25 +8,28 @@ open class Movement(val xFrom: Float,
                     private val topSpeed: Float = startSpeed,
                     private val acceleration: Float = 0f) {
 
+    private var currentSpeed = startSpeed
+
     var xCurrent = xFrom
     var yCurrent = yFrom
 
-    var startBigger = false
+    var startBiggerX = false
+    var startBiggerY = false
     var endMove = false
-    var movingAxis = Axis.Y
-    var currentSpeed = startSpeed
+    var xAxis = false
+    var yAxis = false
 
     init {
         if (xFrom != xTo) {
-            movingAxis = Axis.X
-        }
-        if (movingAxis == Axis.X) {
+            xAxis = true
             if (xFrom > xTo) {
-                startBigger = true
+                startBiggerX = true
             }
-        } else {
+        }
+        if (yFrom != yTo) {
+            yAxis = true
             if (yFrom > yTo) {
-                startBigger = true
+                startBiggerY = true
             }
         }
     }
@@ -41,8 +42,8 @@ open class Movement(val xFrom: Float,
                     currentSpeed = topSpeed
                 }
             }
-            if (movingAxis == Axis.X) {
-                if (!startBigger) {
+            if (xAxis) {
+                if (!startBiggerX) {
                     xCurrent += delta * currentSpeed
                     if (xCurrent >= xTo) {
                         endMove = true
@@ -55,8 +56,9 @@ open class Movement(val xFrom: Float,
                         xCurrent = xTo
                     }
                 }
-            } else {
-                if (!startBigger) {
+            }
+            if (yAxis){
+                if (!startBiggerY) {
                     yCurrent += delta * currentSpeed
                     if (yCurrent >= yTo) {
                         endMove = true
