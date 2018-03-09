@@ -485,6 +485,11 @@ class GameGrid(private val gridType : Array<IntArray>) {
         return moves
     }
 
+    // takes coordinates of two cells and does appropriate actions for them
+    fun doActions(x1 : Float, y1 : Float, x2 : Float, y2 : Float) {
+
+    }
+
 //    private fun prevMoveStartSpeed(xFrom : Float, yFrom : Float) : Float {
 //        for (lastMove in lastMoves) {
 //            if (lastMove.xTo == xFrom && lastMove.yTo == yFrom) {

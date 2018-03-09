@@ -17,8 +17,6 @@ class Jewel(var jewelType : JewelType) {
 
     private val fireGemAnim = ParticleEffect()
 
-    private val fireSelectionAnim = Rotation(TexturesLoader.instance.selectedFireSpell,40f,true)
-    private val moveSelectionAnim = Rotation(TexturesLoader.instance.selectedMoveSpell,40f,true)
     private val crossGemAnim = Flash(TexturesLoader.instance.crossAnim,0.9f, true)
     private val superGemAnim = Flash(TexturesLoader.instance.superGemGlow,1.2f,true)
 
@@ -41,7 +39,7 @@ class Jewel(var jewelType : JewelType) {
 
     fun draw(batch: Batch, x : Float, y : Float, size : Float, delta : Float) {
         if (isSelected) {
-            selection(batch,x,y,size,delta)
+            batch.draw(TexturesLoader.instance.selected,x,y,size,size)
         }
         if (jewelType != JewelType.NO_JEWEL) {
             batch.draw(texture(), x, y, size, size)
@@ -72,13 +70,6 @@ class Jewel(var jewelType : JewelType) {
             }
             EffectType.CROSS -> crossGemAnim.draw(batch,x,y,size,delta)
             EffectType.SUPER_GEM -> superGemAnim.draw(batch,x,y,size,delta)
-        }
-    }
-
-    private fun selection(batch: Batch, x : Float, y : Float, size : Float, delta : Float) {
-        when (effect) {
-            EffectType.NONE -> moveSelectionAnim.draw(batch,x,y,size,delta)
-            EffectType.FIRE -> fireSelectionAnim.draw(batch,x,y,size,delta)
         }
     }
 

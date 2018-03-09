@@ -88,7 +88,6 @@ class GameScreen : Screen {
                         gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.isSelected = true
                     } else {
                         if (gameGrid.isAdjacent(testTouch.x.toInt(), testTouch.y.toInt(), selectedXY.x.toInt(), selectedXY.y.toInt())) {
-
                             moves.add(JewelMove(selectedXY.x, selectedXY.y, testTouch.x, testTouch.y,
                                     Jewel(gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.jewelType,
                                             gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.effect), moveSpeed))

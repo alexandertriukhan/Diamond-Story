@@ -23,11 +23,12 @@ class TexturesLoader {
     val tileBlank : TextureRegion = textureAtlas.findRegion("cells/tile_blank")
     val tileBlankLite : TextureRegion = textureAtlas.findRegion("cells/tile_blank_lite")
     val border = ShapeRenderer()
+    val selected : TextureRegion = textureAtlas.findRegion("selected")
 
     // ANIMATIONS:
     val fireAnimation = ParticleEffect()
-    val selectedMoveSpell : TextureRegion = textureAtlas.findRegion("selected_move_spell")
-    val selectedFireSpell : TextureRegion = textureAtlas.findRegion("selected_fire_spell")
+    //val selectedMoveSpell : TextureRegion = textureAtlas.findRegion("selected_move_spell")
+    //val selectedFireSpell : TextureRegion = textureAtlas.findRegion("selected_fire_spell")
     val crossAnim : TextureRegion = textureAtlas.findRegion("cross_anim")
     val superGemGlow : TextureRegion = textureAtlas.findRegion("super_gem_glow")
 
