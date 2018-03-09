@@ -16,7 +16,7 @@ import utils.TexturesLoader
 
 class GameScreen : Screen {
 
-    private val gameGrid = GameGrid(gridTypes.puzzle())
+    private val gameGrid = GameGrid(gridTypes.lToRWaterfall())
     private val MAX_ROWS = gameGrid.cells.count()
     private val gemSize = Gdx.graphics.width.toFloat() / MAX_ROWS
     private val MAX_COLS = (Gdx.graphics.height.toFloat() / gemSize)
