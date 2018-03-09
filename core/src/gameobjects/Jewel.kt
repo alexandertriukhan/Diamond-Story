@@ -1,8 +1,6 @@
 package gameobjects
 
 import animations.Flash
-import animations.Rotation
-import animations.Shrink
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
@@ -49,7 +47,7 @@ class Jewel(var jewelType : JewelType) {
         }
     }
 
-    fun texture() : TextureRegion {
+    private fun texture() : TextureRegion {
         return when (jewelType) {
             JewelType.RED -> TexturesLoader.instance.redGem
             JewelType.GREEN -> TexturesLoader.instance.greenGem

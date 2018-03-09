@@ -1,12 +1,16 @@
 package gameobjects
 
 import collections.DestroyAnimsList
+import collections.MatchList
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import enums.EffectType
 import enums.JewelType
 import enums.MatchType
+import enums.SwapType
 import utils.TexturesLoader
 import java.util.*
 
@@ -15,14 +19,22 @@ class GameGrid(private val gridType : Array<IntArray>) {
 
     private val destroyAnimations = DestroyAnimsList()
     private val fallDownAcceleration = 0.45f  // ORIGINAL: 0.45f
+
     val lastMoves = mutableListOf<JewelMove>()
 
+    val specialMoves = mutableListOf<JewelMove>()
+    val moves = mutableListOf<JewelMove>()
+    var isFilled = false
     var cells = Array(gridType.count(), {_ -> Array(gridType[0].count()
             , {_ -> Cell(false, Jewel(JewelType.from(Random().nextInt(5))),
             TexturesLoader.instance.tileBlank)})})
-    val rows = cells.count()
-    val cols = cells[0].count()
-    var isFilled = false
+    val MAX_ROWS = cells.count()
+    val gemSize = Gdx.graphics.width.toFloat() / MAX_ROWS
+    val MAX_COLS = (Gdx.graphics.height.toFloat() / gemSize)
+    val gridOffset = (Gdx.graphics.height.toFloat() - (gemSize * cells[0].count())) / 2
+    private val itemsToCheck = mutableListOf<JewelMove>()
+    private var needMoves = false
+    private var makeCheck = false
 
     init {
         for (i in gridType.indices) {
@@ -152,7 +164,21 @@ class GameGrid(private val gridType : Array<IntArray>) {
         return borders
     }
 
-    fun draw(batcher : SpriteBatch, delta: Float, gemSize : Float, gridOffset : Float) {
+    fun draw(batcher : SpriteBatch, delta: Float) {
+        if (needMoves) {
+            fallDownMoves()
+            needMoves = false
+        }
+        drawTiles(batcher)
+        drawJewels(batcher,delta)
+        drawDestroyAnimations(batcher,delta,gemSize,gridOffset)
+        drawMoves(batcher,delta)
+        drawSpecialMoves(batcher,delta)
+        if (makeCheck)
+            checkMatches()
+    }
+
+    private fun drawTiles(batcher : SpriteBatch) {
         for (i in cells.indices) {
             for (j in cells[i].indices) {
                 if (cells[i][j].isPlaying) {
@@ -161,6 +187,9 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 }
             }
         }
+    }
+
+    private fun drawJewels(batcher : SpriteBatch, delta: Float) {
         for (i in cells.indices) {
             for (j in cells[i].indices) {
                 if (cells[i][j].isPlaying) {
@@ -169,10 +198,102 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 }
             }
         }
-        drawDestroyAnimations(batcher,delta,gemSize,gridOffset)
     }
 
-    fun isDrawing() : Boolean {
+    private fun drawSpecialMoves(batcher : SpriteBatch, delta : Float) {
+        val iterator = specialMoves.iterator()
+        while (iterator.hasNext()) {
+            val move = iterator.next()
+            move.draw(batcher, gemSize, delta, gridOffset)
+            if (move.endMove()) {
+                if (!move.destroyOnEnd) {
+                    cells[move.xTo.toInt()][move.yTo.toInt()].jewel = move.jewel
+                    itemsToCheck.add(move)
+                }
+                iterator.remove()
+                if (specialMoves.isEmpty()) {
+                    fallDownMoves()
+                }
+            }
+        }
+    }
+
+    private fun drawMoves(batcher : SpriteBatch, delta : Float) {
+        val iterator = moves.iterator()
+        while (iterator.hasNext()) {
+            val move = iterator.next()
+            if (isDrawing()) {
+                move.drawFromPosition(batcher, gemSize, delta, gridOffset)
+            } else {
+                move.draw(batcher, gemSize, delta, gridOffset)
+            }
+            if (move.endMove()) {
+                if (!move.destroyOnEnd) {
+                    cells[move.xTo.toInt()][move.yTo.toInt()].jewel = move.jewel
+                    itemsToCheck.add(move)
+                    //gameGrid.lastMoves.add(JewelMove(move.xFrom,move.yFrom,move.xTo,move.yTo,move.jewel,
+                    //        move.currentSpeed,18f,0.45f))
+                }
+                iterator.remove()
+                if (moves.isEmpty()) {
+                    if (isFilled) {
+                        makeCheck = true
+                    }
+                    needMoves = !isFilled
+                }
+            }
+        }
+    }
+
+    private fun fallDownMoves() {
+        isFilled = false
+        for (j in (cells[0].count() - 1) downTo 0) {
+            val tmpMoves = fallDownRow(j)
+            for (move in tmpMoves) {
+                moves.add(move)
+            }
+        }
+        if (moves.count() == 0) {
+            isFilled = true
+            makeCheck = true
+        }
+        //gameGrid.lastMoves.clear()
+    }
+
+    private fun checkMatches() {
+        val listOfMatches = MatchList()
+        val iterator = itemsToCheck.iterator()
+        var matchesFound = false
+        while (iterator.hasNext()) {
+            val move = iterator.next()
+            val match = createsMatch(move.xTo.toInt(), move.yTo.toInt())
+            if (match.matchType != MatchType.NO_MATCH) {
+                listOfMatches.add(match)
+                matchesFound = true
+            }
+            iterator.remove()
+        }
+        makeCheck = false
+        removeMatches(listOfMatches.get())
+        if (specialMoves.isEmpty()) {
+            if (matchesFound) {
+                fallDownMoves()
+            }
+        }
+    }
+
+    private fun removeMatches(match : List<Match>) {
+        needMoves = false
+        if (match.isNotEmpty()) {
+            for (m in match) {
+                val tmp = removeMatch(m)
+                for (move in tmp)
+                    specialMoves.add(move)
+            }
+        }
+    }
+
+    private fun isDrawing() : Boolean {
         return destroyAnimations.list.isNotEmpty()
     }
 
@@ -204,7 +325,8 @@ class GameGrid(private val gridType : Array<IntArray>) {
         cells[x2][y2].jewel = tmpCell
     }
 
-    fun createsMatch(x : Int, y : Int, jewelType: JewelType) : Match {
+    private fun createsMatch(x : Int, y : Int) : Match {
+        val jewelType = cells[x][y].jewel.jewelType
         val matchHorizontal = getHorizontalMatch(x,y,jewelType)
         val matchVertical = getVerticalMatch(x,y,jewelType)
         val resultingMatch = Match(MutableList(1,{ _ -> Vector2(x.toFloat(),y.toFloat()) }),MatchType.NO_MATCH,
@@ -271,7 +393,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
         return match
     }
 
-    fun removeMatch(match : Match) : List<JewelMove> {
+    private fun removeMatch(match : Match) : List<JewelMove> {
         val moves = mutableListOf<JewelMove>()
         var hasSpecials = false
         for (gem in match.gemsInMatch) {
@@ -427,7 +549,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
         }
     }
 
-    fun fallDownRow(row : Int) : List<JewelMove> {
+    private fun fallDownRow(row : Int) : List<JewelMove> {
         val moves = mutableListOf<JewelMove>()
         for (i in cells.indices) {
             var leftTurn = false
@@ -485,9 +607,21 @@ class GameGrid(private val gridType : Array<IntArray>) {
         return moves
     }
 
-    // takes coordinates of two cells and does appropriate actions for them
-    fun doActions(x1 : Float, y1 : Float, x2 : Float, y2 : Float) {
-
+    // takes coordinates of two cells and returns result of them swapping
+    fun checkSwap(x1 : Float, y1 : Float, x2 : Float, y2 : Float) : SwapType {
+        if (isAdjacent(x1.toInt(), y1.toInt(), x2.toInt(), y2.toInt())) {
+            if (cells[x1.toInt()][y1.toInt()].jewel.jewelType == JewelType.SUPER_GEM
+                    || cells[x2.toInt()][y2.toInt()].jewel.jewelType == JewelType.SUPER_GEM) {
+                return SwapType.REMOVE_COLOR
+            }
+            if ((createsMatch(x1.toInt(), y1.toInt()).matchType != MatchType.NO_MATCH)
+                    && (createsMatch(x2.toInt(), y2.toInt()).matchType != MatchType.NO_MATCH)) {
+                return SwapType.CREATES_MATCH
+            } else {
+                return SwapType.RETURN_BACK
+            }
+        }
+        return SwapType.NONE
     }
 
 //    private fun prevMoveStartSpeed(xFrom : Float, yFrom : Float) : Float {
