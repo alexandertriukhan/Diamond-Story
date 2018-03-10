@@ -14,14 +14,12 @@ import utils.TexturesLoader
 
 class GameScreen : Screen {
 
-    private val gameGrid = GameGrid(gridTypes.lToRWaterfall())
+    private val gameGrid = GameGrid(gridTypes.square())
     private val batcher = SpriteBatch()
     private val cam = OrthographicCamera()
 
     private var selectedXY = Vector3()
     private var isSelected = false
-
-    private val moveSpeed = 8f  // ORIGINAL: 8f
 
 
     init {
@@ -57,7 +55,7 @@ class GameScreen : Screen {
             touch.y = -1f
         return Vector3(touch.x.toInt().toFloat(), touch.y.toInt().toFloat(),0f)
     }
-    
+
     fun onClick() {
         if (gameGrid.moves.isEmpty() && gameGrid.specialMoves.isEmpty() && gameGrid.isFilled) {
             val testTouch = getSelected()
@@ -69,14 +67,7 @@ class GameScreen : Screen {
                         gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.isSelected = true
                     } else {
                         if (gameGrid.isAdjacent(testTouch.x.toInt(), testTouch.y.toInt(), selectedXY.x.toInt(), selectedXY.y.toInt())) {
-                            gameGrid.moves.add(JewelMove(selectedXY.x, selectedXY.y, testTouch.x, testTouch.y,
-                                    Jewel(gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.jewelType,
-                                            gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.effect), moveSpeed))
-                            gameGrid.moves.add(JewelMove(testTouch.x, testTouch.y, selectedXY.x, selectedXY.y,
-                                    Jewel(gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.jewelType,
-                                            gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.effect), moveSpeed))
-                            gameGrid.cells[testTouch.x.toInt()][testTouch.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
-                            gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
+                            gameGrid.swapActions(testTouch.x, testTouch.y, selectedXY.x, selectedXY.y)
                             gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.isSelected = false
                             isSelected = false
                         } else {

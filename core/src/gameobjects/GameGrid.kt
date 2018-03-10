@@ -3,14 +3,11 @@ package gameobjects
 import collections.DestroyAnimsList
 import collections.MatchList
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import enums.EffectType
 import enums.JewelType
 import enums.MatchType
-import enums.SwapType
 import utils.TexturesLoader
 import java.util.*
 
@@ -30,11 +27,12 @@ class GameGrid(private val gridType : Array<IntArray>) {
             TexturesLoader.instance.tileBlank)})})
     val MAX_ROWS = cells.count()
     val gemSize = Gdx.graphics.width.toFloat() / MAX_ROWS
-    val MAX_COLS = (Gdx.graphics.height.toFloat() / gemSize)
+    val MAX_COLS = Gdx.graphics.height.toFloat() / gemSize
     val gridOffset = (Gdx.graphics.height.toFloat() - (gemSize * cells[0].count())) / 2
     private val itemsToCheck = mutableListOf<JewelMove>()
     private var needMoves = false
     private var makeCheck = false
+    private val moveSpeed = 8f  // ORIGINAL: 8f
 
     init {
         for (i in gridType.indices) {
@@ -171,7 +169,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
         }
         drawTiles(batcher)
         drawJewels(batcher,delta)
-        drawDestroyAnimations(batcher,delta,gemSize,gridOffset)
+        drawDestroyAnimations(batcher,delta)
         drawMoves(batcher,delta)
         drawSpecialMoves(batcher,delta)
         if (makeCheck)
@@ -319,7 +317,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
         return false
     }
 
-    fun swapCells(x1 : Int, y1 : Int, x2 : Int, y2 : Int) {
+    private fun swapCells(x1 : Int, y1 : Int, x2 : Int, y2 : Int) {
         val tmpCell = cells[x1][y1].jewel
         cells[x1][y1].jewel = cells[x2][y2].jewel
         cells[x2][y2].jewel = tmpCell
@@ -391,6 +389,19 @@ class GameGrid(private val gridType : Array<IntArray>) {
             }
         }
         return match
+    }
+
+    private fun removeColor(jewelType : JewelType) {
+        val colorMatch = Match(mutableListOf(), MatchType.MATCH3, JewelType.NO_JEWEL)
+        for (i in cells.indices) {
+            for (j in cells[i].indices) {
+                if (cells[i][j].jewel.jewelType == jewelType) {
+                    colorMatch.gemsInMatch.add(Vector2(i.toFloat(),j.toFloat()))
+                }
+            }
+        }
+        removeMatch(colorMatch)
+        fallDownMoves()
     }
 
     private fun removeMatch(match : Match) : List<JewelMove> {
@@ -535,7 +546,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
         return result
     }
 
-    private fun drawDestroyAnimations(batch: SpriteBatch, delta: Float, size: Float, gridOffset: Float) {
+    private fun drawDestroyAnimations(batch: SpriteBatch, delta: Float) {
         if (destroyAnimations.list.isNotEmpty()) {
             val iterator = destroyAnimations.list.iterator()
             while (iterator.hasNext()) {
@@ -543,7 +554,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 if (anim.isStopped()) {
                     iterator.remove()
                 } else {
-                    anim.draw(batch, delta, size, gridOffset)
+                    anim.draw(batch, delta, gemSize, gridOffset)
                 }
             }
         }
@@ -608,21 +619,32 @@ class GameGrid(private val gridType : Array<IntArray>) {
     }
 
     // takes coordinates of two cells and returns result of them swapping
-    fun checkSwap(x1 : Float, y1 : Float, x2 : Float, y2 : Float) : SwapType {
-        if (isAdjacent(x1.toInt(), y1.toInt(), x2.toInt(), y2.toInt())) {
+    fun swapActions(x1 : Float, y1 : Float, x2 : Float, y2 : Float) {
             if (cells[x1.toInt()][y1.toInt()].jewel.jewelType == JewelType.SUPER_GEM
                     || cells[x2.toInt()][y2.toInt()].jewel.jewelType == JewelType.SUPER_GEM) {
-                return SwapType.REMOVE_COLOR
+                if (cells[x1.toInt()][y1.toInt()].jewel.jewelType != JewelType.SUPER_GEM) {
+                    removeColor(cells[x1.toInt()][y1.toInt()].jewel.jewelType)
+                } else {
+                    removeColor(cells[x2.toInt()][y2.toInt()].jewel.jewelType)
+                }
+                return
             }
+            swapCells(x1.toInt(),y1.toInt(),x2.toInt(),y2.toInt())
             if ((createsMatch(x1.toInt(), y1.toInt()).matchType != MatchType.NO_MATCH)
-                    && (createsMatch(x2.toInt(), y2.toInt()).matchType != MatchType.NO_MATCH)) {
-                return SwapType.CREATES_MATCH
+                    || (createsMatch(x2.toInt(), y2.toInt()).matchType != MatchType.NO_MATCH)) {
+                swapCells(x1.toInt(),y1.toInt(),x2.toInt(),y2.toInt())
+                moves.add(JewelMove(x1, y1, x2, y2, Jewel(cells[x1.toInt()][y1.toInt()].jewel.jewelType,
+                        cells[x1.toInt()][y1.toInt()].jewel.effect), moveSpeed))
+                moves.add(JewelMove(x2, y2, x1, y1, Jewel(cells[x2.toInt()][y2.toInt()].jewel.jewelType,
+                        cells[x2.toInt()][y2.toInt()].jewel.effect), moveSpeed))
+                cells[x1.toInt()][y1.toInt()].jewel.jewelType = JewelType.NO_JEWEL
+                cells[x2.toInt()][y2.toInt()].jewel.jewelType = JewelType.NO_JEWEL
             } else {
-                return SwapType.RETURN_BACK
+                swapCells(x1.toInt(),y1.toInt(),x2.toInt(),y2.toInt())
+                // RETURN_BACK
             }
-        }
-        return SwapType.NONE
     }
+
 
 //    private fun prevMoveStartSpeed(xFrom : Float, yFrom : Float) : Float {
 //        for (lastMove in lastMoves) {
