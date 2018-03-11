@@ -1,15 +1,15 @@
 package gameobjects
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import enums.EffectType
 import enums.JewelType
 import physics.Movement
-import utils.TexturesLoader
+import utils.GameScreenAssets
 
-class DestroyAnimation(val x : Float,
+class DestroyAnimation(assets: GameScreenAssets,
+                       val x : Float,
                        val y : Float,
                        jewel: Jewel,
                        private val effect: EffectType,
@@ -17,46 +17,46 @@ class DestroyAnimation(val x : Float,
                        private val gridOffset: Float,
                        private val score : Int = 0) {
 
-    private val explodeAnim = ParticleEffect()
-    private val crossAnim = ParticleEffect()
-    private var font = TexturesLoader.instance.fontScore
+    private var explodeAnim = ParticleEffect()
+    private var crossAnim = ParticleEffect()
+    private var font = assets.fontScore
+    private var fontColor = Color()
     private val scoreMovement = Movement((x * size) + size / 2,(((y * size) + gridOffset) + size / 1.5f),
-            (x * size) + size / 2,(((y * size) + gridOffset) + size),96f)
+            (x * size) + size / 2,(((y * size) + gridOffset) + size * 2f),96f)
 
     init {
         when (jewel.jewelType) {
             JewelType.RED -> {
-                explodeAnim.load(Gdx.files.internal("graphics/effects/explosion_red.p"),TexturesLoader.instance.textureAtlas)
-                font.color = Color.RED
+                explodeAnim =  ParticleEffect(assets.redExplosion)
+                fontColor = Color.RED
             }
             JewelType.BLUE -> {
-                explodeAnim.load(Gdx.files.internal("graphics/effects/explosion_blue.p"), TexturesLoader.instance.textureAtlas)
-                font.color = Color.BLUE
+                explodeAnim =  ParticleEffect(assets.blueExplosion)
+                fontColor = Color.BLUE
             }
             JewelType.GREEN -> {
-                explodeAnim.load(Gdx.files.internal("graphics/effects/explosion_green.p"),TexturesLoader.instance.textureAtlas)
-                font.color = Color.GREEN
+                explodeAnim =  ParticleEffect(assets.greenExplosion)
+                fontColor = Color.GREEN
             }
             JewelType.YELLOW -> {
-                explodeAnim.load(Gdx.files.internal("graphics/effects/explosion_yellow.p"),TexturesLoader.instance.textureAtlas)
-                font.color = Color.YELLOW
+                explodeAnim =  ParticleEffect(assets.yellowExplosion)
+                fontColor = Color.YELLOW
             }
             JewelType.PURPLE -> {
-                explodeAnim.load(Gdx.files.internal("graphics/effects/explosion_purple.p"),TexturesLoader.instance.textureAtlas)
-                font.color = Color.PURPLE
+                explodeAnim = ParticleEffect(assets.purpleExplosion)
+                fontColor = Color.PURPLE
             }
             // TODO: change
             JewelType.SUPER_GEM -> {
-                explodeAnim.load(Gdx.files.internal("graphics/effects/explosion_purple.p"),TexturesLoader.instance.textureAtlas)
-                font.color = Color.BLACK
+                explodeAnim =  ParticleEffect(assets.purpleExplosion)
+                fontColor = Color.BLACK
             }
         }
         if (effect == EffectType.CROSS) {
-            crossAnim.load(Gdx.files.internal("graphics/effects/cross.p"),TexturesLoader.instance.textureAtlas)
-            crossAnim.scaleEffect(TexturesLoader.instance.animScaleFactor)
+            crossAnim = ParticleEffect(assets.crossAnimation)
             crossAnim.start()
         }
-        explodeAnim.scaleEffect(TexturesLoader.instance.animScaleFactor * 0.8f)
+        explodeAnim.scaleEffect(assets.animScaleFactor * 0.8f)
         explodeAnim.start()
     }
 
@@ -90,6 +90,7 @@ class DestroyAnimation(val x : Float,
     private fun drawScore(batch : SpriteBatch, delta : Float) {
         if (score != 0) {
             scoreMovement.nextPosition(delta)
+            font.color = fontColor
             font.draw(batch,"+" + score.toString(),scoreMovement.xCurrent,scoreMovement.yCurrent)
         }
     }

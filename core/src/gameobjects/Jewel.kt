@@ -7,21 +7,17 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import enums.EffectType
 import enums.JewelType
-import utils.TexturesLoader
+import org.omg.CORBA.Object
+import utils.GameScreenAssets
 
-class Jewel(var jewelType : JewelType) {
+class Jewel(var jewelType : JewelType, private val assets: GameScreenAssets) {
 
     private var isAnimated = false
 
-    private val fireGemAnim = ParticleEffect()
+    private val fireGemAnim = ParticleEffect(assets.fireAnimation)
 
-    private val crossGemAnim = Flash(TexturesLoader.instance.crossAnim,0.9f, true)
-    private val superGemAnim = Flash(TexturesLoader.instance.superGemGlow,1.2f,true)
-
-    init {
-        fireGemAnim.load(Gdx.files.internal("graphics/effects/fire.p"),TexturesLoader.instance.textureAtlas)
-        fireGemAnim.scaleEffect(TexturesLoader.instance.animScaleFactor)
-    }
+    private val crossGemAnim = Flash(assets.crossAnim,0.9f, true)
+    private val superGemAnim = Flash(assets.superGemGlow,1.2f,true)
 
     var effect = EffectType.NONE
     set(value) {
@@ -31,13 +27,13 @@ class Jewel(var jewelType : JewelType) {
 
     var isSelected = false
 
-    constructor(jewelType: JewelType, effectType: EffectType) : this (jewelType) {
+    constructor(jewelType: JewelType, assets: GameScreenAssets, effectType: EffectType) : this (jewelType,assets) {
         effect = effectType
     }
 
     fun draw(batch: Batch, x : Float, y : Float, size : Float, delta : Float) {
         if (isSelected) {
-            batch.draw(TexturesLoader.instance.selected,x,y,size,size)
+            batch.draw(assets.selected,x,y,size,size)
         }
         if (jewelType != JewelType.NO_JEWEL) {
             batch.draw(texture(), x, y, size, size)
@@ -49,13 +45,13 @@ class Jewel(var jewelType : JewelType) {
 
     private fun texture() : TextureRegion {
         return when (jewelType) {
-            JewelType.RED -> TexturesLoader.instance.redGem
-            JewelType.GREEN -> TexturesLoader.instance.greenGem
-            JewelType.BLUE -> TexturesLoader.instance.blueGem
-            JewelType.PURPLE -> TexturesLoader.instance.purpleGem
-            JewelType.YELLOW -> TexturesLoader.instance.yellowGem
-            JewelType.NO_JEWEL -> TexturesLoader.instance.noGem
-            JewelType.SUPER_GEM -> TexturesLoader.instance.superGem
+            JewelType.RED -> assets.redGem
+            JewelType.GREEN -> assets.greenGem
+            JewelType.BLUE -> assets.blueGem
+            JewelType.PURPLE -> assets.purpleGem
+            JewelType.YELLOW -> assets.yellowGem
+            JewelType.NO_JEWEL -> assets.noGem
+            JewelType.SUPER_GEM -> assets.superGem
         }
     }
 

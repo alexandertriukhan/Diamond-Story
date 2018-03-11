@@ -2,20 +2,21 @@ package screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
+import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 import debug.FrameRate
-import enums.JewelType
 import gameobjects.*
 import utils.InputHandler
-import utils.TexturesLoader
+import utils.GameScreenAssets
 
 
-class GameScreen(layout : Array<IntArray>) : Screen {
+class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen {
 
-    private val gameGrid = GameGrid(layout)
+    private val gameScreenAssets = GameScreenAssets(assetManager)
+    private val gameGrid = GameGrid(layout,gameScreenAssets)
     private val batcher = SpriteBatch()
     private val cam = OrthographicCamera()
 
@@ -29,7 +30,7 @@ class GameScreen(layout : Array<IntArray>) : Screen {
         cam.setToOrtho(false, gameGrid.MAX_ROWS.toFloat(), gameGrid.MAX_COLS)
         cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0f)
         cam.update()
-        TexturesLoader.instance.border.projectionMatrix = batcher.projectionMatrix
+        gameScreenAssets.border.projectionMatrix = batcher.projectionMatrix
         Gdx.input.inputProcessor = InputHandler(this)
     }
 

@@ -1,18 +1,17 @@
 package utils
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter
 
 
-class TexturesLoader {
-    val textureAtlas = TextureAtlas(Gdx.files.internal("graphics/atlas.atlas"))
+class GameScreenAssets(assets : AssetManager) {
+    val textureAtlas : TextureAtlas = assets.get("graphics/atlas.atlas", TextureAtlas::class.java)
 
     // GEMS:
     val redGem : TextureRegion = textureAtlas.findRegion("gems/red_gem")
@@ -30,7 +29,13 @@ class TexturesLoader {
     val selected : TextureRegion = textureAtlas.findRegion("selected")
 
     // ANIMATIONS:
-    val fireAnimation = ParticleEffect()
+    val fireAnimation : ParticleEffect = assets.get("graphics/effects/fire.p", ParticleEffect::class.java)
+    val redExplosion : ParticleEffect = assets.get("graphics/effects/explosion_red.p",ParticleEffect::class.java)
+    val blueExplosion : ParticleEffect = assets.get("graphics/effects/explosion_blue.p",ParticleEffect::class.java)
+    val greenExplosion : ParticleEffect = assets.get("graphics/effects/explosion_green.p",ParticleEffect::class.java)
+    val yellowExplosion : ParticleEffect = assets.get("graphics/effects/explosion_yellow.p",ParticleEffect::class.java)
+    val purpleExplosion : ParticleEffect = assets.get("graphics/effects/explosion_purple.p",ParticleEffect::class.java)
+    val crossAnimation : ParticleEffect = assets.get("graphics/effects/cross.p",ParticleEffect::class.java)
     //val selectedMoveSpell : TextureRegion = textureAtlas.findRegion("selected_move_spell")
     //val selectedFireSpell : TextureRegion = textureAtlas.findRegion("selected_fire_spell")
     val crossAnim : TextureRegion = textureAtlas.findRegion("cross_anim")
@@ -40,23 +45,18 @@ class TexturesLoader {
     var animScaleFactor = 1f
 
     // FONT
-    var fontGenerator = FreeTypeFontGenerator(Gdx.files.internal("fonts/JollyLodger-Regular.ttf"))
-    var parameterScore = FreeTypeFontParameter()
-    var fontScore = BitmapFont()
+    val fontScore : BitmapFont = assets.get("fonts/JollyLodger-Regular.ttf", BitmapFont::class.java)
 
     init {
-        fireAnimation.load(Gdx.files.internal("graphics/effects/fire.p"),textureAtlas)
-        animScaleFactor = Gdx.graphics.width.toFloat() / 640f // 640f is a reference width
-        parameterScore.size = (32f * (Gdx.graphics.width.toFloat() / 520f)).toInt()
-        parameterScore.shadowOffsetX = 3
-        parameterScore.shadowOffsetY = 3
-        fontScore = fontGenerator.generateFont(parameterScore)
+        animScaleFactor = Gdx.graphics.width.toFloat() / 520f // 520f is a reference width
+        fireAnimation.scaleEffect(animScaleFactor)
+        redExplosion.scaleEffect(animScaleFactor)
+        blueExplosion.scaleEffect(animScaleFactor)
+        greenExplosion.scaleEffect(animScaleFactor)
+        yellowExplosion.scaleEffect(animScaleFactor)
+        purpleExplosion.scaleEffect(animScaleFactor)
+        crossAnimation.scaleEffect(animScaleFactor)
         border.color = Color.PURPLE
     }
 
-    private object Holder { val INSTANCE = TexturesLoader() }
-
-    companion object {
-        val instance: TexturesLoader by lazy { Holder.INSTANCE }
-    }
 }

@@ -4,9 +4,9 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import enums.JewelType
-import utils.TexturesLoader
+import utils.GameScreenAssets
 
-class Cell(var isPlaying : Boolean, var jewel : Jewel, var tileTexture : TextureRegion) {
+class Cell(var isPlaying : Boolean, var jewel : Jewel, var tileTexture : TextureRegion, private val border : ShapeRenderer) {
 
     private val borderSizeDel = 14
 
@@ -29,40 +29,40 @@ class Cell(var isPlaying : Boolean, var jewel : Jewel, var tileTexture : Texture
     }
 
     private fun drawBorders(x : Float, y : Float, size : Float, borderSize : Float) {
-        TexturesLoader.instance.border.begin(ShapeRenderer.ShapeType.Filled)
+        border.begin(ShapeRenderer.ShapeType.Filled)
         if (isTop) {
             if (isTopEdge) {
-                TexturesLoader.instance.border.rect(x - borderSize, y + size, size + borderSize * 2, borderSize)
+                border.rect(x - borderSize, y + size, size + borderSize * 2, borderSize)
             } else if (isRight && isLeft) {
-                TexturesLoader.instance.border.rect(x - borderSize, y + size, size + borderSize * 2, borderSize)
+                border.rect(x - borderSize, y + size, size + borderSize * 2, borderSize)
             } else if (isRight) {
-                TexturesLoader.instance.border.rect(x, y + size, size + borderSize, borderSize)
+                border.rect(x, y + size, size + borderSize, borderSize)
             } else if (isLeft) {
-                TexturesLoader.instance.border.rect(x - borderSize, y + size, size + borderSize, borderSize)
+                border.rect(x - borderSize, y + size, size + borderSize, borderSize)
             } else {
-                TexturesLoader.instance.border.rect(x, y + size, size, borderSize)
+                border.rect(x, y + size, size, borderSize)
             }
         }
         if (isBottom) {
             if (isBottomEdge) {
-                TexturesLoader.instance.border.rect(x - borderSize, y - borderSize, size + borderSize * 2, borderSize)
+                border.rect(x - borderSize, y - borderSize, size + borderSize * 2, borderSize)
             } else if (isRight && isLeft) {
-                TexturesLoader.instance.border.rect(x - borderSize, y - borderSize, size + borderSize * 2, borderSize)
+                border.rect(x - borderSize, y - borderSize, size + borderSize * 2, borderSize)
             } else if (isRight) {
-                TexturesLoader.instance.border.rect(x, y - borderSize, size + borderSize, borderSize)
+                border.rect(x, y - borderSize, size + borderSize, borderSize)
             } else if (isLeft) {
-                TexturesLoader.instance.border.rect(x - borderSize, y - borderSize, size + borderSize, borderSize)
+                border.rect(x - borderSize, y - borderSize, size + borderSize, borderSize)
             } else {
-                TexturesLoader.instance.border.rect(x, y - borderSize, size, borderSize)
+                border.rect(x, y - borderSize, size, borderSize)
             }
         }
         if (isRight) {
-            TexturesLoader.instance.border.rect(x + size,y,borderSize,size)
+            border.rect(x + size,y,borderSize,size)
         }
         if (isLeft) {
-            TexturesLoader.instance.border.rect(x - borderSize,y,borderSize,size)
+            border.rect(x - borderSize,y,borderSize,size)
         }
-        TexturesLoader.instance.border.end()
+        border.end()
     }
 
     fun drawJewel(batch: Batch, x : Float, y : Float, size : Float, delta : Float) {
@@ -73,7 +73,7 @@ class Cell(var isPlaying : Boolean, var jewel : Jewel, var tileTexture : Texture
         }
     }
 
-    fun isBlocked() : Boolean {  // TODO: returns true for cells that arent allowed to be moved, ex: chained jewels
+    fun isBlocked() : Boolean {  // TODO: returns true for cells that aren't allowed to be moved, ex: chained jewels
         if (!isPlaying) {
             return true
         }

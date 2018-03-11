@@ -3,16 +3,17 @@ package gameobjects
 import collections.DestroyAnimsList
 import collections.MatchList
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import enums.EffectType
 import enums.JewelType
 import enums.MatchType
-import utils.TexturesLoader
+import utils.GameScreenAssets
 import java.util.*
 
 // TODO: implement intArrayOf(0, 1, 1, 1) etc., also consider refactoring
-class GameGrid(private val gridType : Array<IntArray>) {
+class GameGrid(private val gridType : Array<IntArray>, private val assets: GameScreenAssets) {
 
     private val destroyAnimations = DestroyAnimsList()
     private val fallDownAcceleration = 0.45f  // ORIGINAL: 0.45f
@@ -31,8 +32,8 @@ class GameGrid(private val gridType : Array<IntArray>) {
     val moves = mutableListOf<JewelMove>()
     var isFilled = false
     var cells = Array(gridType.count(), {_ -> Array(gridType[0].count()
-            , {_ -> Cell(false, Jewel(JewelType.from(Random().nextInt(5))),
-            TexturesLoader.instance.tileBlank)})})
+            , {_ -> Cell(false, Jewel(JewelType.from(Random().nextInt(5)),assets),
+            assets.tileBlank, assets.border)})})
     val MAX_ROWS = cells.count()
     val gemSize = Gdx.graphics.width.toFloat() / MAX_ROWS
     val MAX_COLS = Gdx.graphics.height.toFloat() / gemSize
@@ -50,7 +51,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                             if (cells[i - 2][j].isPlaying)
                                 if (cells[i - 1][j].jewel.jewelType == cells[i][j].jewel.jewelType) {
                                     while (cells[i - 2][j].jewel.jewelType == cells[i][j].jewel.jewelType)
-                                        cells[i][j].jewel = Jewel(JewelType.from(Random().nextInt(5)))
+                                        cells[i][j].jewel = Jewel(JewelType.from(Random().nextInt(5)),assets)
                                 }
                     }
                     if (j > 1) {
@@ -58,7 +59,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                             if (cells[i][j - 2].isPlaying)
                                 if (cells[i][j - 1].jewel.jewelType == cells[i][j].jewel.jewelType) {
                                     while (cells[i][j - 2].jewel.jewelType == cells[i][j].jewel.jewelType)
-                                        cells[i][j].jewel = Jewel(JewelType.from(Random().nextInt(5)))
+                                        cells[i][j].jewel = Jewel(JewelType.from(Random().nextInt(5)),assets)
                                 }
                     }
                 } else {
@@ -86,11 +87,11 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 }
                 if (j % 2 == 0) {
                     if (i % 2 != 0) {
-                        cells[i][j].tileTexture = TexturesLoader.instance.tileBlankLite
+                        cells[i][j].tileTexture = assets.tileBlankLite
                     }
                 }
                 else if (i % 2 == 0) {
-                    cells[i][j].tileTexture = TexturesLoader.instance.tileBlankLite
+                    cells[i][j].tileTexture = assets.tileBlankLite
                 }
             }
         }
@@ -109,7 +110,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                                     while (cells[i - 2][j].jewel.jewelType == cells[i][j].jewel.jewelType) {
                                         moves.add(JewelMove(Gdx.graphics.width.toFloat() / 2, Gdx.graphics.height.toFloat() / 2,
                                                 i.toFloat(), j.toFloat(),
-                                                Jewel(JewelType.from(Random().nextInt(5))),8f))
+                                                Jewel(JewelType.from(Random().nextInt(5)),assets),8f))
                                     }
                                 }
                     }
@@ -120,7 +121,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                                     while (cells[i][j - 2].jewel.jewelType == cells[i][j].jewel.jewelType) {
                                         moves.add(JewelMove(Gdx.graphics.width.toFloat() / 2, Gdx.graphics.height.toFloat() / 2,
                                                 i.toFloat(), j.toFloat(),
-                                                Jewel(JewelType.from(Random().nextInt(5))),8f))
+                                                Jewel(JewelType.from(Random().nextInt(5)),assets),8f))
                                     }
                                 }
                     }
@@ -427,7 +428,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 if (!(gem.x == match.firstGem().x && gem.y == match.firstGem().y)) {
                     if (!hasSpecials) {
                         moves.add(JewelMove(gem.x, gem.y, match.firstGem().x, match.firstGem().y,
-                                Jewel(cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType), 8f))  // ORIGINAL : 8f
+                                Jewel(cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType,assets), 8f))  // ORIGINAL : 8f
                         moves.last().destroyOnEnd = true
                     }
                     cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
@@ -436,8 +437,8 @@ class GameGrid(private val gridType : Array<IntArray>) {
                     // TODO: add a score for creating fire or cross or super gem
                 }
             } else {
-                destroyAnimations.add(DestroyAnimation(gem.x,gem.y,
-                        Jewel(cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType),EffectType.NONE,gemSize,
+                destroyAnimations.add(DestroyAnimation(assets,gem.x,gem.y,
+                        Jewel(cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType,assets),EffectType.NONE,gemSize,
                         gridOffset,(match3Score * scoreMultiplier).toInt()))
                 cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
             }
@@ -466,8 +467,8 @@ class GameGrid(private val gridType : Array<IntArray>) {
             if (cells[xy.x.toInt()][xy.y.toInt()].jewel.effect == EffectType.CROSS) {
                 crossDestroy(xy.x,xy.y)
             }
-            destroyAnimations.add(DestroyAnimation(xy.x,xy.y,
-                    Jewel(cells[xy.x.toInt()][xy.y.toInt()].jewel.jewelType),EffectType.FIRE,gemSize
+            destroyAnimations.add(DestroyAnimation(assets,xy.x,xy.y,
+                    Jewel(cells[xy.x.toInt()][xy.y.toInt()].jewel.jewelType,assets),EffectType.FIRE,gemSize
                     ,gridOffset,(match3Score * scoreMultiplier).toInt()))
             cells[xy.x.toInt()][xy.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
         }
@@ -475,8 +476,8 @@ class GameGrid(private val gridType : Array<IntArray>) {
 
     private fun crossDestroy(x: Float, y: Float) {
         cells[x.toInt()][y.toInt()].jewel.effect = EffectType.NONE
-        destroyAnimations.add(DestroyAnimation(x,y,
-                Jewel(cells[x.toInt()][y.toInt()].jewel.jewelType),EffectType.CROSS,gemSize,gridOffset,(match3Score * scoreMultiplier).toInt()))
+        destroyAnimations.add(DestroyAnimation(assets,x,y,
+                Jewel(cells[x.toInt()][y.toInt()].jewel.jewelType,assets),EffectType.CROSS,gemSize,gridOffset,(match3Score * scoreMultiplier).toInt()))
         // TODO: dont add for x y
         for (row in (0..(cells.count() - 1))) {
             if (cells[row][y.toInt()].jewel.effect != EffectType.NONE) {
@@ -489,8 +490,8 @@ class GameGrid(private val gridType : Array<IntArray>) {
                     fireDestroy(row.toFloat(), y)
                 }
             }
-            destroyAnimations.add(DestroyAnimation(row.toFloat(),y,
-                    Jewel(cells[row][y.toInt()].jewel.jewelType),EffectType.FIRE,gemSize,gridOffset,(match3Score * scoreMultiplier).toInt()))
+            destroyAnimations.add(DestroyAnimation(assets,row.toFloat(),y,
+                    Jewel(cells[row][y.toInt()].jewel.jewelType,assets),EffectType.FIRE,gemSize,gridOffset,(match3Score * scoreMultiplier).toInt()))
             cells[row][y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
         }
         for (col in (0..(cells[0].count() - 1))) {
@@ -504,8 +505,8 @@ class GameGrid(private val gridType : Array<IntArray>) {
                     fireDestroy(x, col.toFloat())
                 }
             }
-            destroyAnimations.add(DestroyAnimation(x,col.toFloat(),
-                    Jewel(cells[x.toInt()][col].jewel.jewelType),EffectType.FIRE,gemSize,gridOffset,(match3Score * scoreMultiplier).toInt()))
+            destroyAnimations.add(DestroyAnimation(assets,x,col.toFloat(),
+                    Jewel(cells[x.toInt()][col].jewel.jewelType,assets),EffectType.FIRE,gemSize,gridOffset,(match3Score * scoreMultiplier).toInt()))
             cells[x.toInt()][col].jewel.jewelType = JewelType.NO_JEWEL
         }
     }
@@ -578,7 +579,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 if (row < cells[0].count() - 1) {
                     if (!cells[i][row + 1].isBlocked()) {
                         moves.add(JewelMove(i.toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
-                                Jewel(cells[i][row + 1].jewel.jewelType,
+                                Jewel(cells[i][row + 1].jewel.jewelType,assets,
                                         cells[i][row + 1].jewel.effect), 5f))
                         cells[i][row + 1].jewel.jewelType = JewelType.NO_JEWEL
                     } else if (!cells[i][row + 1].isPlaying) {
@@ -596,30 +597,30 @@ class GameGrid(private val gridType : Array<IntArray>) {
                             val randI = Random().nextInt(2)
                             if (randI == 1) {
                                 moves.add(JewelMove((i - 1).toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
-                                        Jewel(cells[i - 1][row + 1].jewel.jewelType,
+                                        Jewel(cells[i - 1][row + 1].jewel.jewelType,assets,
                                                 cells[i - 1][row + 1].jewel.effect), 5f))
                                 cells[i - 1][row + 1].jewel.jewelType = JewelType.NO_JEWEL
                             } else {
                                 moves.add(JewelMove((i + 1).toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
-                                        Jewel(cells[i + 1][row + 1].jewel.jewelType,
+                                        Jewel(cells[i + 1][row + 1].jewel.jewelType,assets,
                                                 cells[i + 1][row + 1].jewel.effect), 5f))
                                 cells[i + 1][row + 1].jewel.jewelType = JewelType.NO_JEWEL
                             }
                         } else if (leftTurn) {
                             moves.add(JewelMove((i - 1).toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
-                                    Jewel(cells[i - 1][row + 1].jewel.jewelType,
+                                    Jewel(cells[i - 1][row + 1].jewel.jewelType,assets,
                                             cells[i - 1][row + 1].jewel.effect), 5f))
                             cells[i - 1][row + 1].jewel.jewelType = JewelType.NO_JEWEL
                         } else if (rightTurn) {
                             moves.add(JewelMove((i + 1).toFloat(), (row + 1).toFloat(), i.toFloat(), row.toFloat(),
-                                    Jewel(cells[i + 1][row + 1].jewel.jewelType,
+                                    Jewel(cells[i + 1][row + 1].jewel.jewelType,assets,
                                             cells[i + 1][row + 1].jewel.effect), 5f))
                             cells[i + 1][row + 1].jewel.jewelType = JewelType.NO_JEWEL
                         }
                     }
                 } else {
                     moves.add(JewelMove(i.toFloat(), cells[0].count().toFloat(),
-                            i.toFloat(), row.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),
+                            i.toFloat(), row.toFloat(), Jewel(JewelType.from(Random().nextInt(5)),assets,
                             EffectType.NONE),5f))
                 }
             }
@@ -633,13 +634,13 @@ class GameGrid(private val gridType : Array<IntArray>) {
                     || cells[x2.toInt()][y2.toInt()].jewel.jewelType == JewelType.SUPER_GEM) {
                 if (cells[x1.toInt()][y1.toInt()].jewel.jewelType != JewelType.SUPER_GEM) {
                     removeColor(cells[x1.toInt()][y1.toInt()].jewel.jewelType)
-                    destroyAnimations.add(DestroyAnimation(x2,y2,
-                            Jewel(cells[x2.toInt()][y2.toInt()].jewel.jewelType),EffectType.NONE,gemSize,gridOffset))
+                    destroyAnimations.add(DestroyAnimation(assets,x2,y2,
+                            Jewel(cells[x2.toInt()][y2.toInt()].jewel.jewelType,assets),EffectType.NONE,gemSize,gridOffset))
                     cells[x2.toInt()][y2.toInt()].jewel.jewelType = JewelType.NO_JEWEL
                 } else {
                     removeColor(cells[x2.toInt()][y2.toInt()].jewel.jewelType)
-                    destroyAnimations.add(DestroyAnimation(x1,y1,
-                            Jewel(cells[x1.toInt()][y1.toInt()].jewel.jewelType),EffectType.NONE,gemSize,gridOffset))
+                    destroyAnimations.add(DestroyAnimation(assets,x1,y1,
+                            Jewel(cells[x1.toInt()][y1.toInt()].jewel.jewelType,assets),EffectType.NONE,gemSize,gridOffset))
                     cells[x1.toInt()][y1.toInt()].jewel.jewelType = JewelType.NO_JEWEL
                 }
                 return
@@ -648,9 +649,9 @@ class GameGrid(private val gridType : Array<IntArray>) {
             if ((createsMatch(x1.toInt(), y1.toInt()).matchType != MatchType.NO_MATCH)
                     || (createsMatch(x2.toInt(), y2.toInt()).matchType != MatchType.NO_MATCH)) {
                 swapCells(x1.toInt(),y1.toInt(),x2.toInt(),y2.toInt())
-                moves.add(JewelMove(x1, y1, x2, y2, Jewel(cells[x1.toInt()][y1.toInt()].jewel.jewelType,
+                moves.add(JewelMove(x1, y1, x2, y2, Jewel(cells[x1.toInt()][y1.toInt()].jewel.jewelType,assets,
                         cells[x1.toInt()][y1.toInt()].jewel.effect), moveSpeed))
-                moves.add(JewelMove(x2, y2, x1, y1, Jewel(cells[x2.toInt()][y2.toInt()].jewel.jewelType,
+                moves.add(JewelMove(x2, y2, x1, y1, Jewel(cells[x2.toInt()][y2.toInt()].jewel.jewelType,assets,
                         cells[x2.toInt()][y2.toInt()].jewel.effect), moveSpeed))
                 cells[x1.toInt()][y1.toInt()].jewel.jewelType = JewelType.NO_JEWEL
                 cells[x2.toInt()][y2.toInt()].jewel.jewelType = JewelType.NO_JEWEL
