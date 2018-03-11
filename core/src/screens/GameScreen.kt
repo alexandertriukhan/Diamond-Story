@@ -6,6 +6,7 @@ import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.input.GestureDetector
 import com.badlogic.gdx.math.Vector3
 import debug.FrameRate
 import gameobjects.*
@@ -31,7 +32,7 @@ class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen 
         cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0f)
         cam.update()
         gameScreenAssets.border.projectionMatrix = batcher.projectionMatrix
-        Gdx.input.inputProcessor = InputHandler(this)
+        Gdx.input.inputProcessor = GestureDetector(InputHandler(this))
     }
 
     override fun hide() {

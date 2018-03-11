@@ -55,14 +55,14 @@ class DiamondStoryGame : ApplicationAdapter() {
 			load("graphics/effects/explosion_purple.p",ParticleEffect::class.java)
 			load("graphics/effects/cross.p",ParticleEffect::class.java)
 			val resolver = InternalFileHandleResolver()
-			setLoader(FreeTypeFontGenerator::class.java, FreeTypeFontGeneratorLoader(resolver))
-			setLoader(BitmapFont::class.java, ".ttf", FreetypeFontLoader(resolver))
+			setLoader(FreeTypeFontGenerator::class.java,FreeTypeFontGeneratorLoader(resolver))
+			setLoader(BitmapFont::class.java,".ttf",FreetypeFontLoader(resolver))
 			val fontScore = FreeTypeFontLoaderParameter()
 			fontScore.fontFileName = "fonts/JollyLodger-Regular.ttf"
 			fontScore.fontParameters.size = (32f * (Gdx.graphics.width.toFloat() / 520f)).toInt()  // 520f used as a referenced width
 			fontScore.fontParameters.shadowOffsetX = 3
 			fontScore.fontParameters.shadowOffsetY = 3
-			load("fonts/JollyLodger-Regular.ttf", BitmapFont::class.java,fontScore)
+			load("fonts/JollyLodger-Regular.ttf",BitmapFont::class.java,fontScore)
 		}
 	}
 }

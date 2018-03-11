@@ -2,7 +2,7 @@ package utils
 
 class MyStack<T>( var items: MutableList<T> = arrayListOf()) {
 
-    fun isEmpty():Boolean = this.items.isEmpty()
+    private fun isEmpty():Boolean = this.items.isEmpty()
 
     fun count():Int = this.items.count()
 
@@ -11,23 +11,21 @@ class MyStack<T>( var items: MutableList<T> = arrayListOf()) {
         this.items.add(position, element)
     }
 
-    override  fun toString() = this.items.toString()
+    override fun toString() = this.items.toString()
 
     fun pop():T? {
-        if (this.isEmpty()) {
-            return null
-        } else {
-            val item =  this.items.count() - 1
+        if (!this.isEmpty()) {
+            val item = this.items.count() - 1
             return this.items.removeAt(item)
         }
+        return null
     }
 
     fun peek():T? {
-        if (isEmpty()) {
-            return null
-        } else {
+        if (!this.isEmpty()) {
             return this.items[this.items.count() - 1]
         }
+        return null
     }
 
 }

@@ -1,40 +1,47 @@
 package utils
 
-import com.badlogic.gdx.InputProcessor
+import com.badlogic.gdx.input.GestureDetector.GestureListener
+import com.badlogic.gdx.math.Vector2
 import screens.GameScreen
 
 
-class InputHandler(private val gs : GameScreen) : InputProcessor {
-    override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        return false
+class InputHandler(private val gs : GameScreen) : GestureListener {
+    override fun fling(velocityX: Float, velocityY: Float, button: Int): Boolean {
+        return true
     }
 
-    override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
-        return false
+    override fun zoom(initialDistance: Float, distance: Float): Boolean {
+        return true
     }
 
-    override fun keyTyped(character: Char): Boolean {
-        return false
+    override fun pan(x: Float, y: Float, deltaX: Float, deltaY: Float): Boolean {
+        return true
     }
 
-    override fun scrolled(amount: Int): Boolean {
-        return false
+    override fun pinchStop() {
+
     }
 
-    override fun keyUp(keycode: Int): Boolean {
-        return false
-    }
-
-    override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
-        return false
-    }
-
-    override fun keyDown(keycode: Int): Boolean {
-        return false
-    }
-
-    override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+    override fun tap(x: Float, y: Float, count: Int, button: Int): Boolean {
         gs.onClick()
         return true
     }
+
+    override fun panStop(x: Float, y: Float, pointer: Int, button: Int): Boolean {
+        return true
+    }
+
+    override fun longPress(x: Float, y: Float): Boolean {
+        return true
+    }
+
+    override fun touchDown(x: Float, y: Float, pointer: Int, button: Int): Boolean {
+        return true
+    }
+
+    override fun pinch(initialPointer1: Vector2?, initialPointer2: Vector2?, pointer1: Vector2?, pointer2: Vector2?): Boolean {
+        return true
+    }
+
+
 }
