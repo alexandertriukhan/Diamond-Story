@@ -6,21 +6,24 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
+import debug.FrameRate
 import enums.JewelType
 import gameobjects.*
 import utils.InputHandler
 import utils.TexturesLoader
 
 
-class GameScreen : Screen {
+class GameScreen(layout : Array<IntArray>) : Screen {
 
-    private val gameGrid = GameGrid(gridTypes.square())
+    private val gameGrid = GameGrid(layout)
     private val batcher = SpriteBatch()
     private val cam = OrthographicCamera()
 
     private var selectedXY = Vector3()
     private var isSelected = false
 
+
+    private val frameRate = FrameRate()
 
     init {
         cam.setToOrtho(false, gameGrid.MAX_ROWS.toFloat(), gameGrid.MAX_COLS)
@@ -41,6 +44,8 @@ class GameScreen : Screen {
     override fun render(delta: Float) {
         Gdx.gl.glClearColor(127/255f, 100/255f, 127/255f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+        frameRate.update()
+        frameRate.render()
         batcher.begin()
         gameGrid.draw(batcher,delta)
         batcher.end()

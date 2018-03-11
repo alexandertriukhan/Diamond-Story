@@ -16,8 +16,16 @@ class GameGrid(private val gridType : Array<IntArray>) {
 
     private val destroyAnimations = DestroyAnimsList()
     private val fallDownAcceleration = 0.45f  // ORIGINAL: 0.45f
+    private val itemsToCheck = mutableListOf<JewelMove>()
+    private var needMoves = false
+    private var makeCheck = false
+    private val moveSpeed = 8f  // ORIGINAL: 8f
 
     val lastMoves = mutableListOf<JewelMove>()
+
+    var score = 0f
+    private var scoreMultiplier = 1f
+    private val match3Score = 100f
 
     val specialMoves = mutableListOf<JewelMove>()
     val moves = mutableListOf<JewelMove>()
@@ -29,10 +37,6 @@ class GameGrid(private val gridType : Array<IntArray>) {
     val gemSize = Gdx.graphics.width.toFloat() / MAX_ROWS
     val MAX_COLS = Gdx.graphics.height.toFloat() / gemSize
     val gridOffset = (Gdx.graphics.height.toFloat() - (gemSize * cells[0].count())) / 2
-    private val itemsToCheck = mutableListOf<JewelMove>()
-    private var needMoves = false
-    private var makeCheck = false
-    private val moveSpeed = 8f  // ORIGINAL: 8f
 
     init {
         for (i in gridType.indices) {
@@ -428,10 +432,13 @@ class GameGrid(private val gridType : Array<IntArray>) {
                     }
                     cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
                     cells[gem.x.toInt()][gem.y.toInt()].jewel.effect = EffectType.NONE
+                } else {
+                    // TODO: add a score for creating fire or cross or super gem
                 }
             } else {
                 destroyAnimations.add(DestroyAnimation(gem.x,gem.y,
-                        Jewel(cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType),EffectType.NONE))
+                        Jewel(cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType),EffectType.NONE,gemSize,
+                        gridOffset,(match3Score * scoreMultiplier).toInt()))
                 cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
             }
         }
@@ -460,7 +467,8 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 crossDestroy(xy.x,xy.y)
             }
             destroyAnimations.add(DestroyAnimation(xy.x,xy.y,
-                    Jewel(cells[xy.x.toInt()][xy.y.toInt()].jewel.jewelType),EffectType.FIRE))
+                    Jewel(cells[xy.x.toInt()][xy.y.toInt()].jewel.jewelType),EffectType.FIRE,gemSize
+                    ,gridOffset,(match3Score * scoreMultiplier).toInt()))
             cells[xy.x.toInt()][xy.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
         }
     }
@@ -468,7 +476,8 @@ class GameGrid(private val gridType : Array<IntArray>) {
     private fun crossDestroy(x: Float, y: Float) {
         cells[x.toInt()][y.toInt()].jewel.effect = EffectType.NONE
         destroyAnimations.add(DestroyAnimation(x,y,
-                Jewel(cells[x.toInt()][y.toInt()].jewel.jewelType),EffectType.CROSS))  // TODO: dont add for x y
+                Jewel(cells[x.toInt()][y.toInt()].jewel.jewelType),EffectType.CROSS,gemSize,gridOffset,(match3Score * scoreMultiplier).toInt()))
+        // TODO: dont add for x y
         for (row in (0..(cells.count() - 1))) {
             if (cells[row][y.toInt()].jewel.effect != EffectType.NONE) {
                 if (cells[row][y.toInt()].jewel.effect == EffectType.CROSS) {
@@ -481,7 +490,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 }
             }
             destroyAnimations.add(DestroyAnimation(row.toFloat(),y,
-                    Jewel(cells[row][y.toInt()].jewel.jewelType),EffectType.FIRE))
+                    Jewel(cells[row][y.toInt()].jewel.jewelType),EffectType.FIRE,gemSize,gridOffset,(match3Score * scoreMultiplier).toInt()))
             cells[row][y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
         }
         for (col in (0..(cells[0].count() - 1))) {
@@ -496,7 +505,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 }
             }
             destroyAnimations.add(DestroyAnimation(x,col.toFloat(),
-                    Jewel(cells[x.toInt()][col].jewel.jewelType),EffectType.FIRE))
+                    Jewel(cells[x.toInt()][col].jewel.jewelType),EffectType.FIRE,gemSize,gridOffset,(match3Score * scoreMultiplier).toInt()))
             cells[x.toInt()][col].jewel.jewelType = JewelType.NO_JEWEL
         }
     }
@@ -554,7 +563,7 @@ class GameGrid(private val gridType : Array<IntArray>) {
                 if (anim.isStopped()) {
                     iterator.remove()
                 } else {
-                    anim.draw(batch, delta, gemSize, gridOffset)
+                    anim.draw(batch,delta)
                 }
             }
         }
@@ -624,8 +633,14 @@ class GameGrid(private val gridType : Array<IntArray>) {
                     || cells[x2.toInt()][y2.toInt()].jewel.jewelType == JewelType.SUPER_GEM) {
                 if (cells[x1.toInt()][y1.toInt()].jewel.jewelType != JewelType.SUPER_GEM) {
                     removeColor(cells[x1.toInt()][y1.toInt()].jewel.jewelType)
+                    destroyAnimations.add(DestroyAnimation(x2,y2,
+                            Jewel(cells[x2.toInt()][y2.toInt()].jewel.jewelType),EffectType.NONE,gemSize,gridOffset))
+                    cells[x2.toInt()][y2.toInt()].jewel.jewelType = JewelType.NO_JEWEL
                 } else {
                     removeColor(cells[x2.toInt()][y2.toInt()].jewel.jewelType)
+                    destroyAnimations.add(DestroyAnimation(x1,y1,
+                            Jewel(cells[x1.toInt()][y1.toInt()].jewel.jewelType),EffectType.NONE,gemSize,gridOffset))
+                    cells[x1.toInt()][y1.toInt()].jewel.jewelType = JewelType.NO_JEWEL
                 }
                 return
             }
@@ -645,6 +660,9 @@ class GameGrid(private val gridType : Array<IntArray>) {
             }
     }
 
+    private fun updateScore(addScore : Int) {
+        score += addScore
+    }
 
 //    private fun prevMoveStartSpeed(xFrom : Float, yFrom : Float) : Float {
 //        for (lastMove in lastMoves) {

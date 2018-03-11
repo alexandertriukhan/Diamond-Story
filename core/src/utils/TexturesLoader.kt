@@ -2,10 +2,14 @@ package utils
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter
+
 
 class TexturesLoader {
     val textureAtlas = TextureAtlas(Gdx.files.internal("graphics/atlas.atlas"))
@@ -35,9 +39,18 @@ class TexturesLoader {
     // ANIMATIONS SCALE:
     var animScaleFactor = 1f
 
+    // FONT
+    var fontGenerator = FreeTypeFontGenerator(Gdx.files.internal("fonts/JollyLodger-Regular.ttf"))
+    var parameterScore = FreeTypeFontParameter()
+    var fontScore = BitmapFont()
+
     init {
         fireAnimation.load(Gdx.files.internal("graphics/effects/fire.p"),textureAtlas)
         animScaleFactor = Gdx.graphics.width.toFloat() / 640f // 640f is a reference width
+        parameterScore.size = (32f * (Gdx.graphics.width.toFloat() / 520f)).toInt()
+        parameterScore.shadowOffsetX = 3
+        parameterScore.shadowOffsetY = 3
+        fontScore = fontGenerator.generateFont(parameterScore)
         border.color = Color.PURPLE
     }
 

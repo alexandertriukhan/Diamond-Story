@@ -16,7 +16,7 @@ class DiamondStoryGame : ApplicationAdapter() {
 	
 	override fun create () {
 		setResourcesToBeLoaded()
-		screenStack.push(GameScreen())
+		screenStack.push(GameScreen(gridTypes.square()))
 	}
 
 	override fun render () {
