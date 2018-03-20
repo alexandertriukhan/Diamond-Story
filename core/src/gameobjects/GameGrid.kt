@@ -3,7 +3,6 @@ package gameobjects
 import collections.DestroyAnimsList
 import collections.MatchList
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import enums.EffectType
@@ -25,6 +24,7 @@ class GameGrid(private val gridType : Array<IntArray>, private val assets: GameS
     val lastMoves = mutableListOf<JewelMove>()
 
     var score = 0f
+    private var moveScore = 0f
     private var scoreMultiplier = 1f
     private val match3Score = 100f
 
@@ -33,11 +33,12 @@ class GameGrid(private val gridType : Array<IntArray>, private val assets: GameS
     var isFilled = false
     var cells = Array(gridType.count(), {_ -> Array(gridType[0].count()
             , {_ -> Cell(false, Jewel(JewelType.from(Random().nextInt(5)),assets),
-            assets.tileBlank, assets.border)})})
+            assets.tileBlank, assets)})})
     val MAX_ROWS = cells.count()
     val gemSize = Gdx.graphics.width.toFloat() / MAX_ROWS
     val MAX_COLS = Gdx.graphics.height.toFloat() / gemSize
     val gridOffset = (Gdx.graphics.height.toFloat() - (gemSize * cells[0].count())) / 2
+    var movesLeft = 30
 
     init {
         for (i in gridType.indices) {
@@ -172,13 +173,18 @@ class GameGrid(private val gridType : Array<IntArray>, private val assets: GameS
             fallDownMoves()
             needMoves = false
         }
+        updateScore()
         drawTiles(batcher)
         drawJewels(batcher,delta)
         drawDestroyAnimations(batcher,delta)
         drawMoves(batcher,delta)
         drawSpecialMoves(batcher,delta)
-        if (makeCheck)
+        if (makeCheck) {
             checkMatches()
+            if (isGameOver()) {
+                movesLeft = 30 // TODO: implement
+            }
+        }
     }
 
     private fun drawTiles(batcher : SpriteBatch) {
@@ -440,6 +446,7 @@ class GameGrid(private val gridType : Array<IntArray>, private val assets: GameS
                 destroyAnimations.add(DestroyAnimation(assets,gem.x,gem.y,
                         Jewel(cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType,assets),EffectType.NONE,gemSize,
                         gridOffset,(match3Score * scoreMultiplier).toInt()))
+                moveScore += match3Score * scoreMultiplier
                 cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
             }
         }
@@ -470,6 +477,7 @@ class GameGrid(private val gridType : Array<IntArray>, private val assets: GameS
             destroyAnimations.add(DestroyAnimation(assets,xy.x,xy.y,
                     Jewel(cells[xy.x.toInt()][xy.y.toInt()].jewel.jewelType,assets),EffectType.FIRE,gemSize
                     ,gridOffset,(match3Score * scoreMultiplier).toInt()))
+            moveScore += match3Score * scoreMultiplier
             cells[xy.x.toInt()][xy.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
         }
     }
@@ -478,6 +486,7 @@ class GameGrid(private val gridType : Array<IntArray>, private val assets: GameS
         cells[x.toInt()][y.toInt()].jewel.effect = EffectType.NONE
         destroyAnimations.add(DestroyAnimation(assets,x,y,
                 Jewel(cells[x.toInt()][y.toInt()].jewel.jewelType,assets),EffectType.CROSS,gemSize,gridOffset,(match3Score * scoreMultiplier).toInt()))
+        moveScore += match3Score * scoreMultiplier
         // TODO: dont add for x y
         for (row in (0..(cells.count() - 1))) {
             if (cells[row][y.toInt()].jewel.effect != EffectType.NONE) {
@@ -492,6 +501,7 @@ class GameGrid(private val gridType : Array<IntArray>, private val assets: GameS
             }
             destroyAnimations.add(DestroyAnimation(assets,row.toFloat(),y,
                     Jewel(cells[row][y.toInt()].jewel.jewelType,assets),EffectType.FIRE,gemSize,gridOffset,(match3Score * scoreMultiplier).toInt()))
+            moveScore += match3Score * scoreMultiplier
             cells[row][y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
         }
         for (col in (0..(cells[0].count() - 1))) {
@@ -507,6 +517,7 @@ class GameGrid(private val gridType : Array<IntArray>, private val assets: GameS
             }
             destroyAnimations.add(DestroyAnimation(assets,x,col.toFloat(),
                     Jewel(cells[x.toInt()][col].jewel.jewelType,assets),EffectType.FIRE,gemSize,gridOffset,(match3Score * scoreMultiplier).toInt()))
+            moveScore += match3Score * scoreMultiplier
             cells[x.toInt()][col].jewel.jewelType = JewelType.NO_JEWEL
         }
     }
@@ -643,6 +654,7 @@ class GameGrid(private val gridType : Array<IntArray>, private val assets: GameS
                             Jewel(cells[x1.toInt()][y1.toInt()].jewel.jewelType,assets),EffectType.NONE,gemSize,gridOffset))
                     cells[x1.toInt()][y1.toInt()].jewel.jewelType = JewelType.NO_JEWEL
                 }
+                movesLeft--
                 return
             }
             swapCells(x1.toInt(),y1.toInt(),x2.toInt(),y2.toInt())
@@ -655,14 +667,37 @@ class GameGrid(private val gridType : Array<IntArray>, private val assets: GameS
                         cells[x2.toInt()][y2.toInt()].jewel.effect), moveSpeed))
                 cells[x1.toInt()][y1.toInt()].jewel.jewelType = JewelType.NO_JEWEL
                 cells[x2.toInt()][y2.toInt()].jewel.jewelType = JewelType.NO_JEWEL
+                movesLeft--
             } else {
                 swapCells(x1.toInt(),y1.toInt(),x2.toInt(),y2.toInt())
                 // RETURN_BACK
             }
     }
 
-    private fun updateScore(addScore : Int) {
-        score += addScore
+    private fun updateScore() {
+        if (moveScore.toInt() < 0) {
+            moveScore = 0f
+        }
+        if (moveScore.toInt() != 0) {
+            if (moveScore < 100) {
+                score++
+                moveScore--
+                return
+            } else if (moveScore < 250) {
+                score += 5
+                moveScore -= 5
+                return
+            } else if (moveScore < 500) {
+                score += 12
+                moveScore -= 12
+                return
+            } else {
+                score += 23
+                moveScore -= 23
+                return
+            }
+
+        }
     }
 
 //    private fun prevMoveStartSpeed(xFrom : Float, yFrom : Float) : Float {
@@ -673,5 +708,10 @@ class GameGrid(private val gridType : Array<IntArray>, private val assets: GameS
 //        }
 //        return 0f
 //    }
+
+    // TODO: implement
+    fun isGameOver() : Boolean {
+        return movesLeft == 0
+    }
 
 }

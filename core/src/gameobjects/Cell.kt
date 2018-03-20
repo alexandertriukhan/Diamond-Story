@@ -6,9 +6,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import enums.JewelType
 import utils.GameScreenAssets
 
-class Cell(var isPlaying : Boolean, var jewel : Jewel, var tileTexture : TextureRegion, private val border : ShapeRenderer) {
-
-    private val borderSizeDel = 14
+class Cell(var isPlaying : Boolean, var jewel : Jewel, var tileTexture : TextureRegion, private val assets: GameScreenAssets) {
 
     var isTop = false
     var isBottom = false
@@ -19,50 +17,49 @@ class Cell(var isPlaying : Boolean, var jewel : Jewel, var tileTexture : Texture
 
     // TODO : Use init block to determine borders (save them to the list CellBorder and use CellBorder.draw())
     fun drawTile(batch: Batch, x : Float, y : Float, size : Float) {
-        val borderSize = size / borderSizeDel
         if (isPlaying) {
             batch.draw(tileTexture,x,y,size,size)
         }
         batch.end()
-        drawBorders(x,y,size,borderSize)
+        drawBorders(x,y,size,assets.borderWidth)
         batch.begin()
     }
 
     private fun drawBorders(x : Float, y : Float, size : Float, borderSize : Float) {
-        border.begin(ShapeRenderer.ShapeType.Filled)
+        assets.border.begin(ShapeRenderer.ShapeType.Filled)
         if (isTop) {
             if (isTopEdge) {
-                border.rect(x - borderSize, y + size, size + borderSize * 2, borderSize)
+                assets.border.rect(x - borderSize, y + size, size + borderSize * 2, borderSize)
             } else if (isRight && isLeft) {
-                border.rect(x - borderSize, y + size, size + borderSize * 2, borderSize)
+                assets.border.rect(x - borderSize, y + size, size + borderSize * 2, borderSize)
             } else if (isRight) {
-                border.rect(x, y + size, size + borderSize, borderSize)
+                assets.border.rect(x, y + size, size + borderSize, borderSize)
             } else if (isLeft) {
-                border.rect(x - borderSize, y + size, size + borderSize, borderSize)
+                assets.border.rect(x - borderSize, y + size, size + borderSize, borderSize)
             } else {
-                border.rect(x, y + size, size, borderSize)
+                assets.border.rect(x, y + size, size, borderSize)
             }
         }
         if (isBottom) {
             if (isBottomEdge) {
-                border.rect(x - borderSize, y - borderSize, size + borderSize * 2, borderSize)
+                assets.border.rect(x - borderSize, y - borderSize, size + borderSize * 2, borderSize)
             } else if (isRight && isLeft) {
-                border.rect(x - borderSize, y - borderSize, size + borderSize * 2, borderSize)
+                assets.border.rect(x - borderSize, y - borderSize, size + borderSize * 2, borderSize)
             } else if (isRight) {
-                border.rect(x, y - borderSize, size + borderSize, borderSize)
+                assets.border.rect(x, y - borderSize, size + borderSize, borderSize)
             } else if (isLeft) {
-                border.rect(x - borderSize, y - borderSize, size + borderSize, borderSize)
+                assets.border.rect(x - borderSize, y - borderSize, size + borderSize, borderSize)
             } else {
-                border.rect(x, y - borderSize, size, borderSize)
+                assets.border.rect(x, y - borderSize, size, borderSize)
             }
         }
         if (isRight) {
-            border.rect(x + size,y,borderSize,size)
+            assets.border.rect(x + size,y,borderSize,size)
         }
         if (isLeft) {
-            border.rect(x - borderSize,y,borderSize,size)
+            assets.border.rect(x - borderSize,y,borderSize,size)
         }
-        border.end()
+        assets.border.end()
     }
 
     fun drawJewel(batch: Batch, x : Float, y : Float, size : Float, delta : Float) {

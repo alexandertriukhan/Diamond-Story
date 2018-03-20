@@ -20,10 +20,10 @@ class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen 
     private val gameGrid = GameGrid(layout,gameScreenAssets)
     private val batcher = SpriteBatch()
     private val cam = OrthographicCamera()
+    private val menuBar = GameScreenMenuBars(gameScreenAssets,gameGrid)
 
     private var selectedXY = Vector3()
     private var isSelected = false
-
 
     private val frameRate = FrameRate()
 
@@ -49,6 +49,8 @@ class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen 
         frameRate.update()
         frameRate.render()
         batcher.begin()
+        menuBar.drawTopBar(batcher)
+        menuBar.drawBottomBar(batcher)
         gameGrid.draw(batcher,delta)
         batcher.end()
     }
@@ -88,6 +90,10 @@ class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen 
             }
         }
     }
+//
+//    private fun drawTopMenu() {
+//        scoreFont.draw(batcher,gameGrid.score.toInt().toString(), Gdx.graphics.width - 100f, Gdx.graphics.height - 5f)
+//    }
 
     override fun pause() {
 

@@ -1,6 +1,7 @@
 package gameobjects
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import enums.EffectType
@@ -15,13 +16,14 @@ class DestroyAnimation(assets: GameScreenAssets,
                        private val effect: EffectType,
                        val size: Float,
                        private val gridOffset: Float,
-                       private val score : Int = 0) {
+                       val score : Int = 0) {
 
+    // TODO: font with the same position for different screen sizes
     private var explodeAnim = ParticleEffect()
     private var crossAnim = ParticleEffect()
     private var font = assets.fontScore
     private var fontColor = Color()
-    private val scoreMovement = Movement((x * size) + size / 2,(((y * size) + gridOffset) + size / 1.5f),
+    private val scoreMovement = Movement((x * size) + size / 2,(((y * size) + gridOffset) + size / 2),
             (x * size) + size / 2,(((y * size) + gridOffset) + size * 2f),96f)
 
     init {
@@ -91,7 +93,8 @@ class DestroyAnimation(assets: GameScreenAssets,
         if (score != 0) {
             scoreMovement.nextPosition(delta)
             font.color = fontColor
-            font.draw(batch,"+" + score.toString(),scoreMovement.xCurrent,scoreMovement.yCurrent)
+            val fontLayout =  GlyphLayout(font,"+" + score.toString())
+            font.draw(batch,fontLayout,scoreMovement.xCurrent - (fontLayout.width / 2),scoreMovement.yCurrent + (fontLayout.height / 2))
         }
     }
 

@@ -57,12 +57,12 @@ class DiamondStoryGame : ApplicationAdapter() {
 			val resolver = InternalFileHandleResolver()
 			setLoader(FreeTypeFontGenerator::class.java,FreeTypeFontGeneratorLoader(resolver))
 			setLoader(BitmapFont::class.java,".ttf",FreetypeFontLoader(resolver))
-			val fontScore = FreeTypeFontLoaderParameter()
-			fontScore.fontFileName = "fonts/JollyLodger-Regular.ttf"
-			fontScore.fontParameters.size = (32f * (Gdx.graphics.width.toFloat() / 520f)).toInt()  // 520f used as a referenced width
-			fontScore.fontParameters.shadowOffsetX = 3
-			fontScore.fontParameters.shadowOffsetY = 3
-			load("fonts/JollyLodger-Regular.ttf",BitmapFont::class.java,fontScore)
+			val font32 = FreeTypeFontLoaderParameter()
+			font32.fontFileName = "fonts/JollyLodger-Regular.ttf"
+			font32.fontParameters.size = (32f * (Gdx.graphics.width.toFloat() / 520f)).toInt()  // 520f used as a referenced width
+			font32.fontParameters.shadowOffsetX = 3
+			font32.fontParameters.shadowOffsetY = 3
+			load("fonts/JollyLodger-Regular.ttf",BitmapFont::class.java,font32)
 		}
 	}
 }

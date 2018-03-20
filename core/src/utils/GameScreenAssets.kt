@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 
 
 class GameScreenAssets(assets : AssetManager) {
-    val textureAtlas : TextureAtlas = assets.get("graphics/atlas.atlas", TextureAtlas::class.java)
+    private val textureAtlas : TextureAtlas = assets.get("graphics/atlas.atlas", TextureAtlas::class.java)
 
     // GEMS:
     val redGem : TextureRegion = textureAtlas.findRegion("gems/red_gem")
@@ -44,8 +44,17 @@ class GameScreenAssets(assets : AssetManager) {
     // ANIMATIONS SCALE:
     var animScaleFactor = 1f
 
+    // INTERFACE
+    val movesCircle : TextureRegion = textureAtlas.findRegion("moves_circle")
+
     // FONT
-    val fontScore : BitmapFont = assets.get("fonts/JollyLodger-Regular.ttf", BitmapFont::class.java)
+    val fontScore : BitmapFont = assets.get("fonts/JollyLodger-Regular.ttf", BitmapFont::class.java)  // 32 size
+
+    // COLORS
+    val myPurpleColor = Color(162/255f,57/255f,202/255f,1f)
+
+    // SIZES
+    val borderWidth = (Gdx.graphics.width.toFloat() / 8f) / 12f
 
     init {
         animScaleFactor = Gdx.graphics.width.toFloat() / 520f // 520f is a reference width
@@ -56,7 +65,7 @@ class GameScreenAssets(assets : AssetManager) {
         yellowExplosion.scaleEffect(animScaleFactor)
         purpleExplosion.scaleEffect(animScaleFactor)
         crossAnimation.scaleEffect(animScaleFactor)
-        border.color = Color.PURPLE
+        border.color = myPurpleColor
     }
 
 }
