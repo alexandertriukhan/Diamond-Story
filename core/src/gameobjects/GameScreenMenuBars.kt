@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
+import utils.Arc
 import utils.GameScreenAssets
 
 class GameScreenMenuBars(private val assets: GameScreenAssets, private val gameGrid: GameGrid) {
@@ -17,10 +18,12 @@ class GameScreenMenuBars(private val assets: GameScreenAssets, private val gameG
     private val moveCircleCenter = Vector2(colWidth + movesCircleRadius,Gdx.graphics.height.toFloat() - movesCircleRadius)
 
     private val shape = ShapeRenderer()
+    private val decreasePercent : Float = gameGrid.movesLeft.toFloat() / 100f
 
     fun drawTopBar(batch: SpriteBatch) {
         drawTopBarShapes(batch)
         drawTopBarMoves(batch)
+        drawProgressArc()
     }
 
     private fun drawTopBarShapes(batch: SpriteBatch) {
@@ -50,6 +53,14 @@ class GameScreenMenuBars(private val assets: GameScreenAssets, private val gameG
         shape.rect(0f,colHeight,Gdx.graphics.width.toFloat(),assets.borderWidth)
         shape.end()
         batch.begin()
+    }
+
+    private fun drawProgressArc() {
+        Gdx.gl.glLineWidth(4f)
+        assets.arc.color = Color.GREEN
+        assets.arc.begin(ShapeRenderer.ShapeType.Line)
+        assets.arc.drawArc(moveCircleCenter.x,moveCircleCenter.y,movesCircleRadius,90f,360f) // start - increase, degrees - decrease
+        assets.arc.end()
     }
 
 }

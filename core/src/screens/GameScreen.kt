@@ -32,6 +32,7 @@ class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen 
         cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0f)
         cam.update()
         gameScreenAssets.border.projectionMatrix = batcher.projectionMatrix
+        gameScreenAssets.arc.projectionMatrix = batcher.projectionMatrix
         Gdx.input.inputProcessor = GestureDetector(InputHandler(this))
     }
 
@@ -90,10 +91,6 @@ class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen 
             }
         }
     }
-//
-//    private fun drawTopMenu() {
-//        scoreFont.draw(batcher,gameGrid.score.toInt().toString(), Gdx.graphics.width - 100f, Gdx.graphics.height - 5f)
-//    }
 
     override fun pause() {
 
