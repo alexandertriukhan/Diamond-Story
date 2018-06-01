@@ -103,20 +103,22 @@ class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen 
     }
 
     fun onSwipe(start: Vector2, direction: String) {
-        val testTouch = getSelected(start)
-        val end = Vector2(9999f,9999f)
-        if (gameGrid.inRange(testTouch.x.toInt(), testTouch.y.toInt())) {
-            when (direction) {
-                "left" -> end.set(testTouch.x - 1, testTouch.y)
-                "right" -> end.set(testTouch.x + 1,testTouch.y)
-                "up" -> end.set(testTouch.x, testTouch.y + 1)
-                "down" -> end.set(testTouch.x, testTouch.y - 1)
-            }
-            if (gameGrid.inRange(end.x.toInt(), end.y.toInt())) {
-                gameGrid.swapActions(testTouch.x, testTouch.y, end.x, end.y)
-                if (isSelected) {
-                    gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.isSelected = false
-                    isSelected = false
+        if (gameGrid.moves.isEmpty() && gameGrid.specialMoves.isEmpty() && gameGrid.isFilled) {
+            val testTouch = getSelected(start)
+            val end = Vector2(9999f, 9999f)
+            if (gameGrid.inRange(testTouch.x.toInt(), testTouch.y.toInt())) {
+                when (direction) {
+                    "left" -> end.set(testTouch.x - 1, testTouch.y)
+                    "right" -> end.set(testTouch.x + 1, testTouch.y)
+                    "up" -> end.set(testTouch.x, testTouch.y + 1)
+                    "down" -> end.set(testTouch.x, testTouch.y - 1)
+                }
+                if (gameGrid.inRange(end.x.toInt(), end.y.toInt())) {
+                    gameGrid.swapActions(testTouch.x, testTouch.y, end.x, end.y)
+                    if (isSelected) {
+                        gameGrid.cells[selectedXY.x.toInt()][selectedXY.y.toInt()].jewel.isSelected = false
+                        isSelected = false
+                    }
                 }
             }
         }
