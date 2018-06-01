@@ -18,6 +18,7 @@ class GameScreenMenuBars(private val assets: GameScreenAssets, private val gameG
 
     private val shape = ShapeRenderer()
     private val decreasePercent : Float = 360f / gameGrid.movesLeft.toFloat()
+    private var progressArcColor = Color.GREEN
 
     fun drawTopBar(batch: SpriteBatch) {
         drawTopBarShapes(batch)
@@ -56,9 +57,9 @@ class GameScreenMenuBars(private val assets: GameScreenAssets, private val gameG
 
     private fun drawProgressArc() {
         Gdx.gl.glLineWidth(8f)
-        assets.arc.color = Color.GREEN
         assets.arc.begin(ShapeRenderer.ShapeType.Line)
-        assets.arc.drawArc(moveCircleCenter.x,moveCircleCenter.y,movesCircleRadius,90f,gameGrid.movesLeft * decreasePercent) // start - increase, degrees - decrease
+        assets.arc.drawArc(moveCircleCenter.x,moveCircleCenter.y,movesCircleRadius,
+                90f,gameGrid.movesLeft * decreasePercent, progressArcColor) // start - increase, degrees - decrease
         assets.arc.end()
     }
 
