@@ -56,8 +56,6 @@ class GameScreenAssets(assets : AssetManager) {
     // SIZES
     val borderWidth = (Gdx.graphics.width.toFloat() / 8f) / 12f
 
-    // OBJECTS
-    val arc = Arc()
 
     init {
         animScaleFactor = Gdx.graphics.width.toFloat() / 520f // 520f is a reference width

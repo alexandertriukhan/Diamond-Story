@@ -7,7 +7,7 @@ import com.alextriukhan.match3.DiamondStoryGame;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		//config.samples = 2;
+		config.samples = 2;
 		config.title = "Diamond Story";
 		config.width = 520;
 		config.height = 780;

@@ -23,7 +23,6 @@ class GameScreenMenuBars(private val assets: GameScreenAssets, private val gameG
     fun drawTopBar(batch: SpriteBatch) {
         drawTopBarShapes(batch)
         drawTopBarMoves(batch)
-        drawProgressArc()
     }
 
     private fun drawTopBarShapes(batch: SpriteBatch) {
@@ -34,8 +33,10 @@ class GameScreenMenuBars(private val assets: GameScreenAssets, private val gameG
         shape.color = assets.myPurpleColor
         shape.rect(0f,Gdx.graphics.height.toFloat() - colHeight - assets.borderWidth,Gdx.graphics.width.toFloat(),assets.borderWidth)
         shape.end()
+        drawProgressArc()
         batch.begin()
-        batch.draw(assets.movesCircle,colWidth,Gdx.graphics.height.toFloat() - movesCircleRadius * 2,movesCircleRadius * 2,movesCircleRadius * 2)
+        // TODO: remove hardcode
+        batch.draw(assets.movesCircle,colWidth + 5f,(Gdx.graphics.height.toFloat() - movesCircleRadius * 2) + 5f,(movesCircleRadius * 2) - 10f,(movesCircleRadius * 2) - 10f)
     }
 
     private fun drawTopBarMoves(batch: SpriteBatch) {
@@ -56,11 +57,12 @@ class GameScreenMenuBars(private val assets: GameScreenAssets, private val gameG
     }
 
     private fun drawProgressArc() {
-        Gdx.gl.glLineWidth(8f)
-        assets.arc.begin(ShapeRenderer.ShapeType.Line)
-        assets.arc.drawArc(moveCircleCenter.x,moveCircleCenter.y,movesCircleRadius,
-                90f,gameGrid.movesLeft * decreasePercent, progressArcColor) // start - increase, degrees - decrease
-        assets.arc.end()
+        shape.begin(ShapeRenderer.ShapeType.Filled)
+        shape.color = Color.BLACK
+        shape.circle(moveCircleCenter.x,moveCircleCenter.y,movesCircleRadius + 5f)
+        shape.color = progressArcColor
+        shape.arc(moveCircleCenter.x,moveCircleCenter.y,movesCircleRadius, 90f,gameGrid.movesLeft * decreasePercent)
+        shape.end()
     }
 
 }
