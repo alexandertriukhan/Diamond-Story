@@ -6,7 +6,25 @@ import screens.GameScreen
 
 
 class InputHandler(private val gs : GameScreen) : GestureListener {
+
+    private val lastTouch = Vector2(0f,0f)
+
     override fun fling(velocityX: Float, velocityY: Float, button: Int): Boolean {
+        val direction: String
+        if (Math.abs(velocityX) > Math.abs(velocityY)) {
+            if (velocityX > 0) {
+                direction = "right"
+            } else {
+                direction = "left"
+            }
+        } else {
+            if (velocityY > 0) {
+                direction = "down"
+            } else {
+                direction = "up"
+            }
+        }
+        gs.onSwipe(lastTouch,direction)
         return true
     }
 
@@ -36,6 +54,7 @@ class InputHandler(private val gs : GameScreen) : GestureListener {
     }
 
     override fun touchDown(x: Float, y: Float, pointer: Int, button: Int): Boolean {
+        lastTouch.set(x,y)
         return true
     }
 
