@@ -46,11 +46,11 @@ class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen 
     override fun render(delta: Float) {
         Gdx.gl.glClearColor(127/255f, 100/255f, 127/255f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-        frameRate.update()
-        frameRate.render()
         batcher.begin()
         menuBar.drawTopBar(batcher)
         menuBar.drawBottomBar(batcher)
+        frameRate.update()
+        frameRate.render(batcher)
         gameGrid.draw(batcher,delta)
         batcher.end()
     }
@@ -92,7 +92,6 @@ class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen 
     }
 
     override fun pause() {
-
     }
 
     override fun resume() {
@@ -104,6 +103,6 @@ class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen 
     }
 
     override fun dispose() {
-
+        batcher.dispose()
     }
 }

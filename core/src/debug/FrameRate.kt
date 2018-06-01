@@ -14,15 +14,13 @@ class FrameRate : Disposable {
     private var sinceChange = 0f
     private var frameRate = Gdx.graphics.framesPerSecond
     private var font: BitmapFont = BitmapFont()
-    private var batch: SpriteBatch = SpriteBatch()
-    private var cam: OrthographicCamera = OrthographicCamera(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
-    fun resize(screenWidth: Int, screenHeight: Int) {
-        cam = OrthographicCamera(screenWidth.toFloat(), screenHeight.toFloat())
-        cam.translate(screenWidth / 2f, screenHeight / 2f)
-        cam.update()
-        batch.projectionMatrix = cam.combined
-    }
+//    fun resize(screenWidth: Int, screenHeight: Int) {
+//        cam = OrthographicCamera(screenWidth.toFloat(), screenHeight.toFloat())
+//        cam.translate(screenWidth / 2f, screenHeight / 2f)
+//        cam.update()
+//        batch.projectionMatrix = cam.combined
+//    }
 
     fun update() {
         val delta = TimeUtils.timeSinceMillis(lastTimeCounted)
@@ -35,15 +33,12 @@ class FrameRate : Disposable {
         }
     }
 
-    fun render() {
-        batch.begin()
+    fun render(batch: SpriteBatch) {
         font.draw(batch,frameRate.toString() + " fps", 3f, Gdx.graphics.height - 3f)
-        batch.end()
     }
 
     override fun dispose() {
         font.dispose()
-        batch.dispose()
     }
 
 }

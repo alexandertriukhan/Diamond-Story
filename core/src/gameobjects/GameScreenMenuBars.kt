@@ -51,7 +51,7 @@ class GameScreenMenuBars(private val assets: GameScreenAssets, private val gameG
         shape.color = Color.DARK_GRAY
         shape.rect(0f,0f,Gdx.graphics.width.toFloat(),colHeight)
         shape.color = assets.myPurpleColor
-        shape.rect(0f,colHeight,Gdx.graphics.width.toFloat(),assets.borderWidth)
+        shape.rect(0f,Gdx.graphics.height.toFloat() /11f,Gdx.graphics.width.toFloat(),assets.borderWidth)
         shape.end()
         batch.begin()
     }
