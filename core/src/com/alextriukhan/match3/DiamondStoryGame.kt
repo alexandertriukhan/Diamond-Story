@@ -14,6 +14,9 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader.FreeTypeFontLoaderParameter
+// import com.badlogic.gdx.net.HttpRequestBuilder.json
+// import gameobjects.Level
+// import java.io.Reader
 
 
 class DiamondStoryGame : ApplicationAdapter() {
@@ -25,6 +28,10 @@ class DiamondStoryGame : ApplicationAdapter() {
 		setResourcesToBeLoaded()
 		assetManager.finishLoading()
 		screenStack.push(GameScreen(gridTypes.square(),assetManager))
+//		val level = Level(gridTypes.square())
+//		val levelStr = json.toJson(level)
+//		val file = Gdx.files.local("l1.json")
+//		file.writeString(levelStr,false)
 	}
 
 	override fun render () {

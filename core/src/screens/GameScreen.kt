@@ -18,7 +18,7 @@ import utils.GameScreenAssets
 class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen {
 
     private val gameScreenAssets = GameScreenAssets(assetManager)
-    private val gameGrid = GameGrid(layout,gameScreenAssets)
+    private val gameGrid = GameGrid(gameScreenAssets.levelData.gridTemplate,gameScreenAssets)
     private val batcher = SpriteBatch()
     private val cam = OrthographicCamera()
     private val menuBar = GameScreenMenuBars(gameScreenAssets,gameGrid)

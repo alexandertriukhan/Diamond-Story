@@ -2,12 +2,15 @@ package utils
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.net.HttpRequestBuilder
+import gameobjects.Level
 
 
 class GameScreenAssets(assets : AssetManager) {
@@ -55,6 +58,9 @@ class GameScreenAssets(assets : AssetManager) {
 
     // SIZES
     val borderWidth = (Gdx.graphics.width.toFloat() / 8f) / 12f
+
+    // LEVEL TEMPLATE
+    val levelData : Level = HttpRequestBuilder.json.fromJson(Level::class.java, FileHandle("levels/l1.json"))
 
     init {
         animScaleFactor = Gdx.graphics.width.toFloat() / 520f // 520f is a reference width
