@@ -9,11 +9,15 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import screens.GameScreen
 import utils.MyStack
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader.FreeTypeFontLoaderParameter
+import com.badlogic.gdx.net.HttpRequestBuilder.json
+import gameobjects.Level
+
 // import com.badlogic.gdx.net.HttpRequestBuilder.json
 // import gameobjects.Level
 // import java.io.Reader
@@ -27,9 +31,10 @@ class DiamondStoryGame : ApplicationAdapter() {
 	override fun create () {
 		setResourcesToBeLoaded()
 		assetManager.finishLoading()
-		screenStack.push(GameScreen(gridTypes.square(),assetManager))
+//		screenStack.push(GameScreen(gridTypes.square(),assetManager))
+//		val levels : Array<Level> = arrayOf(Level(gridTypes.square()), Level(gridTypes.lToRWaterfall()))
 //		val level = Level(gridTypes.square())
-//		val levelStr = json.toJson(level)
+//		val levelStr = json.toJson(levels)
 //		val file = Gdx.files.local("l1.json")
 //		file.writeString(levelStr,false)
 	}
@@ -51,6 +56,7 @@ class DiamondStoryGame : ApplicationAdapter() {
 		screenStack.push(screen)
 	}
 
+	// TODO: this must be resources needed to display main menu
 	private fun setResourcesToBeLoaded() {
 		assetManager.apply {
 			load("graphics/atlas.atlas",TextureAtlas::class.java)
@@ -72,4 +78,5 @@ class DiamondStoryGame : ApplicationAdapter() {
 			load("fonts/JollyLodger-Regular.ttf",BitmapFont::class.java,font32)
 		}
 	}
+
 }
