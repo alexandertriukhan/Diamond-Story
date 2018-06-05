@@ -14,20 +14,20 @@ import gameobjects.Level
 
 
 class GameScreenAssets(assets : AssetManager) {
-    private val textureAtlas : TextureAtlas = assets.get("graphics/atlas.atlas", TextureAtlas::class.java)
+    private val textureAtlas : TextureAtlas = assets.get("graphics/GameScreen.atlas", TextureAtlas::class.java)
 
     // GEMS:
-    val redGem : TextureRegion = textureAtlas.findRegion("gems/red_gem")
-    val greenGem : TextureRegion = textureAtlas.findRegion("gems/green_gem")
-    val blueGem : TextureRegion = textureAtlas.findRegion("gems/blue_gem")
-    val purpleGem : TextureRegion = textureAtlas.findRegion("gems/purple_gem")
-    val yellowGem : TextureRegion = textureAtlas.findRegion("gems/yellow_gem")
-    val superGem : TextureRegion = textureAtlas.findRegion("gems/super_gem")
-    val noGem : TextureRegion = textureAtlas.findRegion("gems/no_gem")
+    val redGem : TextureRegion = textureAtlas.findRegion("red_gem")
+    val greenGem : TextureRegion = textureAtlas.findRegion("green_gem")
+    val blueGem : TextureRegion = textureAtlas.findRegion("blue_gem")
+    val purpleGem : TextureRegion = textureAtlas.findRegion("purple_gem")
+    val yellowGem : TextureRegion = textureAtlas.findRegion("yellow_gem")
+    val superGem : TextureRegion = textureAtlas.findRegion("super_gem")
+    val noGem : TextureRegion = textureAtlas.findRegion("no_gem")
 
     // CELLS:
-    val tileBlank : TextureRegion = textureAtlas.findRegion("cells/tile_blank")
-    val tileBlankLite : TextureRegion = textureAtlas.findRegion("cells/tile_blank_lite")
+    val tileBlank : TextureRegion = textureAtlas.findRegion("tile_blank")
+    val tileBlankLite : TextureRegion = textureAtlas.findRegion("tile_blank_lite")
     val border = ShapeRenderer()
     val selected : TextureRegion = textureAtlas.findRegion("selected")
 

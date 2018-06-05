@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader.FreeTypeFontLoaderParameter
 import com.badlogic.gdx.net.HttpRequestBuilder.json
 import gameobjects.Level
+import screens.GameLoadingScreen
 
 // import com.badlogic.gdx.net.HttpRequestBuilder.json
 // import gameobjects.Level
@@ -29,8 +30,9 @@ class DiamondStoryGame : ApplicationAdapter() {
 	private val screenStack = MyStack<Screen>()
 	
 	override fun create () {
-		setResourcesToBeLoaded()
-		assetManager.finishLoading()
+		screenStack.push(GameLoadingScreen(assetManager,this))
+//		setResourcesToBeLoaded()
+//		assetManager.finishLoading()
 //		screenStack.push(GameScreen(gridTypes.square(),assetManager))
 //		val levels : Array<Level> = arrayOf(Level(gridTypes.square()), Level(gridTypes.lToRWaterfall()))
 //		val level = Level(gridTypes.square())
@@ -57,9 +59,9 @@ class DiamondStoryGame : ApplicationAdapter() {
 	}
 
 	// TODO: this must be resources needed to display main menu
-	private fun setResourcesToBeLoaded() {
+	fun setResourcesToBeLoaded() {
 		assetManager.apply {
-			load("graphics/atlas.atlas",TextureAtlas::class.java)
+			load("graphics/GameScreen.atlas",TextureAtlas::class.java)
 			load("graphics/effects/fire.p",ParticleEffect::class.java)
 			load("graphics/effects/explosion_red.p",ParticleEffect::class.java)
 			load("graphics/effects/explosion_blue.p",ParticleEffect::class.java)
