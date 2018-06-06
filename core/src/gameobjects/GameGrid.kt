@@ -36,7 +36,6 @@ class GameGrid(private val gridType : Array<IntArray>, private val assets: GameS
             assets.tileBlank, assets)})})
     val MAX_ROWS = cells.count()
     val gemSize = Gdx.graphics.width.toFloat() / MAX_ROWS
-    // The following is used to calculate touchOffset
     val MAX_COLS = Gdx.graphics.height.toFloat() / gemSize
     private val gridOffset = (Gdx.graphics.height.toFloat() - (gemSize * cells[0].count())) / 2
     var movesLeft = 30

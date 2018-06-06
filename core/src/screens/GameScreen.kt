@@ -32,7 +32,6 @@ class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen 
     private val frameRate = FrameRate()
     private val viewport = FitViewport(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
-    val initHeight = Gdx.graphics.height.toFloat()
 
     init {
         cam.setToOrtho(false, gameGrid.MAX_ROWS.toFloat(), gameGrid.MAX_COLS)
