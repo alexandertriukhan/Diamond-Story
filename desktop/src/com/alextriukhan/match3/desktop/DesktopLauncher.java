@@ -10,8 +10,7 @@ public class DesktopLauncher {
 		config.samples = 2;
 		config.title = "Diamond Story";
 		config.width = 320;
-		config.height = 568;
-		config.resizable = false;
+		config.height = 480;
 		new LwjglApplication(new DiamondStoryGame(), config);
 	}
 }

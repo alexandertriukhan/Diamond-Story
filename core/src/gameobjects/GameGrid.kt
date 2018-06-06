@@ -36,9 +36,14 @@ class GameGrid(private val gridType : Array<IntArray>, private val assets: GameS
             assets.tileBlank, assets)})})
     val MAX_ROWS = cells.count()
     val gemSize = Gdx.graphics.width.toFloat() / MAX_ROWS
+    // The following is used to calculate touchOffset
     val MAX_COLS = Gdx.graphics.height.toFloat() / gemSize
-    val gridOffset = (Gdx.graphics.height.toFloat() - (gemSize * cells[0].count())) / 2
+    private val gridOffset = (Gdx.graphics.height.toFloat() - (gemSize * cells[0].count())) / 2
     var movesLeft = 30
+
+    var relativeCols = Gdx.graphics.height.toFloat() / gemSize
+    private var relativeGemSize = Gdx.graphics.width.toFloat() / MAX_ROWS
+    var touchOffsetY = (Gdx.graphics.height.toFloat() - (relativeGemSize * cells[0].count())) / 2
 
     init {
         for (i in gridType.indices) {
@@ -97,6 +102,12 @@ class GameGrid(private val gridType : Array<IntArray>, private val assets: GameS
             }
         }
         isFilled = true
+    }
+
+    fun resize(width: Int, height: Int) {
+        relativeGemSize = width.toFloat() / MAX_ROWS
+        relativeCols = height.toFloat() / relativeGemSize
+        touchOffsetY = (height.toFloat() - (relativeGemSize * cells[0].count())) / 2
     }
 
     fun swapField() : List<JewelMove> {

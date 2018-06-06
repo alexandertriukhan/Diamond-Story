@@ -6,17 +6,13 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import screens.GameScreen
 import utils.MyStack
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver
-import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader.FreeTypeFontLoaderParameter
-import com.badlogic.gdx.net.HttpRequestBuilder.json
-import gameobjects.Level
 import screens.GameLoadingScreen
 
 // import com.badlogic.gdx.net.HttpRequestBuilder.json
@@ -39,6 +35,10 @@ class DiamondStoryGame : ApplicationAdapter() {
 //		val levelStr = json.toJson(levels)
 //		val file = Gdx.files.local("l1.json")
 //		file.writeString(levelStr,false)
+//		val javaHeap = Gdx.app.javaHeap
+//		val nativeHeap = Gdx.app.nativeHeap
+//		println("Java heap: " + javaHeap.toString())
+//		println("Native heap: " + nativeHeap.toString())
 	}
 
 	override fun render () {
@@ -56,6 +56,10 @@ class DiamondStoryGame : ApplicationAdapter() {
 
 	fun pushScreen(screen : Screen) {
 		screenStack.push(screen)
+	}
+
+	override fun resize(width: Int, height: Int) {
+		screenStack.peek()?.resize(width,height)
 	}
 
 	// TODO: this must be resources needed to display main menu

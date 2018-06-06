@@ -60,7 +60,7 @@ class GameScreenAssets(assets : AssetManager) {
     val borderWidth = (Gdx.graphics.width.toFloat() / 8f) / 12f
 
     // LEVEL TEMPLATE
-    val levelData : Level = HttpRequestBuilder.json.fromJson(Level::class.java, FileHandle("levels/l1.json"))
+    //val levelData : Level = HttpRequestBuilder.json.fromJson(Level::class.java, FileHandle("levels/l1.json"))
 
     init {
         animScaleFactor = Gdx.graphics.width.toFloat() / 520f // 520f is a reference width

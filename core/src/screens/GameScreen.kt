@@ -9,6 +9,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.input.GestureDetector
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.utils.viewport.ExtendViewport
+import com.badlogic.gdx.utils.viewport.FitViewport
+import com.badlogic.gdx.utils.viewport.Viewport
 import debug.FrameRate
 import gameobjects.*
 import utils.InputHandler
@@ -18,7 +21,7 @@ import utils.GameScreenAssets
 class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen {
 
     private val gameScreenAssets = GameScreenAssets(assetManager)
-    private val gameGrid = GameGrid(gameScreenAssets.levelData.gridTemplate,gameScreenAssets)
+    private val gameGrid = GameGrid(layout,gameScreenAssets)
     private val batcher = SpriteBatch()
     private val cam = OrthographicCamera()
     private val menuBar = GameScreenMenuBars(gameScreenAssets,gameGrid)
@@ -27,6 +30,9 @@ class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen 
     private var isSelected = false
 
     private val frameRate = FrameRate()
+    private val viewport = FitViewport(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+
+    val initHeight = Gdx.graphics.height.toFloat()
 
     init {
         cam.setToOrtho(false, gameGrid.MAX_ROWS.toFloat(), gameGrid.MAX_COLS)
@@ -57,7 +63,7 @@ class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen 
     }
 
     private fun getSelected() : Vector2 {
-        val touch = Vector3(Gdx.input.x.toFloat(), Gdx.input.y.toFloat() + gameGrid.gridOffset, 0f)
+        val touch = Vector3(Gdx.input.x.toFloat(), Gdx.input.y.toFloat() + gameGrid.touchOffsetY, 0f)
         cam.unproject(touch)
         if (touch.x < 0)
             touch.x = -1f
@@ -67,7 +73,7 @@ class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen 
     }
 
     private fun getSelected(touchCoordinates: Vector2) : Vector2 {
-        val touch = Vector3(touchCoordinates.x, touchCoordinates.y + gameGrid.gridOffset, 0f)
+        val touch = Vector3(touchCoordinates.x, touchCoordinates.y + gameGrid.touchOffsetY, 0f)
         cam.unproject(touch)
         if (touch.x < 0)
             touch.x = -1f
@@ -128,11 +134,14 @@ class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen 
     }
 
     override fun resume() {
-
     }
 
     override fun resize(width: Int, height: Int) {
-
+        viewport.update(width,height)
+        cam.setToOrtho(false, gameGrid.MAX_ROWS.toFloat(), gameGrid.relativeCols)
+        cam.update()
+        cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0f)
+        gameGrid.resize(width,height)
     }
 
     override fun dispose() {

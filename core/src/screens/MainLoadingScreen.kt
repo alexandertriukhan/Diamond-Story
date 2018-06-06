@@ -3,6 +3,7 @@ package screens
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 
 class MainLoadingScreen(private val assetManager: AssetManager) : Screen {
 
@@ -11,8 +12,11 @@ class MainLoadingScreen(private val assetManager: AssetManager) : Screen {
 
     init {
         // TODO: add loading graphics atlas
-        assetManager.load("graphics/loading.atlas", TextureAtlas::class.java)
+        assetManager.load("graphics/atlas.atlas", TextureAtlas::class.java)
         assetManager.finishLoading()
+
+        val textureAtlas : TextureAtlas = assetManager.get("graphics/atlas.atlas", TextureAtlas::class.java)
+        val blueGem : TextureRegion = textureAtlas.findRegion("gems/blue_gem")
         //TODO: assign loading textures to variables
     }
 
