@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
 import utils.GameScreenAssets
 
-class GameScreenMenuBars(private val assets: GameScreenAssets, private val gameGrid: GameGrid) {
+class GameScreenUI(private val assets: GameScreenAssets, private val gameGrid: GameGrid) {
 
     // TODO: check why circle of different size on phone and on desktop
     private val colWidth  = Gdx.graphics.width.toFloat() * 0.4f

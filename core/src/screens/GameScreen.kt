@@ -22,7 +22,7 @@ class GameScreen(layout : Array<IntArray>, private val assetManager: AssetManage
     private val gameGrid = GameGrid(layout,gameScreenAssets)
     private val batcher = SpriteBatch()
     private val cam = OrthographicCamera()
-    private val menuBar = GameScreenMenuBars(gameScreenAssets,gameGrid)
+    private val menuBar = GameScreenUI(gameScreenAssets,gameGrid)
 
     private var selectedXY = Vector2()
     private var isSelected = false
@@ -55,7 +55,7 @@ class GameScreen(layout : Array<IntArray>, private val assetManager: AssetManage
         menuBar.drawBottomBar(batcher)
         frameRate.update()
         frameRate.render(batcher)
-        gameGrid.draw(batcher,delta)
+        //gameGrid.draw(batcher,delta)
         batcher.end()
     }
 
