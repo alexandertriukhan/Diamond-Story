@@ -9,16 +9,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.input.GestureDetector
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
-import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.badlogic.gdx.utils.viewport.FitViewport
-import com.badlogic.gdx.utils.viewport.Viewport
 import debug.FrameRate
 import gameobjects.*
 import utils.InputHandler
 import utils.GameScreenAssets
 
 
-class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen {
+class GameScreen(layout : Array<IntArray>, private val assetManager: AssetManager) : Screen {
 
     private val gameScreenAssets = GameScreenAssets(assetManager)
     private val gameGrid = GameGrid(layout,gameScreenAssets)
@@ -145,5 +143,18 @@ class GameScreen(layout : Array<IntArray>, assetManager: AssetManager) : Screen 
 
     override fun dispose() {
         batcher.dispose()
+        disposeResources()
     }
+
+    private fun disposeResources() {
+        assetManager.unload("graphics/GameScreen.atlas")
+        assetManager.unload("graphics/effects/fire.p")
+        assetManager.unload("graphics/effects/explosion_red.p")
+        assetManager.unload("graphics/effects/explosion_blue.p")
+        assetManager.unload("graphics/effects/explosion_green.p")
+        assetManager.unload("graphics/effects/explosion_yellow.p")
+        assetManager.unload("graphics/effects/explosion_purple.p")
+        assetManager.unload("graphics/effects/cross.p")
+    }
+
 }

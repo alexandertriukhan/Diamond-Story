@@ -29,6 +29,8 @@ class LoadingScreen(private val assetManager: AssetManager,
         blueGem = textureAtlas.findRegion("blue_gem")
         when (screenToLoad) {
             Screens.GAME_SCREEN -> setToLoadGameScreenResources()
+            Screens.MAIN_MENU_SCREEN -> setToLoadMainMenuScreenResources()
+            Screens.GAME_MAP_SCREEN -> setToLoadGameMapScreenResources()
         }
     }
 
@@ -49,6 +51,8 @@ class LoadingScreen(private val assetManager: AssetManager,
         if (assetManager.update()) {
             when (screenToLoad) {
                 Screens.GAME_SCREEN -> dGame.replaceScreen(GameScreen(gridTypes.square(), assetManager))
+                Screens.MAIN_MENU_SCREEN -> dGame.replaceScreen(MainMenuScreen())
+                Screens.GAME_MAP_SCREEN -> dGame.replaceScreen(GameMapScreen())
             }
         }
     }
@@ -79,6 +83,7 @@ class LoadingScreen(private val assetManager: AssetManager,
             val resolver = InternalFileHandleResolver()
             setLoader(FreeTypeFontGenerator::class.java, FreeTypeFontGeneratorLoader(resolver))
             setLoader(BitmapFont::class.java,".ttf", FreetypeFontLoader(resolver))
+            // TODO: fonts gonna be loaded only once in DiamondStoryGame
             val font32 = FreetypeFontLoader.FreeTypeFontLoaderParameter()
             font32.fontFileName = "fonts/JollyLodger-Regular.ttf"
             font32.fontParameters.size = (32f * (Gdx.graphics.width.toFloat() / 520f)).toInt()  // 520f used as a referenced width
@@ -86,6 +91,14 @@ class LoadingScreen(private val assetManager: AssetManager,
             font32.fontParameters.shadowOffsetY = 3
             load("fonts/JollyLodger-Regular.ttf", BitmapFont::class.java,font32)
         }
+    }
+
+    private fun setToLoadMainMenuScreenResources() {
+
+    }
+
+    private fun setToLoadGameMapScreenResources() {
+
     }
 
 }
