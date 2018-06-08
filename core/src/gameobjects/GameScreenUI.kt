@@ -11,8 +11,8 @@ import utils.GameScreenAssets
 class GameScreenUI(private val assets: GameScreenAssets, private val gameGrid: GameGrid) {
 
     // TODO: check why circle of different size on phone and on desktop
-    private val colWidth  = Gdx.graphics.width.toFloat() * 0.4f
-    private val colHeight = Gdx.graphics.height.toFloat() /11f
+    private var colWidth  = Gdx.graphics.width.toFloat() * 0.4f
+    private var colHeight = Gdx.graphics.height.toFloat() / 11f
     private val movesCircleRadius = (Gdx.graphics.width.toFloat() - (colWidth * 2)) / 2  // height = width
     private val moveCircleCenter = Vector2(colWidth + movesCircleRadius,Gdx.graphics.height.toFloat() - movesCircleRadius)
 
@@ -26,13 +26,14 @@ class GameScreenUI(private val assets: GameScreenAssets, private val gameGrid: G
     }
 
     private fun drawTopBarShapes(batch: SpriteBatch) {
+//        shape.begin(ShapeRenderer.ShapeType.Filled)
+//        shape.color = Color.DARK_GRAY
+//        shape.rect(0f,Gdx.graphics.height.toFloat() - colHeight,Gdx.graphics.width.toFloat(),colHeight)
+//        shape.color = assets.myPurpleColor
+//        shape.rect(0f,Gdx.graphics.height.toFloat() - colHeight - assets.borderWidth,Gdx.graphics.width.toFloat(),assets.borderWidth)
+//        shape.end()
+        // TODO: draw top bar and bottom bar here
         batch.end()
-        shape.begin(ShapeRenderer.ShapeType.Filled)
-        shape.color = Color.DARK_GRAY
-        shape.rect(0f,Gdx.graphics.height.toFloat() - colHeight,Gdx.graphics.width.toFloat(),colHeight)
-        shape.color = assets.myPurpleColor
-        shape.rect(0f,Gdx.graphics.height.toFloat() - colHeight - assets.borderWidth,Gdx.graphics.width.toFloat(),assets.borderWidth)
-        shape.end()
         drawProgressArc()
         batch.begin()
         // TODO: remove hardcode
@@ -45,16 +46,16 @@ class GameScreenUI(private val assets: GameScreenAssets, private val gameGrid: G
         assets.fontScore.draw(batch,fontLayout,moveCircleCenter.x - (fontLayout.width / 2),moveCircleCenter.y + (fontLayout.height / 2))
     }
 
-    fun drawBottomBar(batch: SpriteBatch) {
-        batch.end()
-        shape.begin(ShapeRenderer.ShapeType.Filled)
-        shape.color = Color.DARK_GRAY
-        shape.rect(0f,0f,Gdx.graphics.width.toFloat(),colHeight)
-        shape.color = assets.myPurpleColor
-        shape.rect(0f,Gdx.graphics.height.toFloat() /11f,Gdx.graphics.width.toFloat(),assets.borderWidth)
-        shape.end()
-        batch.begin()
-    }
+//    fun drawBottomBar(batch: SpriteBatch) {
+//        batch.end()
+//        shape.begin(ShapeRenderer.ShapeType.Filled)
+//        shape.color = Color.DARK_GRAY
+//        shape.rect(0f,0f,Gdx.graphics.width.toFloat(),colHeight)
+//        shape.color = assets.myPurpleColor
+//        shape.rect(0f,Gdx.graphics.height.toFloat() /11f,Gdx.graphics.width.toFloat(),assets.borderWidth)
+//        shape.end()
+//        batch.begin()
+//    }
 
     private fun drawProgressArc() {
         shape.begin(ShapeRenderer.ShapeType.Filled)
@@ -63,6 +64,11 @@ class GameScreenUI(private val assets: GameScreenAssets, private val gameGrid: G
         shape.color = progressArcColor
         shape.arc(moveCircleCenter.x,moveCircleCenter.y,movesCircleRadius, 90f,gameGrid.movesLeft * decreasePercent)
         shape.end()
+    }
+
+    fun resize(width : Int, height : Int) {
+        colWidth = width.toFloat() * 0.4f
+        colHeight = height.toFloat() / 11f
     }
 
 }

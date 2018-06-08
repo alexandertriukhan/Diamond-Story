@@ -52,9 +52,9 @@ class GameScreen(layout : Array<IntArray>, private val assetManager: AssetManage
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         batcher.begin()
         menuBar.drawTopBar(batcher)
-        menuBar.drawBottomBar(batcher)
-        frameRate.update()
-        frameRate.render(batcher)
+//        menuBar.drawBottomBar(batcher)
+        //frameRate.update()
+        //frameRate.render(batcher)
         //gameGrid.draw(batcher,delta)
         batcher.end()
     }
@@ -139,6 +139,7 @@ class GameScreen(layout : Array<IntArray>, private val assetManager: AssetManage
         cam.update()
         cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0f)
         gameGrid.resize(width,height)
+        menuBar.resize(width,height)
     }
 
     override fun dispose() {
