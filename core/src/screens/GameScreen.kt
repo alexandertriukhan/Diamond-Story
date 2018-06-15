@@ -51,10 +51,9 @@ class GameScreen(layout : Array<IntArray>, private val assetManager: AssetManage
         Gdx.gl.glClearColor(127/255f, 100/255f, 127/255f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         batcher.begin()
-        menuBar.drawTopBar(batcher)
-//        menuBar.drawBottomBar(batcher)
-        //frameRate.update()
-        //frameRate.render(batcher)
+        menuBar.draw(batcher)
+        frameRate.update()
+        frameRate.render(batcher)
         //gameGrid.draw(batcher,delta)
         batcher.end()
     }

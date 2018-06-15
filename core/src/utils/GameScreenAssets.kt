@@ -49,6 +49,7 @@ class GameScreenAssets(assets : AssetManager) {
 
     // INTERFACE
     val movesCircle : TextureRegion = textureAtlas.findRegion("moves_circle")
+    val uiBar : TextureRegion = textureAtlas.findRegion("game-ui-bar")
 
     // FONT
     val fontScore : BitmapFont = assets.get("fonts/JollyLodger-Regular.ttf", BitmapFont::class.java)  // 32 size
