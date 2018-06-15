@@ -7,13 +7,16 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
 import utils.GameScreenAssets
+import utils.MyScreenUtils
 
 class GameScreenUI(private val assets: GameScreenAssets, private val gameGrid: GameGrid) {
 
     // TODO: check why circle of different size on phone and on desktop
+    private val screenUtils = MyScreenUtils()
+
     private var colWidth  = Gdx.graphics.width.toFloat() * 0.4f
-    private var colHeight = Gdx.graphics.height.toFloat() / 8.5f
-    private var widthAddition = Gdx.graphics.width.toFloat() / 10f
+    private var colHeight = Gdx.graphics.height.toFloat() / 9f
+    private var widthAddition = screenUtils.initScreenWidth / 10f
     private val movesCircleRadius = (Gdx.graphics.width.toFloat() - (colWidth * 2)) / 2  // height = width
     private val moveCircleCenter = Vector2(colWidth + movesCircleRadius,Gdx.graphics.height.toFloat() - movesCircleRadius)
 
@@ -30,12 +33,13 @@ class GameScreenUI(private val assets: GameScreenAssets, private val gameGrid: G
     }
 
     private fun drawUIBars(batch: SpriteBatch) {
-        batch.draw(assets.uiBar,-(widthAddition / 2f),Gdx.graphics.height.toFloat() - colHeight,Gdx.graphics.width.toFloat() + widthAddition,colHeight)
-        batch.draw(assets.uiBar,-(widthAddition / 2f),0f, (Gdx.graphics.width.toFloat() + widthAddition) / 2f,
-                colHeight / 2f,Gdx.graphics.width.toFloat() + widthAddition,colHeight,1f,1f,180f)
+        batch.draw(assets.uiBar, screenUtils.initXOffset - (widthAddition / 2f),Gdx.graphics.height.toFloat() - colHeight,(screenUtils.initScreenWidth + widthAddition),colHeight)
+        batch.draw(assets.uiBar, screenUtils.initXOffset - (widthAddition / 2f),0f, (screenUtils.initScreenWidth + widthAddition) / 2f,
+                colHeight / 2f,screenUtils.initScreenWidth + widthAddition,colHeight,1f,1f,180f)
     }
 
     private fun drawTopBarMoves(batch: SpriteBatch) {
+        // TODO: use screenUtils, remove hardCode
         batch.draw(assets.movesCircle,colWidth + 5f,(Gdx.graphics.height.toFloat() - movesCircleRadius * 2) + 5f,(movesCircleRadius * 2) - 10f,
                 (movesCircleRadius * 2) - 10f)
         assets.fontScore.color = Color.WHITE

@@ -54,7 +54,7 @@ class GameScreen(layout : Array<IntArray>, private val assetManager: AssetManage
         menuBar.draw(batcher)
         frameRate.update()
         frameRate.render(batcher)
-        //gameGrid.draw(batcher,delta)
+        gameGrid.draw(batcher,delta)
         batcher.end()
     }
 

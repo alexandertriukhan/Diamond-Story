@@ -9,8 +9,17 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.samples = 2;
 		config.title = "Diamond Story";
-		config.width = 320;
-		config.height = 480;
+		int phoneSize = 1;
+		config.width = phoneSizes[phoneSize - 1][0];
+		config.height = phoneSizes[phoneSize - 1][1];
 		new LwjglApplication(new DiamondStoryGame(), config);
 	}
+
+	private static int[][] phoneSizes = new int[][]{
+			{ 320, 480 },  // iPhone 3gs         // 1
+			{ 270, 480 },  // FullHD equivalent  // 2
+			{ 270, 860 },  // Ultra Height       // 3
+			{ 860, 270 },  // Ultra Width        // 4
+	};
+
 }
