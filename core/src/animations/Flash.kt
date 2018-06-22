@@ -4,10 +4,12 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import interfaces.Anim
 
-class Flash(override val texture: TextureRegion, override val speed: Float, override val isLoop: Boolean) : Anim {
+class Flash(override val texture: TextureRegion,
+            override val speed: Float,
+            override val isLoop: Boolean,
+            private val minAlpha : Float = 0.25f) : Anim {
 
     private var alpha = 1f
-    private val minAlpha = 0.25f
     private var increment = false
     private var waitFor1 = false
 
