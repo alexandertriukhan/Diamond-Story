@@ -107,7 +107,7 @@ class GameScreen(layout : Array<IntArray>, private val assetManager: AssetManage
     fun onSwipe(start: Vector2, direction: String) {
         if (gameGrid.moves.isEmpty() && gameGrid.specialMoves.isEmpty() && gameGrid.isFilled) {
             val testTouch = getSelected(start)
-            val end = Vector2(9999f, 9999f)
+            val end = Vector2(Float.MAX_VALUE, Float.MAX_VALUE)
             if (gameGrid.inRange(testTouch.x.toInt(), testTouch.y.toInt())) {
                 when (direction) {
                     "left" -> end.set(testTouch.x - 1, testTouch.y)
