@@ -18,8 +18,9 @@ public class DesktopLauncher {
 	private static int[][] phoneSizes = new int[][]{
 			{ 320, 480 },  // iPhone 3gs         // 1
 			{ 270, 480 },  // FullHD equivalent  // 2
-			{ 270, 860 },  // Ultra Height       // 3
-			{ 860, 270 },  // Ultra Width        // 4
+			{ 540, 960 },  // 2x FullHD          // 3
+			{ 270, 860 },  // Ultra Height       // 4
+			{ 860, 270 },  // Ultra Width        // 5
 	};
 
 }

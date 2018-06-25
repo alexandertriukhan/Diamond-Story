@@ -24,18 +24,41 @@ class GameScreenUI(private val assets: GameScreenAssets, private val gameGrid: G
     private val decreasePercent : Float = 360f / gameGrid.movesLeft.toFloat()
     private var progressArcColor = Color.GREEN
 
+    private val buttonSize = (movesCircleRadius * 2) / 1.5f
+    private val menuButtonPosition = Vector2(Gdx.graphics.width - colHeight * 1.2f,Gdx.graphics.height - colHeight)
+
     fun draw(batch: SpriteBatch) {
         drawUIBars(batch)
         batch.end()
         drawProgressArc()
         batch.begin()
         drawTopBarMoves(batch)
+        drawTopBarButtons(batch)
+        drawObjectives(batch)
+        drawScore(batch)
+        drawBottomBarButtons(batch)
     }
 
     private fun drawUIBars(batch: SpriteBatch) {
         batch.draw(assets.uiBar, screenUtils.initXOffset - (widthAddition / 2f),Gdx.graphics.height.toFloat() - colHeight,(screenUtils.initScreenWidth + widthAddition),colHeight)
         batch.draw(assets.uiBar, screenUtils.initXOffset - (widthAddition / 2f),0f, (screenUtils.initScreenWidth + widthAddition) / 2f,
                 colHeight / 2f,screenUtils.initScreenWidth + widthAddition,colHeight,1f,1f,180f)
+    }
+
+    private fun drawTopBarButtons(batch: SpriteBatch) {
+        batch.draw(assets.menuButton,menuButtonPosition.x,menuButtonPosition.y,buttonSize,buttonSize)
+    }
+
+    private fun drawBottomBarButtons(batch: SpriteBatch) {
+        // TODO: implement
+    }
+
+    private fun drawObjectives(batch: SpriteBatch) {
+        // TODO: implement
+    }
+
+    private fun drawScore(batch: SpriteBatch) {
+        // TODO: implement
     }
 
     private fun drawTopBarMoves(batch: SpriteBatch) {

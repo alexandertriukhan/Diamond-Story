@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader
 import com.badlogic.gdx.math.Interpolation
+import com.badlogic.gdx.math.Vector2
 import enums.Screens
 
 class LoadingScreen(private val assetManager: AssetManager,
@@ -21,6 +22,8 @@ class LoadingScreen(private val assetManager: AssetManager,
     private var blueGem = TextureRegion()
     private val batcher = SpriteBatch()
     private var percent = 0f
+    private val logoWidth = Gdx.graphics.width / 2f
+    private val logoPosition = Vector2(Gdx.graphics.width / 2f - logoWidth / 2, Gdx.graphics.height / 2f - logoWidth / 2)
 
     init {
         assetManager.load("graphics/LoadingScreen.atlas", TextureAtlas::class.java)
@@ -46,7 +49,7 @@ class LoadingScreen(private val assetManager: AssetManager,
         percent = Interpolation.linear.apply(percent, assetManager.progress, 0.1f)
         println("Percentage: " + percent)
         batcher.begin()
-        batcher.draw(blueGem,40f,200f)
+        batcher.draw(blueGem,logoPosition.x, logoPosition.y, logoWidth, logoWidth)
         batcher.end()
         if (assetManager.update()) {
             when (screenToLoad) {

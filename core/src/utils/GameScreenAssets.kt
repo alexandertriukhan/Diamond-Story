@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
@@ -50,6 +51,7 @@ class GameScreenAssets(assets : AssetManager) {
     // INTERFACE
     val movesCircle : TextureRegion = textureAtlas.findRegion("moves_circle")
     val uiBar : TextureRegion = textureAtlas.findRegion("game-ui-bar")
+    val menuButton : TextureRegion = textureAtlas.findRegion("gs_button")
 
     // FONT
     val fontScore : BitmapFont = assets.get("fonts/JollyLodger-Regular.ttf", BitmapFont::class.java)  // 32 size
