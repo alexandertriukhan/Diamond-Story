@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.viewport.FitViewport
 import debug.FrameRate
+import enums.BonusType
 import gameobjects.*
 import utils.InputHandler
 import utils.GameScreenAssets
@@ -22,7 +23,10 @@ class GameScreen(layout : Array<IntArray>, private val assetManager: AssetManage
     private val gameGrid = GameGrid(layout,gameScreenAssets)
     private val batcher = SpriteBatch()
     private val cam = OrthographicCamera()
-    private val menuBar = GameScreenUI(gameScreenAssets,gameGrid)
+    private val menuBar = GameScreenUI(gameScreenAssets,gameGrid, mapOf(BonusType.HAMMER to 1,
+                                                                        BonusType.MASH to 1,
+                                                                        BonusType.BOMB to 2,
+                                                                        BonusType.COLOR_REMOVE to 4))
 
     private var selectedXY = Vector2()
     private var isSelected = false

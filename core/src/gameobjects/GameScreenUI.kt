@@ -2,14 +2,21 @@ package gameobjects
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import enums.BonusType
 import utils.GameScreenAssets
 import utils.MyScreenUtils
 
-class GameScreenUI(private val assets: GameScreenAssets, private val gameGrid: GameGrid) {
+class GameScreenUI(private val assets: GameScreenAssets, private val gameGrid: GameGrid, private val bonuses: Map<BonusType,Int>) {
 
     // TODO: check why circle of different size on phone and on desktop
     private val screenUtils = MyScreenUtils()
@@ -25,7 +32,13 @@ class GameScreenUI(private val assets: GameScreenAssets, private val gameGrid: G
     private var progressArcColor = Color.GREEN
 
     private val buttonSize = (movesCircleRadius * 2) / 1.5f
-    private val menuButtonPosition = Vector2(Gdx.graphics.width - colHeight * 1.2f,Gdx.graphics.height - colHeight)
+    private val menuButtonPosition = Vector2(Gdx.graphics.width - colHeight,Gdx.graphics.height - colHeight)
+
+    private val font = BitmapFont()
+
+    init {
+        assert(bonuses.size < 5,{ "Max number of bonuses is 4!!!" })
+    }
 
     fun draw(batch: SpriteBatch) {
         drawUIBars(batch)
@@ -34,9 +47,9 @@ class GameScreenUI(private val assets: GameScreenAssets, private val gameGrid: G
         batch.begin()
         drawTopBarMoves(batch)
         drawTopBarButtons(batch)
-        drawObjectives(batch)
-        drawScore(batch)
         drawBottomBarButtons(batch)
+        drawScore(batch)
+        drawObjectives(batch)
     }
 
     private fun drawUIBars(batch: SpriteBatch) {
@@ -49,8 +62,42 @@ class GameScreenUI(private val assets: GameScreenAssets, private val gameGrid: G
         batch.draw(assets.menuButton,menuButtonPosition.x,menuButtonPosition.y,buttonSize,buttonSize)
     }
 
+    // TODO: draw count
     private fun drawBottomBarButtons(batch: SpriteBatch) {
-        // TODO: implement
+        val bonusPosition = Vector2(0f,0f)
+        val columnWidth = Gdx.graphics.width / bonuses.size
+        var counter = 0
+        for (bonus in bonuses) {
+            counter++
+            var heightDivider = 4
+            if (bonuses.size == 3) {
+                if (counter == 2)
+                    heightDivider = 2
+            }
+            if (bonuses.size == 4) {
+                if (counter == 2 || counter == 3)
+                    heightDivider = 2
+            }
+            bonusPosition.set(((columnWidth * counter) - columnWidth / 2) - buttonSize / 2, colHeight / heightDivider)
+            when (bonus.key) {
+                BonusType.HAMMER -> {
+                    batch.draw(assets.menuButton,bonusPosition.x,bonusPosition.y,buttonSize,buttonSize)
+                    font.draw(batch,bonus.value.toString(),(bonusPosition.x + buttonSize) - buttonSize / 8,bonusPosition.y + buttonSize / 6)
+                }
+                BonusType.MASH -> {
+                    batch.draw(assets.menuButton,bonusPosition.x,bonusPosition.y,buttonSize,buttonSize)
+                    font.draw(batch,bonus.value.toString(),(bonusPosition.x + buttonSize) - buttonSize / 8,bonusPosition.y + buttonSize / 6)
+                }
+                BonusType.BOMB -> {
+                    batch.draw(assets.menuButton,bonusPosition.x,bonusPosition.y,buttonSize,buttonSize)
+                    font.draw(batch,bonus.value.toString(),(bonusPosition.x + buttonSize) - buttonSize / 8,bonusPosition.y + buttonSize / 6)
+                }
+                BonusType.COLOR_REMOVE -> {
+                    batch.draw(assets.menuButton,bonusPosition.x,bonusPosition.y,buttonSize,buttonSize)
+                    font.draw(batch,bonus.value.toString(),(bonusPosition.x + buttonSize) - buttonSize / 8,bonusPosition.y + buttonSize / 6)
+                }
+            }
+        }
     }
 
     private fun drawObjectives(batch: SpriteBatch) {
@@ -58,7 +105,7 @@ class GameScreenUI(private val assets: GameScreenAssets, private val gameGrid: G
     }
 
     private fun drawScore(batch: SpriteBatch) {
-        // TODO: implement
+        //font.draw(batch,gameGrid.score.toString(),0f,0f)
     }
 
     private fun drawTopBarMoves(batch: SpriteBatch) {
@@ -80,8 +127,6 @@ class GameScreenUI(private val assets: GameScreenAssets, private val gameGrid: G
     }
 
     fun resize(width : Int, height : Int) {
-        colWidth = width.toFloat() * 0.4f
-        colHeight = height.toFloat() / 11f
     }
 
 }
