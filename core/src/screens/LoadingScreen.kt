@@ -13,10 +13,12 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import enums.Screens
+import gameobjects.Level
 
 class LoadingScreen(private val assetManager: AssetManager,
                     private val dGame: DiamondStoryGame,
-                    private val screenToLoad: Screens) : Screen {
+                    private val screenToLoad: Screens,
+                    private val level : Level = Level()) : Screen {
 
     private var textureAtlas = TextureAtlas()
     private var blueGem = TextureRegion()
@@ -53,7 +55,7 @@ class LoadingScreen(private val assetManager: AssetManager,
         batcher.end()
         if (assetManager.update()) {
             when (screenToLoad) {
-                Screens.GAME_SCREEN -> dGame.replaceScreen(GameScreen(gridTypes.square(), assetManager))
+                Screens.GAME_SCREEN -> dGame.replaceScreen(GameScreen(level.gridTemplate, assetManager))
                 Screens.MAIN_MENU_SCREEN -> dGame.replaceScreen(MainMenuScreen())
                 Screens.GAME_MAP_SCREEN -> dGame.replaceScreen(GameMapScreen())
             }

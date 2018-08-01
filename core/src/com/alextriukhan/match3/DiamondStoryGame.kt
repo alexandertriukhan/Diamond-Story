@@ -4,13 +4,11 @@ import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.net.HttpRequestBuilder.json
 import utils.MyStack
 import enums.Screens
+import gameobjects.Level
 import screens.LoadingScreen
-
-// import com.badlogic.gdx.net.HttpRequestBuilder.json
-// import gameobjects.Level
-// import java.io.Reader
 
 
 class DiamondStoryGame : ApplicationAdapter() {
@@ -19,10 +17,10 @@ class DiamondStoryGame : ApplicationAdapter() {
 	private val screenStack = MyStack<Screen>()
 	
 	override fun create () {
-		screenStack.push(LoadingScreen(assetManager,this, Screens.GAME_SCREEN))
-//		val levels : Array<Level> = arrayOf(Level(gridTypes.square()), Level(gridTypes.lToRWaterfall()))
-//		val level = Level(gridTypes.square())
-//		val levelStr = json.toJson(levels)
+		val levelData = json.fromJson(Level::class.java,Gdx.files.local("levels/l1.json"))
+		screenStack.push(LoadingScreen(assetManager,this, Screens.GAME_SCREEN, levelData))
+//		val level = Level(gridTypes.square(), arrayOf(Objective(ObjectiveType.CHAINED,0,0)), intArrayOf(10000,50000,200000))
+//		val levelStr = json.toJson(level)
 //		val file = Gdx.files.local("l1.json")
 //		file.writeString(levelStr,false)
 //		val javaHeap = Gdx.app.javaHeap
