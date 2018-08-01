@@ -12,8 +12,9 @@ import utils.GameScreenAssets
 import java.util.*
 
 // TODO: implement intArrayOf(0, 1, 1, 1) etc., also consider refactoring
-class GameGrid(private val gridType : Array<IntArray>, private val assets: GameScreenAssets) {
+class GameGrid(private val levelData : Level, private val assets: GameScreenAssets) {
 
+    private val gridType = levelData.gridTemplate
     private val destroyAnimations = DestroyAnimsList()
     private val fallDownAcceleration = 0.45f  // ORIGINAL: 0.45f
     private val itemsToCheck = mutableListOf<JewelMove>()

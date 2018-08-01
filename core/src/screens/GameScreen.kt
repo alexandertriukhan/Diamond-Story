@@ -20,7 +20,7 @@ import utils.GameScreenAssets
 class GameScreen(levelData : Level, private val assetManager: AssetManager) : Screen {
 
     private val gameScreenAssets = GameScreenAssets(assetManager)
-    private val gameGrid = GameGrid(levelData.gridTemplate,gameScreenAssets)
+    private val gameGrid = GameGrid(levelData,gameScreenAssets)
     private val batcher = SpriteBatch()
     private val cam = OrthographicCamera()
     private val menuBar = GameScreenUI(gameScreenAssets,gameGrid, mapOf(BonusType.HAMMER to 1,

@@ -105,7 +105,8 @@ class GameScreenUI(private val assets: GameScreenAssets, private val gameGrid: G
     }
 
     private fun drawScore(batch: SpriteBatch) {
-        //font.draw(batch,gameGrid.score.toString(),0f,0f)
+        // TODO: remove hardcode
+        font.draw(batch,gameGrid.score.toInt().toString(),menuButtonPosition.x - 50,menuButtonPosition.y + 25)
     }
 
     private fun drawTopBarMoves(batch: SpriteBatch) {
