@@ -17,7 +17,7 @@ class DiamondStoryGame : ApplicationAdapter() {
 	private val screenStack = MyStack<Screen>()
 	
 	override fun create () {
-		val levelData = json.fromJson(Level::class.java,Gdx.files.local("levels/l1.json"))
+		val levelData = json.fromJson(Level::class.java,Gdx.files.internal("levels/l1.json"))
 		screenStack.push(LoadingScreen(assetManager,this, Screens.GAME_SCREEN, levelData))
 //		val level = Level(gridTypes.square(), arrayOf(Objective(ObjectiveType.CHAINED,0,0)), intArrayOf(10000,50000,200000))
 //		val levelStr = json.toJson(level)
