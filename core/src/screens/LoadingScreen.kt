@@ -55,7 +55,7 @@ class LoadingScreen(private val assetManager: AssetManager,
         batcher.end()
         if (assetManager.update()) {
             when (screenToLoad) {
-                Screens.GAME_SCREEN -> dGame.replaceScreen(GameScreen(level.gridTemplate, assetManager))
+                Screens.GAME_SCREEN -> dGame.replaceScreen(GameScreen(level, assetManager))
                 Screens.MAIN_MENU_SCREEN -> dGame.replaceScreen(MainMenuScreen())
                 Screens.GAME_MAP_SCREEN -> dGame.replaceScreen(GameMapScreen())
             }
