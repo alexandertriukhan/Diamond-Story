@@ -135,7 +135,6 @@ class GameScreen(private val levelData : Level, private val assetManager: AssetM
     }
 
     override fun resume() {
-        LoadingScreen(assetManager,Screens.GAME_SCREEN,levelData,true)
     }
 
     override fun resize(width: Int, height: Int) {

@@ -9,13 +9,13 @@ import utils.MyStack
 import screens.LoadingScreen
 
 
-object DiamondStoryGame : ApplicationAdapter() {
+class DiamondStoryGame : ApplicationAdapter() {
 
 	private val assetManager = AssetManager()
 	private val screenStack = MyStack<Screen>()
 
 	override fun create () {
-		screenStack.push(LoadingScreen(assetManager))
+		screenStack.push(LoadingScreen(assetManager,this))
 //		val level = Level(gridTypes.square(), arrayOf(Objective(ObjectiveType.CHAINED,0,0)), intArrayOf(10000,50000,200000))
 //		val levelStr = json.toJson(level)
 //		val file = Gdx.files.local("l1.json")

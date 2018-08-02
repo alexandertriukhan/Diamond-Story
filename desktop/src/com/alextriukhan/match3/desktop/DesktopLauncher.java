@@ -12,7 +12,7 @@ public class DesktopLauncher {
 		int phoneSize = 1;
 		config.width = phoneSizes[phoneSize - 1][0];
 		config.height = phoneSizes[phoneSize - 1][1];
-		new LwjglApplication(DiamondStoryGame.INSTANCE, config);
+		new LwjglApplication(new DiamondStoryGame(), config);
 	}
 
 	private static int[][] phoneSizes = new int[][] {

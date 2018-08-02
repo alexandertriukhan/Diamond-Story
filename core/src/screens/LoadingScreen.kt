@@ -1,7 +1,6 @@
 package screens
 
-import com.alextriukhan.match3.DiamondStoryGame.pushScreen
-import com.alextriukhan.match3.DiamondStoryGame.replaceScreen
+import com.alextriukhan.match3.DiamondStoryGame
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.assets.AssetManager
@@ -18,6 +17,7 @@ import enums.Screens
 import gameobjects.Level
 
 class LoadingScreen(private val assetManager: AssetManager,
+                    private val game : DiamondStoryGame,
                     private val screenToLoad: Screens = Screens.MAIN_MENU_SCREEN,
                     private val level : Level = Level(),private val renew : Boolean = false) : Screen {
 
@@ -56,9 +56,9 @@ class LoadingScreen(private val assetManager: AssetManager,
         batcher.end()
         if (assetManager.update() && !renew) {
             when (screenToLoad) {
-                Screens.GAME_SCREEN -> pushScreen(GameScreen(level, assetManager))
-                Screens.MAIN_MENU_SCREEN -> replaceScreen(MainMenuScreen(assetManager))
-                Screens.GAME_MAP_SCREEN -> replaceScreen(GameMapScreen())
+                Screens.GAME_SCREEN -> game.pushScreen(GameScreen(level, assetManager))
+                Screens.MAIN_MENU_SCREEN -> game.replaceScreen(MainMenuScreen(assetManager, game))
+                Screens.GAME_MAP_SCREEN -> game.replaceScreen(GameMapScreen())
             }
         }
     }

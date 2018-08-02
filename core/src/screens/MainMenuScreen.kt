@@ -20,7 +20,7 @@ import utils.setOnClickListener
     as it won't have too much of resources, but that is
     a thing to be be considered.
  */
-class MainMenuScreen(private val assetManager: AssetManager) : Screen {
+class MainMenuScreen(private val assetManager: AssetManager, private val game: DiamondStoryGame) : Screen {
 
     private val assets        = GlobalAssets(assetManager)
     private val table         = Table()
@@ -52,7 +52,7 @@ class MainMenuScreen(private val assetManager: AssetManager) : Screen {
         stage.addActor(table)
 
         newGameButton.setOnClickListener {
-            DiamondStoryGame.pushScreen(LoadingScreen(assetManager, Screens.GAME_SCREEN, levelsData[1]))
+            game.pushScreen(LoadingScreen(assetManager, game, Screens.GAME_SCREEN, levelsData[1]))
         }
         exitButton.setOnClickListener {
             Gdx.app.exit()
