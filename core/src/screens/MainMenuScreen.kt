@@ -84,6 +84,7 @@ class MainMenuScreen(private val assetManager: AssetManager) : Screen {
     }
 
     override fun dispose() {
+        assets.dispose()
     }
 
 }
