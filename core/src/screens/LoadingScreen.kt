@@ -19,7 +19,7 @@ import gameobjects.Level
 
 class LoadingScreen(private val assetManager: AssetManager,
                     private val screenToLoad: Screens = Screens.MAIN_MENU_SCREEN,
-                    private val level : Level = Level()) : Screen {
+                    private val level : Level = Level(),private val renew : Boolean = false) : Screen {
 
     private var textureAtlas = TextureAtlas()
     private var blueGem = TextureRegion()
@@ -54,7 +54,7 @@ class LoadingScreen(private val assetManager: AssetManager,
         batcher.begin()
         batcher.draw(blueGem,logoPosition.x, logoPosition.y, logoWidth, logoWidth)
         batcher.end()
-        if (assetManager.update()) {
+        if (assetManager.update() && !renew) {
             when (screenToLoad) {
                 Screens.GAME_SCREEN -> pushScreen(GameScreen(level, assetManager))
                 Screens.MAIN_MENU_SCREEN -> replaceScreen(MainMenuScreen(assetManager))
@@ -67,6 +67,8 @@ class LoadingScreen(private val assetManager: AssetManager,
     }
 
     override fun resume() {
+        assetManager.load("graphics/LoadingScreen.atlas", TextureAtlas::class.java)
+        assetManager.finishLoading()
     }
 
     override fun resize(width: Int, height: Int) {
@@ -74,6 +76,7 @@ class LoadingScreen(private val assetManager: AssetManager,
 
     override fun dispose() {
         assetManager.unload("graphics/LoadingScreen.atlas")
+        println("LoadingScreen disposed")
     }
 
     private fun setToLoadGameScreenResources() {

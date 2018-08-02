@@ -12,12 +12,13 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.viewport.FitViewport
 import debug.FrameRate
 import enums.BonusType
+import enums.Screens
 import gameobjects.*
 import utils.InputHandler
 import utils.GameScreenAssets
 
 
-class GameScreen(levelData : Level, private val assetManager: AssetManager) : Screen {
+class GameScreen(private val levelData : Level, private val assetManager: AssetManager) : Screen {
 
     private val gameScreenAssets = GameScreenAssets(assetManager)
     private val gameGrid = GameGrid(levelData,gameScreenAssets)
@@ -134,6 +135,7 @@ class GameScreen(levelData : Level, private val assetManager: AssetManager) : Sc
     }
 
     override fun resume() {
+        LoadingScreen(assetManager,Screens.GAME_SCREEN,levelData,true)
     }
 
     override fun resize(width: Int, height: Int) {
@@ -148,6 +150,7 @@ class GameScreen(levelData : Level, private val assetManager: AssetManager) : Sc
     override fun dispose() {
         batcher.dispose()
         disposeResources()
+        println("GameScreen disposed")
     }
 
     private fun disposeResources() {

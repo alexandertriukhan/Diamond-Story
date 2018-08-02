@@ -52,7 +52,6 @@ class MainMenuScreen(private val assetManager: AssetManager) : Screen {
         stage.addActor(table)
 
         newGameButton.setOnClickListener {
-            print("CLICK")
             DiamondStoryGame.pushScreen(LoadingScreen(assetManager, Screens.GAME_SCREEN, levelsData[1]))
         }
         exitButton.setOnClickListener {
@@ -84,7 +83,7 @@ class MainMenuScreen(private val assetManager: AssetManager) : Screen {
     }
 
     override fun dispose() {
-        assets.dispose()
+        assetManager.dispose()
     }
 
 }
