@@ -1,6 +1,7 @@
 package screens
 
-import com.alextriukhan.match3.DiamondStoryGame
+import com.alextriukhan.match3.DiamondStoryGame.pushScreen
+import com.alextriukhan.match3.DiamondStoryGame.replaceScreen
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.assets.AssetManager
@@ -12,12 +13,12 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import enums.Screens
 import gameobjects.Level
 
 class LoadingScreen(private val assetManager: AssetManager,
-                    private val dGame: DiamondStoryGame,
-                    private val screenToLoad: Screens,
+                    private val screenToLoad: Screens = Screens.MAIN_MENU_SCREEN,
                     private val level : Level = Level()) : Screen {
 
     private var textureAtlas = TextureAtlas()
@@ -55,9 +56,9 @@ class LoadingScreen(private val assetManager: AssetManager,
         batcher.end()
         if (assetManager.update()) {
             when (screenToLoad) {
-                Screens.GAME_SCREEN -> dGame.replaceScreen(GameScreen(level, assetManager))
-                Screens.MAIN_MENU_SCREEN -> dGame.replaceScreen(MainMenuScreen())
-                Screens.GAME_MAP_SCREEN -> dGame.replaceScreen(GameMapScreen())
+                Screens.GAME_SCREEN -> pushScreen(GameScreen(level, assetManager))
+                Screens.MAIN_MENU_SCREEN -> replaceScreen(MainMenuScreen(assetManager))
+                Screens.GAME_MAP_SCREEN -> replaceScreen(GameMapScreen())
             }
         }
     }
@@ -99,7 +100,11 @@ class LoadingScreen(private val assetManager: AssetManager,
     }
 
     private fun setToLoadMainMenuScreenResources() {
-
+        // Global assets loading:
+        assetManager.apply {
+            load("skin/glassy-ui.json", Skin::class.java)
+        }
+        // TODO: MainScreenAssets loading:
     }
 
     private fun setToLoadGameMapScreenResources() {

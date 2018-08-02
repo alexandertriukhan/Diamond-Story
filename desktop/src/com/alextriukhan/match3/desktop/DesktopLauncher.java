@@ -12,10 +12,10 @@ public class DesktopLauncher {
 		int phoneSize = 1;
 		config.width = phoneSizes[phoneSize - 1][0];
 		config.height = phoneSizes[phoneSize - 1][1];
-		new LwjglApplication(new DiamondStoryGame(), config);
+		new LwjglApplication(DiamondStoryGame.INSTANCE, config);
 	}
 
-	private static int[][] phoneSizes = new int[][]{
+	private static int[][] phoneSizes = new int[][] {
 			{ 320, 480 },  // iPhone 3gs         // 1
 			{ 270, 480 },  // FullHD equivalent  // 2
 			{ 540, 960 },  // 2x FullHD          // 3
