@@ -52,7 +52,7 @@ class MainMenuScreen(private val assetManager: AssetManager, private val game: D
         stage.addActor(table)
 
         newGameButton.setOnClickListener {
-            game.pushScreen(LoadingScreen(assetManager, game, Screens.GAME_SCREEN, levelsData[1]))
+            game.pushScreen(LoadingScreen(assetManager, game, Screens.GAME_SCREEN, levelsData[0]))
         }
         exitButton.setOnClickListener {
             Gdx.app.exit()
