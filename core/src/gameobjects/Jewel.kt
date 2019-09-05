@@ -1,13 +1,11 @@
 package gameobjects
 
 import animations.Flash
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import enums.EffectType
 import enums.JewelType
-import org.omg.CORBA.Object
 import utils.GameScreenAssets
 
 class Jewel(var jewelType : JewelType, private val assets: GameScreenAssets) {
