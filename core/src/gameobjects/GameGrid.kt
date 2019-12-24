@@ -9,6 +9,7 @@ import enums.EffectType
 import enums.JewelType
 import enums.MatchType
 import utils.GameScreenAssets
+import constants.Values
 import java.util.*
 
 // TODO: implement intArrayOf(0, 1, 1, 1) etc., also consider refactoring
@@ -20,14 +21,13 @@ class GameGrid(private val levelData : Level, private val assets: GameScreenAsse
     private val itemsToCheck = mutableListOf<JewelMove>()
     private var needMoves = false
     private var makeCheck = false
-    private val moveSpeed = 8f  // ORIGINAL: 8f
+    private val moveSpeed = Values.JEWEL_MOVEMENT_SPEED  // ORIGINAL: 8f
 
     val lastMoves = mutableListOf<JewelMove>()
 
     var score = 0f
     private var moveScore = 0f
     private var scoreMultiplier = 1f
-    private val match3Score = 100f
 
     val specialMoves = mutableListOf<JewelMove>()
     val moves = mutableListOf<JewelMove>()
@@ -456,8 +456,8 @@ class GameGrid(private val levelData : Level, private val assets: GameScreenAsse
             } else {
                 destroyAnimations.add(DestroyAnimation(assets,gem.x,gem.y,
                         Jewel(cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType,assets),EffectType.NONE,gemSize,
-                        gridOffset,(match3Score * scoreMultiplier).toInt()))
-                moveScore += match3Score * scoreMultiplier
+                        gridOffset,(Values.SCORE_MATCH_3 * scoreMultiplier).toInt()))
+                moveScore += Values.SCORE_MATCH_3 * scoreMultiplier
                 cells[gem.x.toInt()][gem.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
             }
         }
@@ -487,8 +487,8 @@ class GameGrid(private val levelData : Level, private val assets: GameScreenAsse
             }
             destroyAnimations.add(DestroyAnimation(assets,xy.x,xy.y,
                     Jewel(cells[xy.x.toInt()][xy.y.toInt()].jewel.jewelType,assets),EffectType.FIRE,gemSize
-                    ,gridOffset,(match3Score * scoreMultiplier).toInt()))
-            moveScore += match3Score * scoreMultiplier
+                    ,gridOffset,(Values.SCORE_MATCH_3 * scoreMultiplier).toInt()))
+            moveScore += Values.SCORE_MATCH_3 * scoreMultiplier
             cells[xy.x.toInt()][xy.y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
         }
     }
@@ -496,8 +496,8 @@ class GameGrid(private val levelData : Level, private val assets: GameScreenAsse
     private fun crossDestroy(x: Float, y: Float) {
         cells[x.toInt()][y.toInt()].jewel.effect = EffectType.NONE
         destroyAnimations.add(DestroyAnimation(assets,x,y,
-                Jewel(cells[x.toInt()][y.toInt()].jewel.jewelType,assets),EffectType.CROSS,gemSize,gridOffset,(match3Score * scoreMultiplier).toInt()))
-        moveScore += match3Score * scoreMultiplier
+                Jewel(cells[x.toInt()][y.toInt()].jewel.jewelType,assets),EffectType.CROSS,gemSize,gridOffset,(Values.SCORE_MATCH_3 * scoreMultiplier).toInt()))
+        moveScore += Values.SCORE_MATCH_3 * scoreMultiplier
         // TODO: dont add for x y
         for (row in (0..(cells.count() - 1))) {
             if (cells[row][y.toInt()].jewel.effect != EffectType.NONE) {
@@ -511,8 +511,8 @@ class GameGrid(private val levelData : Level, private val assets: GameScreenAsse
                 }
             }
             destroyAnimations.add(DestroyAnimation(assets,row.toFloat(),y,
-                    Jewel(cells[row][y.toInt()].jewel.jewelType,assets),EffectType.FIRE,gemSize,gridOffset,(match3Score * scoreMultiplier).toInt()))
-            moveScore += match3Score * scoreMultiplier
+                    Jewel(cells[row][y.toInt()].jewel.jewelType,assets),EffectType.FIRE,gemSize,gridOffset,(Values.SCORE_MATCH_3 * scoreMultiplier).toInt()))
+            moveScore += Values.SCORE_MATCH_3 * scoreMultiplier
             cells[row][y.toInt()].jewel.jewelType = JewelType.NO_JEWEL
         }
         for (col in (0..(cells[0].count() - 1))) {
@@ -527,8 +527,8 @@ class GameGrid(private val levelData : Level, private val assets: GameScreenAsse
                 }
             }
             destroyAnimations.add(DestroyAnimation(assets,x,col.toFloat(),
-                    Jewel(cells[x.toInt()][col].jewel.jewelType,assets),EffectType.FIRE,gemSize,gridOffset,(match3Score * scoreMultiplier).toInt()))
-            moveScore += match3Score * scoreMultiplier
+                    Jewel(cells[x.toInt()][col].jewel.jewelType,assets),EffectType.FIRE,gemSize,gridOffset,(Values.SCORE_MATCH_3 * scoreMultiplier).toInt()))
+            moveScore += Values.SCORE_MATCH_3 * scoreMultiplier
             cells[x.toInt()][col].jewel.jewelType = JewelType.NO_JEWEL
         }
     }

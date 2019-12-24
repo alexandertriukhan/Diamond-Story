@@ -9,7 +9,7 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.samples = 2;
 		config.title = "Diamond Story";
-		int phoneSize = 1;
+		int phoneSize = 3;
 		config.width = phoneSizes[phoneSize - 1][0];
 		config.height = phoneSizes[phoneSize - 1][1];
 		new LwjglApplication(new DiamondStoryGame(), config);
