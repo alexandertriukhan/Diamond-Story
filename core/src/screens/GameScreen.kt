@@ -12,22 +12,21 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.viewport.FitViewport
 import debug.FrameRate
 import enums.BonusType
-import enums.Screens
 import gameobjects.*
 import utils.InputHandler
 import utils.GameScreenAssets
 
 
-class GameScreen(private val levelData : Level, private val assetManager: AssetManager) : Screen {
+class GameScreen(levelData: Level, private val assetManager: AssetManager) : Screen {
 
     private val gameScreenAssets = GameScreenAssets(assetManager)
-    private val gameGrid = GameGrid(levelData,gameScreenAssets)
+    private val gameGrid = GameGrid(levelData, gameScreenAssets)
     private val batcher = SpriteBatch()
     private val cam = OrthographicCamera()
-    private val menuBar = GameScreenUI(gameScreenAssets,gameGrid, mapOf(BonusType.HAMMER to 1,
-                                                                        BonusType.MASH to 1,
-                                                                        BonusType.BOMB to 2,
-                                                                        BonusType.COLOR_REMOVE to 4))
+    private val menuBar = GameScreenUI(gameScreenAssets, gameGrid, mapOf(BonusType.HAMMER to 1,
+            BonusType.MASH to 1,
+            BonusType.BOMB to 2,
+            BonusType.COLOR_REMOVE to 4))
 
     private var selectedXY = Vector2()
     private var isSelected = false
@@ -53,17 +52,17 @@ class GameScreen(private val levelData : Level, private val assetManager: AssetM
     }
 
     override fun render(delta: Float) {
-        Gdx.gl.glClearColor(127/255f, 100/255f, 127/255f, 1f)
+        Gdx.gl.glClearColor(127 / 255f, 100 / 255f, 127 / 255f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         batcher.begin()
         menuBar.draw(batcher)
         frameRate.update()
         frameRate.render(batcher)
-        gameGrid.draw(batcher,delta)
+        gameGrid.draw(batcher, delta)
         batcher.end()
     }
 
-    private fun getSelected() : Vector2 {
+    private fun getSelected(): Vector2 {
         val touch = Vector3(Gdx.input.x.toFloat(), Gdx.input.y.toFloat() + gameGrid.touchOffsetY, 0f)
         cam.unproject(touch)
         if (touch.x < 0)
@@ -73,7 +72,7 @@ class GameScreen(private val levelData : Level, private val assetManager: AssetM
         return Vector2(touch.x.toInt().toFloat(), touch.y.toInt().toFloat())
     }
 
-    private fun getSelected(touchCoordinates: Vector2) : Vector2 {
+    private fun getSelected(touchCoordinates: Vector2): Vector2 {
         val touch = Vector3(touchCoordinates.x, touchCoordinates.y + gameGrid.touchOffsetY, 0f)
         cam.unproject(touch)
         if (touch.x < 0)
@@ -138,12 +137,12 @@ class GameScreen(private val levelData : Level, private val assetManager: AssetM
     }
 
     override fun resize(width: Int, height: Int) {
-        viewport.update(width,height)
+        viewport.update(width, height)
         cam.setToOrtho(false, gameGrid.MAX_ROWS.toFloat(), gameGrid.relativeCols)
         cam.update()
         cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0f)
-        gameGrid.resize(width,height)
-        menuBar.resize(width,height)
+        gameGrid.resize(width, height)
+        menuBar.resize(width, height)
     }
 
     override fun dispose() {
