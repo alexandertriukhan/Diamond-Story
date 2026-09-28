@@ -1,55 +1,45 @@
-apply plugin: "java"
+apply plugin: 'application'
 
-sourceCompatibility = 1.7
-sourceSets.main.java.srcDirs = [ "src/" ]
+sourceSets.main.java.srcDirs = ['src/']
+// Packs the assets into the runnable jar; `run` reads them straight from assetsDir.
+sourceSets.main.resources.srcDirs = [assetsDir]
+sourceSets.main.resources.exclude('src/**', '**/*.tpproj', '.git/**')
 
-project.ext.mainClassName = "com.alextriukhan.match3.desktop.DesktopLauncher"
-project.ext.assetsDir = new File("../android/assets");
+application.mainClass = 'com.alextriukhan.match3.desktop.DesktopLauncher'
 
-task run(dependsOn: classes, type: JavaExec) {
-    main = project.mainClassName
-    classpath = sourceSets.main.runtimeClasspath
-    standardInput = System.in
-    workingDir = project.assetsDir
-    ignoreExitValue = true
+dependencies {
+    implementation project(':core')
+    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+
+    // Newer LWJGL avoids native-access warnings on recent JDKs.
+    constraints {
+        implementation "org.lwjgl:lwjgl:$lwjgl3Version"
+        implementation "org.lwjgl:lwjgl-glfw:$lwjgl3Version"
+        implementation "org.lwjgl:lwjgl-jemalloc:$lwjgl3Version"
+        implementation "org.lwjgl:lwjgl-openal:$lwjgl3Version"
+        implementation "org.lwjgl:lwjgl-opengl:$lwjgl3Version"
+        implementation "org.lwjgl:lwjgl-stb:$lwjgl3Version"
+    }
 }
 
-task debug(dependsOn: classes, type: JavaExec) {
-    main = project.mainClassName
-    classpath = sourceSets.main.runtimeClasspath
-    standardInput = System.in
-    workingDir = project.assetsDir
-    ignoreExitValue = true
-    debug = true
+def isMac = System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('mac')
+
+tasks.named('run', JavaExec) {
+    workingDir = assetsDir
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
+    // GLFW on macOS must run on the main thread.
+    if (isMac) jvmArgs '-XstartOnFirstThread'
 }
 
-task dist(type: Jar) {
-    from files(sourceSets.main.output.classesDirs)
-    from files(sourceSets.main.output.resourcesDir)
-    from {configurations.compile.collect {zipTree(it)}}
-    from files(project.assetsDir);
- 
+tasks.named('jar', Jar) {
+    archiveFileName = "${appName}-${projectVersion}.jar"
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    dependsOn configurations.runtimeClasspath
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    exclude('META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA')
     manifest {
-        attributes 'Main-Class': project.mainClassName
+        attributes 'Main-Class': application.mainClass, 'Enable-Native-Access': 'ALL-UNNAMED', 'Multi-Release': 'true'
     }
-}
-
-dist.dependsOn classes
-
-eclipse {
-    project {
-        name = appName + "-desktop"
-        linkedResource name: 'assets', type: '2', location: 'PARENT-1-PROJECT_LOC/android/assets'
-    }
-}
-
-task afterEclipseImport(description: "Post processing after project generation", group: "IDE") {
-  doLast {
-    def classpath = new XmlParser().parse(file(".classpath"))
-    new Node(classpath, "classpathentry", [ kind: 'src', path: 'assets' ]);
-    def writer = new FileWriter(file(".classpath"))
-    def printer = new XmlNodePrinter(new PrintWriter(writer))
-    printer.setPreserveWhitespace(true)
-    printer.print(classpath)
-  }
 }

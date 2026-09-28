@@ -5,11 +5,11 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.net.HttpRequestBuilder
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Json
 import enums.Screens
 import gameobjects.Level
 import utils.GlobalAssets
@@ -28,6 +28,8 @@ class MainMenuScreen(private val assetManager: AssetManager, private val game: D
     private val newGameButton = TextButton("Story Mode", assets.skin)
     private val stage         = Stage()
     private val exitButton    = TextButton("Quit", assets.skin)
+    // Level files may contain fields the current classes no longer have (e.g. objective posX/posY in l1.json)
+    private val levelJson     = Json().apply { ignoreUnknownFields = true }
     val levelsData = mutableListOf<Level>()
 
     init {
@@ -36,7 +38,7 @@ class MainMenuScreen(private val assetManager: AssetManager, private val game: D
         while (true) {
             val levelFile = Gdx.files.internal("levels/l$levelNumber.json")
             if (levelFile.exists()) {
-                levelsData.add(levelNumber - 1, HttpRequestBuilder.json.fromJson(Level::class.java,levelFile))
+                levelsData.add(levelNumber - 1, levelJson.fromJson(Level::class.java,levelFile))
             } else {
                 break
             }

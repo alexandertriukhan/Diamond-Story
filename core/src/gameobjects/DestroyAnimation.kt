@@ -53,6 +53,7 @@ class DestroyAnimation(assets: GameScreenAssets,
                 explodeAnim =  ParticleEffect(assets.purpleExplosion)
                 fontColor = Color.BLACK
             }
+            JewelType.NO_JEWEL -> {}
         }
         if (effect == EffectType.CROSS) {
             crossAnim = ParticleEffect(assets.crossAnimation)
@@ -76,6 +77,7 @@ class DestroyAnimation(assets: GameScreenAssets,
                 crossAnim.setPosition((x * size) + size / 2,(((y * size) + gridOffset) + size / 2) - delta * 4)
                 crossAnim.draw(batch, delta * 2)
             }
+            EffectType.SUPER_GEM -> {}
         }
         drawScore(batch,delta)
     }
@@ -85,6 +87,7 @@ class DestroyAnimation(assets: GameScreenAssets,
             EffectType.NONE -> return explodeAnim.isComplete
             EffectType.FIRE -> return explodeAnim.isComplete
             EffectType.CROSS -> return crossAnim.isComplete
+            EffectType.SUPER_GEM -> {}
         }
         return false
     }

@@ -128,4 +128,7 @@ Thumbs.db
 /android/assets/
 
 ## Out
-/out/
+out/
+
+## Kotlin
+.kotlin/
