@@ -1,1 +1,16 @@
-include 'desktop', 'core'
+rootProject.name = 'Diamond-Story'
+
+include 'core', 'desktop', 'ios'
+
+// The Android module needs an Android SDK. Include it only when one is configured,
+// so desktop/iOS builds keep working on machines without the SDK.
+def localProperties = new Properties()
+def localPropertiesFile = file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withInputStream { localProperties.load(it) }
+}
+if (localProperties.getProperty('sdk.dir') || System.getenv('ANDROID_HOME') || System.getenv('ANDROID_SDK_ROOT')) {
+    include 'android'
+} else {
+    println "Android SDK not found (set sdk.dir in local.properties or ANDROID_HOME): skipping :android module"
+}

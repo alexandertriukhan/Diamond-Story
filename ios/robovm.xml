@@ -2,15 +2,19 @@
   <executableName>${app.executable}</executableName>
   <mainClass>${app.mainclass}</mainClass>
   <os>ios</os>
-  <arch>thumbv7</arch>
   <target>ios</target>
   <iosInfoPList>Info.plist.xml</iosInfoPList>
+  <treeShaker>conservative</treeShaker>
   <resources>
     <resource>
       <directory>../android/assets</directory>
       <includes>
         <include>**</include>
       </includes>
+      <excludes>
+        <exclude>src/**</exclude>
+        <exclude>**/*.tpproj</exclude>
+      </excludes>
       <skipPngCrush>true</skipPngCrush>
     </resource>
     <resource>
@@ -18,6 +22,9 @@
     </resource>
   </resources>
   <forceLinkClasses>
+    <!-- Level data is deserialized by libGDX Json via reflection -->
+    <pattern>gameobjects.**</pattern>
+    <pattern>enums.**</pattern>
     <pattern>com.badlogic.gdx.scenes.scene2d.ui.*</pattern>
     <pattern>com.badlogic.gdx.graphics.g3d.particles.**</pattern>
     <pattern>com.android.okhttp.HttpHandler</pattern>
@@ -33,15 +40,15 @@
     <pattern>org.apache.harmony.security.provider.crypto.CryptoProvider</pattern>
   </forceLinkClasses>
   <libs>
-      <lib>z</lib>   
+      <lib>z</lib>
   </libs>
   <frameworks>
     <framework>UIKit</framework>
-    <framework>OpenGLES</framework>
     <framework>QuartzCore</framework>
     <framework>CoreGraphics</framework>
     <framework>OpenAL</framework>
     <framework>AudioToolbox</framework>
     <framework>AVFoundation</framework>
+    <framework>GameController</framework>
   </frameworks>
 </config>

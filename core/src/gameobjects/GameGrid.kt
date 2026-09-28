@@ -439,6 +439,7 @@ class GameGrid(private val levelData : Level, private val assets: GameScreenAsse
                 when (cells[gem.x.toInt()][gem.y.toInt()].jewel.effect) {
                     EffectType.FIRE -> fireDestroy(gem.x,gem.y)
                     EffectType.CROSS -> crossDestroy(gem.x,gem.y)
+                    EffectType.NONE, EffectType.SUPER_GEM -> {}
                 }
             }
             if (match.matchType != MatchType.MATCH3) {

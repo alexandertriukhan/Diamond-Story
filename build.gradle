@@ -1,120 +1,42 @@
 buildscript {
-    ext.kotlin_version = '1.3.21'
-
-
     repositories {
-        mavenLocal()
         mavenCentral()
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        jcenter()
+        gradlePluginPortal()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
-        classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-
-
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "com.android.tools.build:gradle:$androidPluginVersion"
+        classpath "com.mobidevelop.robovm:robovm-gradle-plugin:$robovmVersion"
     }
 }
-apply plugin: 'kotlin'
 
-allprojects {
-    apply plugin: "eclipse"
-    apply plugin: "idea"
-
-    version = '1.0'
+subprojects {
+    version = projectVersion
     ext {
-        appName = "alexa-triukhan-match3"
-        gdxVersion = '1.9.8'
-        roboVMVersion = '2.3.1'
-        box2DLightsVersion = '1.4'
-        ashleyVersion = '1.7.0'
-        aiVersion = '1.8.0'
+        appName = 'DiamondStory'
+        // Assets live in android/assets (a separate, git-ignored repository); every platform reads them from there.
+        assetsDir = rootProject.file('android/assets')
     }
 
     repositories {
-        mavenLocal()
         mavenCentral()
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        google()
     }
 }
 
-project(":desktop") {
-    apply plugin: "java"
+// RoboVM (iOS) only understands Java 8 bytecode, so every JVM module targets Java 8.
+configure(subprojects.findAll { it.name != 'android' }) {
+    apply plugin: 'java'
 
-
-    dependencies {
-        compile project(":core")
-        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+    java {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
-}
 
-//project(":android") {
-//    apply plugin: "android"
-//
-//    configurations { natives }
-//
-//    dependencies {
-//        compile project(":core")
-//        compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
-//        natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi"
-//        natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
-//        natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
-//        natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
-//        natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
-//        compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-//        natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-armeabi"
-//        natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-armeabi-v7a"
-//        natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-arm64-v8a"
-//        natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
-//        natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86_64"
-//    }
-//}
-
-//project(":ios") {
-//    apply plugin: "java"
-//    apply plugin: "robovm"
-//
-//
-//    dependencies {
-//        compile project(":core")
-//        compile "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
-//        compile "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
-//        compile "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
-//        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
-//        compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
-//    }
-//}
-
-project(":core") {
-    apply plugin: "java"
-
-
-    dependencies {
-        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-    }
-}
-
-tasks.eclipse.doLast {
-    delete ".project"
-}
-repositories {
-    mavenCentral()
-}
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-}
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.release = 8
+        options.compilerArgs += '-Xlint:-options'
     }
 }
